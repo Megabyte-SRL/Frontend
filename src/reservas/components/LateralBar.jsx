@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Collapse, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from '@mui/material';
+import { Box, Collapse, Divider, Drawer, Grid, List, styled , ListItemButton, ListItemText, Toolbar, Typography } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
+import { Link as RouterLink } from 'react-router-dom';
 
 const LateralBar = ({anchoCaja=240}) => {
     const [openSubMenu, setOpenSubMenu] = useState(false);
@@ -13,6 +14,12 @@ const LateralBar = ({anchoCaja=240}) => {
     const handleEliminarSubMenuClick = () => {
         setOpenEliminarSubMenu(!openEliminarSubMenu);
     };
+
+    // Crear un componente Link personalizado sin subrayado
+    const Link = styled(RouterLink)({
+        textDecoration: 'none',
+        color: 'inherit',
+    });
     return (
         <Box 
             component='nav'
@@ -37,7 +44,9 @@ const LateralBar = ({anchoCaja=240}) => {
                                 <ListItemText primary="Ambientes" />
                             </ListItemButton>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Horarios" />
+                                <Link to="/crear-horario">
+                                    <ListItemText primary="Horarios" />
+                                </Link>
                             </ListItemButton>
                         </List>
                     </Collapse>
