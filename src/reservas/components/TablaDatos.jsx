@@ -58,6 +58,9 @@ const TablaDatos = ({ datos }) => {
       setSnackbarOpen(true);
       setShowUndoButton(true);
 
+      // Limpia los campos
+      setSelectedHora('');
+      setFecha('');
       
     }
   };
