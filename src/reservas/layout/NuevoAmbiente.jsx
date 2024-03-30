@@ -17,9 +17,9 @@ const NuevoAmbiente = () => {
     
               display: 'center',
               justifyContent: 'center',
-              marginTop: matches ? '10%' : '10%', // Ajustar el marginTop en pantallas pequeñas
+              marginTop: matches ? '10%' : '9%', 
               background: 'black',
-              minHeight: 'calc(100vh - 20px)', // Calcula la altura mínima para ajustarse a la pantalla
+              minHeight: 'calc(80vh - 60px)', 
             }}
           >
             <Paper sx={{
@@ -33,42 +33,51 @@ const NuevoAmbiente = () => {
               <Typography variant="h5" align="center" gutterBottom>
                 REGISTRO DE AMBIENTES
               </Typography>
-              <form>
-                
+
+                   
+
+                          
+              <form  style={{ margin: '0  100px' }}>
+              
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                 <Typography variant="body1">Identificador de ambiente:</Typography>
-                <TextField label="Ingrese identificador de ambiente" variant="outlined" style={{ width: '100%' }} />
+                <TextField label="Ingrese identificador de ambiente" variant="outlined" style={{ flex: 1 }} />
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                 <Typography variant="body1">Capacidad de ambiente:</Typography>
-                <TextField label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ width: '100%' }} />
+                <TextField label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ flex: 1 }} />
               </div>
 
+
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <Typography variant="body1">Accesibilidad:</Typography>
-                <RadioGroup aria-label="accesibilidad" name="accesibilidad">
-                    <FormControlLabel value="si" control={<Radio />} label="Si" />
-                    <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup>
-                </div>
+  <Typography variant="body1">Accesibilidad:</Typography>
+  <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }}>
+    <FormControlLabel value="si" control={<Radio />} label="Si" />
+    <FormControlLabel value="no" control={<Radio />} label="No" />
+  </RadioGroup>
+</div>
+
               
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
-                  <TextField label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ width: '100%' }} />
+                  <TextField label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1 }} />
                   
               </div>
-              <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
-                    <Button variant="contained" color="primary">
-                      Guardar
-                    </Button>
-                    <Button variant="contained" color="secondary">
-                      Cancelar
-                    </Button>
+              <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
+                <Button variant="contained" color="primary">
+                  SIGUIENTE
+                </Button>
+                <Button variant="contained" color="secondary">
+                  Cancelar
+                </Button>
               </Box>
+
+
 
                 
               </form>
+              
             </Paper>
           </Box>
         </Grid>
