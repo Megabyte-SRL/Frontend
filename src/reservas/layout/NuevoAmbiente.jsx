@@ -32,50 +32,49 @@ const NuevoAmbiente = () => {
             }}>
               <Typography variant="h5" align="center" gutterBottom>
                 REGISTRO DE AMBIENTES
-              </Typography>
-
-                   
-
-                          
+              </Typography>                 
+              
               <form  style={{ margin: '0  100px' }}>
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <Typography variant="body1">Identificador de ambiente:</Typography>
-                <TextField label="Ingrese identificador de ambiente" variant="outlined" style={{ flex: 1 }} />
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                <Typography variant="body1">Capacidad de ambiente:</Typography>
-                <TextField label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ flex: 1 }} />
-              </div>
-
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-  <Typography variant="body1">Accesibilidad:</Typography>
-  <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }}>
-    <FormControlLabel value="si" control={<Radio />} label="Si" />
-    <FormControlLabel value="no" control={<Radio />} label="No" />
-  </RadioGroup>
-</div>
-
-              
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
-                  <TextField label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1 }} />
-                  
-              </div>
-              <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
-                <Button variant="contained" color="primary">
-                  SIGUIENTE
-                </Button>
-                <Button variant="contained" color="secondary">
-                  Cancelar
-                </Button>
-              </Box>
-
-
-
                 
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <Typography variant="body1">Identificador de ambiente:</Typography>
+                  <TextField label="Ingrese identificador de ambiente" variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} 
+                        inputProps={{
+                        pattern: '^[a-zA-Z0-9@#- ]+$',
+                        maxLength: 20,
+                        minLength: 10,
+                        title: 'Ingrese solo letras, números, espacios y los caracteres @,#,-'
+                      }}
+                  />
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <Typography variant="body1">Capacidad de ambiente:</Typography>
+                  <TextField label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
+                </div>
+
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                  <Typography variant="body1">Accesibilidad:</Typography>
+                  <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }} defaultValue="no">
+                    <FormControlLabel value="si" control={<Radio />} label="Si" />
+                    <FormControlLabel value="no" control={<Radio />} label="No" />
+                  </RadioGroup>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                    <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
+                    <TextField label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
+                </div>
+                <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
+                  <Button variant="contained" color="primary">
+                    SIGUIENTE
+                  </Button>
+                  <Button variant="contained" color="secondary">
+                    CANCELAR
+                  </Button>
+                </Box>
+               
               </form>
               
             </Paper>
