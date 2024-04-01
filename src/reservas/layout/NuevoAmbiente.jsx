@@ -1,12 +1,57 @@
-import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button } from '@mui/material';
+import React, { useState } from 'react'; //para modal 
+import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import React from 'react';
+//import React from 'react';
 import ReservaLayout from '../layout/ReservaLayout';
 
 const NuevoAmbiente = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [openModal, setOpenModal] = useState(false);
+  
+  const handleOpenModal = () => { //controla la apertura del modal
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {//controla el cierre del modal
+    setOpenModal(false);
+  };
+
+  const modalBody = (
+    <Box
+      sx={{
+        position: 'absolute',
+        width: 400,
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 4,
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+      }}
+    >
+      <Typography variant="h5" align="center" gutterBottom>
+        AGREGAR UBICACION
+      </Typography>
+      <form>
+        <TextField label="Descripción" fullWidth variant="outlined" sx={{ mb: 2 }} />
+        <TextField label="Edificio" fullWidth variant="outlined" sx={{ mb: 2 }} />
+        <TextField label="Piso" fullWidth variant="outlined" sx={{ mb: 2 }} />
+        <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
+          <Button variant="contained" color="primary">
+            GUARDAR
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleCloseModal}>
+            ANTERIOR
+          </Button>
+        </Box>
+      </form>
+    </Box>
+  );
+
+
 
   return (
     <ReservaLayout>
@@ -67,7 +112,7 @@ const NuevoAmbiente = () => {
                     <TextField label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
                 </div>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
-                  <Button variant="contained" color="primary">
+                  <Button variant="contained" color="primary" onClick={handleOpenModal}>
                     SIGUIENTE
                   </Button>
                   <Button variant="contained" color="secondary">
@@ -81,6 +126,9 @@ const NuevoAmbiente = () => {
           </Box>
         </Grid>
       </Grid>
+      <Modal open={openModal} onClose={handleCloseModal}>
+        {modalBody}
+      </Modal>
     </ReservaLayout>
   );
 };
