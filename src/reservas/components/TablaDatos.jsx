@@ -102,7 +102,7 @@ const TablaDatos = ({ datos }) => {
             <TableCell>Capacidad</TableCell>
             <TableCell>Descripción</TableCell>
             <TableCell>Horario</TableCell>
-          </TableRow>
+          </TableRow> 
         </TableHead>
         <TableBody>
           {datos.map((fila, index) => (
