@@ -7,8 +7,8 @@ import { Search as SearchIcon } from '@mui/icons-material';
 const CrearHorario = () => {
   // Supongamos que tienes un array de objetos llamado `datos`
   const datos = [
-    { facultad: 'Facultad A', fecha: '2022-03-28', nombreAmbiente: 'Aula 101', capacidad: 30, carrera: 'Ingeniería', descripcion: 'Aula de teoría' },
-    { facultad: 'Facultad B', fecha: '2022-03-29', nombreAmbiente: 'Laboratorio 201', capacidad: 20, carrera: 'Ciencias', descripcion: 'Laboratorio de química' },
+    {  fecha: '2022-03-28', nombreAmbiente: 'Aula 101', capacidad: 30, carrera: 'Informatica', descripcion: 'Aula de teoría' },
+    {  fecha: '2022-03-29', nombreAmbiente: 'Laboratorio 201', capacidad: 20, carrera: 'Sistemas', descripcion: 'Laboratorio de computo' },
     // Agrega más objetos según sea necesario
   ];
 
