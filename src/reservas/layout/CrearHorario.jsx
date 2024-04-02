@@ -1,59 +1,66 @@
-import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
-import ReservaLayout from '../layout/ReservaLayout'
+import ReservaLayout from '../layout/ReservaLayout';
+import TablaDatos from '../components/TablaDatos';
+import { Box, Paper, Grid, Typography, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Search as SearchIcon } from '@mui/icons-material';
 
 const CrearHorario = () => {
-  const theme = useTheme();
-  const matches = useMediaQuery(theme.breakpoints.down('sm')); // Verificar si es una pantalla pequeña
+  // Supongamos que tienes un array de objetos llamado `datos`
+  const datos = [
+    {  fecha: '2022-03-28', nombreAmbiente: 'Aula 101', capacidad: 30, descripcion: 'Aula de teoría' },
+    {  fecha: '2022-03-29', nombreAmbiente: 'Laboratorio 201', capacidad: 20, descripcion: 'Laboratorio de computo' },
+    // Agrega más objetos según sea necesario
+  ];
 
   return (
     <ReservaLayout>
-      <Grid container justifyContent="center" >
-        <Grid item xs={12} md={12} lg={90} sx={{ background: '' }} >
+      <Grid container justifyContent="center">
+        <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
           <Box
             sx={{
-    
               display: 'flex',
               justifyContent: 'center',
-              marginTop: matches ? '10%' : '10%', // Ajustar el marginTop en pantallas pequeñas
+              marginTop: '10%', // Ajustar el marginTop en pantallas pequeñas
               background: 'black',
               minHeight: 'calc(100vh - 20px)', // Calcula la altura mínima para ajustarse a la pantalla
             }}
           >
-              <Paper sx={{
-              marginTop:'-5%',
+            <Paper sx={{
+              marginTop: '-5%',
               boxShadow: '0px 0px 10px 2px rgba(0,0,0,0.2)', // Ajusta el sombreado para el marco
               padding: '2%',
               width: '100%',
               backgroundColor: '#F3F6F9', // Cambia el color de fondo al interior del marco
             }}>
-              <Typography variant="h5" align="center" gutterBottom>
+              <Typography variant="h4" align="center" gutterBottom>
                 REGISTRO DE HORARIOS
               </Typography>
-              <Typography variant="body1" gutterBottom>
+              <Typography variant="body1" gutterBottom sx={{ marginLeft: '5%' }}>
                 Buscar ambientes:
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Typography variant="body1" sx={{ marginRight: '1rem' }}>Nombre:</Typography>
-                <TextField label="Nombre" variant="outlined" />
+              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '.5rem' }}>
+                <Typography variant="body1" sx={{ marginRight: '1rem', marginLeft: '5%' }}>Nombre:</Typography>
+                <TextField variant="outlined" InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton>
+                        <SearchIcon color="primary" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }} />
+                <Typography variant="body1" sx={{ marginRight: '1rem', marginLeft: '5%' }}>Capacidad:</Typography>
+                <TextField variant="outlined" InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton>
+                        <SearchIcon color="primary" />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }} />
               </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Typography variant="body1" sx={{ marginRight: '1rem' }}>Capacidad:</Typography>
-                <TextField label="Capacidad" variant="outlined" />
-              </Box>
-              <Toolbar>
-                <List>
-                  <ListItem button>
-                    <ListItemText primary="Botón 1" />
-                  </ListItem>
-                  <ListItem button>
-                    <ListItemText primary="Botón 2" />
-                  </ListItem>
-                  {/* Agrega más elementos según sea necesario */}
-                </List>
-              </Toolbar>
+              <TablaDatos datos={datos} />
             </Paper>
           </Box>
         </Grid>
