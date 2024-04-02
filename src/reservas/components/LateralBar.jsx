@@ -62,7 +62,9 @@ const LateralBar = ({anchoCaja=240}) => {
                     <Collapse in={openEliminarSubMenu} timeout="auto" unmountOnExit>
                         <List component="div" disablePadding>
                             <ListItemButton sx={{ pl: 4 }}>
-                                <ListItemText primary="Ambientes" />
+                                <Link to="/eliminar-ambiente">
+                                    <ListItemText primary="Ambientes" />
+                                </Link>
                             </ListItemButton>
                             
                         </List>
