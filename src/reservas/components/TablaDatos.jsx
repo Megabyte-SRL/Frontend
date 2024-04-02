@@ -100,7 +100,6 @@ const TablaDatos = ({ datos }) => {
             <TableCell>Fecha</TableCell>
             <TableCell>Nombre Ambiente</TableCell>
             <TableCell>Capacidad</TableCell>
-           {/*  <TableCell>Carrera</TableCell>*/}
             <TableCell>Descripción</TableCell>
             <TableCell>Horario</TableCell>
           </TableRow>
@@ -114,7 +113,6 @@ const TablaDatos = ({ datos }) => {
               <TableCell>{fila.fecha}</TableCell>
               <TableCell>{fila.nombreAmbiente}</TableCell>
               <TableCell>{fila.capacidad}</TableCell>
-              {/*<TableCell>{fila.carrera}</TableCell>*/}
               <TableCell>{fila.descripcion}</TableCell>
               <TableCell align="center">
                 <IconButton
