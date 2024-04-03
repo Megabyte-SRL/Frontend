@@ -1,24 +1,23 @@
 import React, { useState } from 'react';
-import { Select, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, TextField, Button, Grid } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, TextField, Button, Grid, Checkbox, FormControl, FormGroup, FormControlLabel, Popover, List, ListItem, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { Add as AddIcon } from '@mui/icons-material';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
-
 
 const TablaDatos = ({ datos }) => {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
   const [selectedRowIndex, setSelectedRowIndex] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [modalData, setModalData] = useState({});
-  const [selectedHora, setSelectedHora] = useState('');
+  const [selectedHoras, setSelectedHoras] = useState([]); // Estado para almacenar las horas seleccionadas
   const [fecha, setFecha] = useState('');
+  const [horasError, setHorasError] = useState(false);
   const [fechaError, setFechaError] = useState(false);
-  const [horaError, setHoraError] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [showUndoButton, setShowUndoButton] = useState(false);
-
+  const [anchorEl, setAnchorEl] = useState(null); // Estado para el ancla del popover
 
   const handleClick = (index) => {
     setSelectedButtonIndex(index);
@@ -31,43 +30,33 @@ const TablaDatos = ({ datos }) => {
     setOpenModal(false);
     setSelectedButtonIndex(null);
     setSelectedRowIndex(null);
-    setSelectedHora('');
+    setSelectedHoras([]); // Limpiar las horas seleccionadas al cerrar el modal
     setFecha('');
     setFechaError(false);
-    setHoraError(false);
   };
 
   const handleAceptar = () => {
-    if (selectedHora === '' || fecha === '') {
-      // Si alguno de los campos está vacío, establece el estado de error correspondiente
-      if (selectedHora === '') setHoraError(true);
+    if (selectedHoras.length === 0 || fecha === '') {
+      if (selectedHoras.length === 0) setHorasError(true);
       if (fecha === '') setFechaError(true);
     } else {
-      // Si ambos campos están llenos, realiza las acciones necesarias y cierra el modal
-      // Aquí puedes realizar otras acciones, como enviar los datos o realizar validaciones adicionales
       setOpenModal(false);
       setSelectedButtonIndex(null);
       setSelectedRowIndex(null);
-      
-      // Restablecer errores a falso
-      if (fechaError) setFechaError(false);
-      if (horaError) setHoraError(false);
 
-      // Muestra el Snackbar con el mensaje "Horario registrado"
+      if (fechaError) setFechaError(false);
+
       setSnackbarMessage('Horario registrado');
       setSnackbarOpen(true);
       setShowUndoButton(true);
 
-      // Limpia los campos
-      setSelectedHora('');
       setFecha('');
-      
+      setSelectedHoras([]);
     }
   };
 
   const handleUndo = () => {
-    // Limpia los campos
-    setSelectedHora('');
+    setSelectedHoras([]);
     setFecha('');
 
     setShowUndoButton(false);
@@ -76,12 +65,9 @@ const TablaDatos = ({ datos }) => {
     setSnackbarOpen(true);
   };
 
-  const handleHoraChange = (event) => {
-    setSelectedHora(event.target.value);
-  };
-
   const handleFechaChange = (event) => {
     setFecha(event.target.value);
+    setFechaError(false); // Actualizar el estado de error a false al cambiar la fecha
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -91,6 +77,34 @@ const TablaDatos = ({ datos }) => {
 
     setSnackbarOpen(false);
   };
+
+  const handleCheckboxChange = (hora) => () => {
+    if (selectedHoras.includes(hora)) {
+      setSelectedHoras(selectedHoras.filter((h) => h !== hora));
+    } else {
+      setSelectedHoras([...selectedHoras, hora]);
+    }
+    setHorasError(false); // Actualizar el estado de error a false al cambiar las horas seleccionadas
+  };
+
+  const handleSelectAll = () => {
+    if (selectedHoras.length === 10) {
+      setSelectedHoras([]);
+    } else {
+      setSelectedHoras(['6:45 - 8:15', '8:15 - 9:45', '9:45 - 11:15', '11:15 - 12:45', '12:45 - 14:15', '14:15 - 15:45', '15:45 - 17:15', '17:15 - 18:45', '18:45 - 20:15', '20:15 - 21:45']);
+    }
+  };
+
+  const handlePopoverClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <TableContainer component={Paper} sx={{ borderRadius: '.5rem' }}>
@@ -176,51 +190,71 @@ const TablaDatos = ({ datos }) => {
                       </Typography>
                     )}
                   </Typography>
-                  
                 </Grid>
                 <Grid item xs={3.5}>
-                  <TextField id="fecha" type="date" fullWidth onChange={handleFechaChange} sx={{ mb: 1,marginLeft: '-10%' }} />
+                  <TextField id="fecha" type="date" fullWidth onChange={handleFechaChange} sx={{ mb: 1,marginLeft: '-5%' }} />
+                  {fechaError && (
+                      <Typography variant="body2" color="error">
+                      * Campo obligatorio
+                      </Typography>
+                    )}
                 </Grid>
-                 
-                <Grid item xs={2} sx={{paddingBottom: '4%' }}>
-                  <Typography variant="h6" >
-                      Hora:
-                      {horaError && (
-                        <Typography variant="body2" color="error" component="span">
-                          &nbsp;*
-                        </Typography>
-                      )}
-                    </Typography>
-                </Grid>
+                
+              <Grid item xs={2} sx={{paddingBottom: '4%' }}>
+                <Typography variant="h6" >
+                    Hora:
+                    {horasError && (
+                      <Typography variant="body2" color="error" component="span">
+                        &nbsp;*  
+                      </Typography>
+                    )}
+                  </Typography>
+              </Grid>
                 <Grid item xs={3.5}>
-                  <Select
-                    value={selectedHora}
-                    onChange={handleHoraChange}
-                    fullWidth
+                  <Button
+                    variant="contained"
+                    color="secondary"
+                    onClick={handlePopoverClick}
                     sx={{ mb: 3,marginLeft: '-10%'  }}
                   >
-                    <MenuItem value="">Seleccione un periodo</MenuItem>
-                    <MenuItem value="6:45 - 8:15">6:45 - 8:15</MenuItem>
-                    <MenuItem value="8:15 - 9:45">8:15 - 9:45</MenuItem>
-                    <MenuItem value="9:45 - 11:15">9:45 - 11:15</MenuItem>
-                    <MenuItem value="11:15 - 12:45">11:15 - 12:45</MenuItem>
-                    <MenuItem value="12:45 - 14:15">12:45 - 14:15</MenuItem>
-                    <MenuItem value="14:15 - 15:45">14:15 - 15:45</MenuItem>
-                    <MenuItem value="15:45 - 17:15">15:45 - 17:15</MenuItem>
-                    <MenuItem value="17:15 - 18:45">17:15 - 18:45</MenuItem>
-                    <MenuItem value="18:45 - 20:15">18:45 - 20:15</MenuItem>
-                    <MenuItem value="20:15 - 21:45">20:15 - 21:45</MenuItem>
-                  </Select>
-                </Grid>
+                    Seleccione horarios
+                  </Button>
+                  <Popover
+                    id={id}
+                    open={open}
+                    anchorEl={anchorEl}
+                    onClose={handlePopoverClose}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'left',
+                    }}
+                  >
+                    <List>
+                      <ListItem dense button onClick={handleSelectAll}>
+                        <ListItemText primary="Seleccionar todo" />
+                        <Checkbox checked={selectedHoras.length === 10} />
+                      </ListItem>
+                      {['6:45 - 8:15', '8:15 - 9:45', '9:45 - 11:15', '11:15 - 12:45', '12:45 - 14:15', '14:15 - 15:45', '15:45 - 17:15', '17:15 - 18:45', '18:45 - 20:15', '20:15 - 21:45'].map((hora, index) => (
+                        <ListItem key={index} dense button onClick={handleCheckboxChange(hora)}>
+                          <ListItemText primary={hora} />
+                          <Checkbox checked={selectedHoras.includes(hora)} />
+                        </ListItem>
+                      ))}
+                    </List>
+                  </Popover>
+                  {horasError && (
+                    <Typography variant="body2" color="error">
+                      * Campo obligatorio
+                    </Typography>
+                  )}
+                 </Grid>
               </Grid>
-            </Grid>
-          
-          {/* Agrega más campos según necesites */}
-          {(fechaError||horaError)  && (
-              <Typography variant="body2" color="error">
-                * Campos obligatorios
-              </Typography>
-            )}
+          </Grid>
+
           <Button 
             variant="contained" 
             sx={{ 
