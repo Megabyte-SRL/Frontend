@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; //para modal 
-import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal } from '@mui/material';
+import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal, Select, MenuItem } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 //import React from 'react';
@@ -8,6 +8,23 @@ import ReservaLayout from '../layout/ReservaLayout';
 const NuevoAmbiente = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
+  //copiar aula y capacidad
+  const [aulaValue, setAulaValue] = useState('');
+  const [capacidadValue, setCapacidadValue] = useState('');
+
+  const handleAulaChange = (event) => {
+    setAulaValue(event.target.value);
+  };
+
+  const handleCapacidadChange = (event) => {
+    setCapacidadValue(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    // Aquí puedes usar los valores de aulaValue y capacidadValue como desees
+    console.log('Aula:', aulaValue);
+    console.log('Capacidad:', capacidadValue);
+  };
 
   const [openModal, setOpenModal] = useState(false);
   
@@ -18,12 +35,12 @@ const NuevoAmbiente = () => {
   const handleCloseModal = () => {//controla el cierre del modal
     setOpenModal(false);
   };
-
+  const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
   const modalBody = (
     <Box
       sx={{
         position: 'absolute',
-        width: 400,
+        width: 600,
         bgcolor: 'background.paper',
         boxShadow: 24,
         p: 4,
@@ -35,10 +52,27 @@ const NuevoAmbiente = () => {
       <Typography variant="h5" align="center" gutterBottom>
         AGREGAR UBICACION
       </Typography>
+      <Grid container spacing={2}>
+      <Grid item xs={6}>
+        <Typography variant="body1" align="left">Aula: {aulaValue}</Typography>
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant="body1" align="right">Capacidad:{capacidadValue} </Typography>
+      </Grid>
+      </Grid>
       <form>
-        <TextField label="Descripción" fullWidth variant="outlined" sx={{ mb: 2 }} />
-        <TextField label="Edificio" fullWidth variant="outlined" sx={{ mb: 2 }} />
+        <TextField label="Lugar" fullWidth variant="outlined" sx={{ mb: 2 }} />
         <TextField label="Piso" fullWidth variant="outlined" sx={{ mb: 2 }} />
+        {/* <TextField label="Edificio" fullWidth variant="outlined" sx={{ mb: 2 }} /> */}
+        <Box sx={{ mb: 2 }}>
+          <Select label="Edificio" fullWidth variant="outlined">
+            {edificioOptions.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
           <Button variant="contained" color="primary">
             GUARDAR
@@ -83,19 +117,23 @@ const NuevoAmbiente = () => {
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1">Identificador de ambiente:</Typography>
-                  <TextField label="Ingrese identificador de ambiente" variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} 
+                  <TextField label="Ingrese identificador de ambiente" variant="outlined" 
+                        style={{ flex: 1, backgroundColor: 'white' }} 
                         inputProps={{
                         pattern: '^[a-zA-Z0-9@#- ]+$',
                         maxLength: 20,
                         minLength: 10,
                         title: 'Ingrese solo letras, números, espacios y los caracteres @,#,-'
-                      }}
+                      }
+                    }
+                    onChange={handleAulaChange}
+                    value={aulaValue}
                   />
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1">Capacidad de ambiente:</Typography>
-                  <TextField label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
+                  <TextField onChange={handleCapacidadChange} value={capacidadValue} label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
                 </div>
 
 
