@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; //para modal 
-import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal, Select, MenuItem } from '@mui/material';
+import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal, Select, MenuItem, InputLabel } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 //import React from 'react';
@@ -36,6 +36,7 @@ const NuevoAmbiente = () => {
     setOpenModal(false);
   };
   const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
+  const pisoOptions =['','1er Piso', '2do Piso','3er Piso','4to Piso','5to Piso','6to Piso'];
   const modalBody = (
     <Box
       sx={{
@@ -62,10 +63,24 @@ const NuevoAmbiente = () => {
       </Grid>
       <form>
         <TextField label="Lugar" fullWidth variant="outlined" sx={{ mb: 2 }} />
-        <TextField label="Piso" fullWidth variant="outlined" sx={{ mb: 2 }} />
-        {/* <TextField label="Edificio" fullWidth variant="outlined" sx={{ mb: 2 }} /> */}
+        {/* <TextField label="Piso" fullWidth variant="outlined" sx={{ mb: 2 }} /> */}
+
         <Box sx={{ mb: 2 }}>
-          <Select label="Edificio" fullWidth variant="outlined">
+          <InputLabel id="piso-label">Piso</InputLabel>
+          <Select labelId="piso-label" id="piso" fullWidth variant="outlined">
+            {pisoOptions.map(option => (
+              <MenuItem key={option} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+
+
+        <Box sx={{ mb: 2 }}>
+          <InputLabel id="edificio-label">Edificio</InputLabel>
+          <Select labelId="edificio-label" id="edificio" fullWidth variant="outlined">
+          {/* <Select {label="Edificio"} fullWidth variant="outlined"></Select> */}
             {edificioOptions.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
