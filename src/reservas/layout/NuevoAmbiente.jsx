@@ -1,8 +1,7 @@
 import React, { useState } from 'react'; //para modal 
-import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal, Select, MenuItem, InputLabel } from '@mui/material';
+import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal, Select, MenuItem, InputLabel, Alert } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-//import React from 'react';
 import ReservaLayout from '../layout/ReservaLayout';
 
 const NuevoAmbiente = () => {
@@ -11,6 +10,12 @@ const NuevoAmbiente = () => {
   //copiar aula y capacidad
   const [aulaValue, setAulaValue] = useState('');
   const [capacidadValue, setCapacidadValue] = useState('');
+  //05042024 json
+  const [lugarValue, setLugarValue] = useState('');
+  const [pisoValue, setPisoValue] = useState('');
+  const [edificioValue, setEdificioValue] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleAulaChange = (event) => {
     setAulaValue(event.target.value);
@@ -19,12 +24,54 @@ const NuevoAmbiente = () => {
   const handleCapacidadChange = (event) => {
     setCapacidadValue(event.target.value);
   };
-
-  const handleSubmit = () => {
-    // Aquí puedes usar los valores de aulaValue y capacidadValue como desees
-    console.log('Aula:', aulaValue);
-    console.log('Capacidad:', capacidadValue);
+  //manejamos lugar y piso 05042024
+  const handleLugarChange = (event) => {
+    setLugarValue(event.target.value);
   };
+
+  const handlePisoChange = (event) => {
+    setPisoValue(event.target.value);
+  };
+
+  const handleEdificioChange = (event) => {
+    setEdificioValue(event.target.value);
+  };
+
+  const handleSubmit = async () => {
+    const formData = {
+      aula: aulaValue,
+      capacidad: capacidadValue,
+      ubicacion: {
+        lugar: lugarValue,
+        piso: pisoValue,
+        edificio: edificioValue
+      }
+    };
+    try {
+      const response = await fetch('http://localhost:8080/api/ambientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+      const data = await response.json();
+      if (response.ok) {
+        // Manejar respuesta exitosa
+        setSuccessMessage(data.msg);
+        setErrorMessage('');
+      } else {
+        // Manejar errores
+        setErrorMessage(data.msg);
+        setSuccessMessage('');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setErrorMessage('Error al procesar la solicitud.');
+      setSuccessMessage('');
+    }
+  };
+  
 
   const [openModal, setOpenModal] = useState(false);
   
@@ -35,8 +82,17 @@ const NuevoAmbiente = () => {
   const handleCloseModal = () => {//controla el cierre del modal
     setOpenModal(false);
   };
+  const handleCloseSuccessMessage = () => {
+    setSuccessMessage('');
+  };
+
+  const handleCloseErrorMessage = () => {
+    setErrorMessage('');
+  };
+
   const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
   const pisoOptions =['','1er Piso', '2do Piso','3er Piso','4to Piso','5to Piso','6to Piso'];
+
   const modalBody = (
     <Box
       sx={{
@@ -62,12 +118,12 @@ const NuevoAmbiente = () => {
       </Grid>
       </Grid>
       <form>
-        <TextField label="Lugar" fullWidth variant="outlined" sx={{ mb: 2 }} />
-        {/* <TextField label="Piso" fullWidth variant="outlined" sx={{ mb: 2 }} /> */}
-
+        <TextField label="Lugar" fullWidth variant="outlined" sx={{ mb: 2 }} onChange={handleLugarChange}
+          value={lugarValue} />
         <Box sx={{ mb: 2 }}>
           <InputLabel id="piso-label">Piso</InputLabel>
-          <Select labelId="piso-label" id="piso" fullWidth variant="outlined">
+          <Select labelId="piso-label" id="piso" fullWidth variant="outlined" onChange={handlePisoChange}
+            value={pisoValue}>
             {pisoOptions.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
@@ -79,8 +135,9 @@ const NuevoAmbiente = () => {
 
         <Box sx={{ mb: 2 }}>
           <InputLabel id="edificio-label">Edificio</InputLabel>
-          <Select labelId="edificio-label" id="edificio" fullWidth variant="outlined">
-          {/* <Select {label="Edificio"} fullWidth variant="outlined"></Select> */}
+          <Select labelId="edificio-label" id="edificio" fullWidth variant="outlined" onChange={handleEdificioChange}
+            value={edificioValue}>
+          
             {edificioOptions.map(option => (
               <MenuItem key={option} value={option}>
                 {option}
@@ -89,7 +146,7 @@ const NuevoAmbiente = () => {
           </Select>
         </Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-around' }}>
-          <Button variant="contained" color="primary">
+          <Button variant="contained" color="primary" onClick={handleSubmit}>
             GUARDAR
           </Button>
           <Button variant="contained" color="secondary" onClick={handleCloseModal}>
@@ -182,7 +239,22 @@ const NuevoAmbiente = () => {
       <Modal open={openModal} onClose={handleCloseModal}>
         {modalBody}
       </Modal>
+      <Alert
+        open={!!successMessage}
+        severity="success"
+        onClose={handleCloseSuccessMessage}
+      >
+        {successMessage}
+      </Alert>
+      <Alert
+        open={!!errorMessage}
+        severity="error"
+        onClose={handleCloseErrorMessage}
+      >
+        {errorMessage}
+      </Alert>
     </ReservaLayout>
+    
   );
 };
 
