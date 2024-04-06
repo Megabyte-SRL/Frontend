@@ -35,23 +35,46 @@ const TablaDatos = ({ datos }) => {
     setFechaError(false);
   };
 
-  const handleAceptar = () => {
+  const handleAceptar = async () => {
     if (selectedHoras.length === 0 || fecha === '') {
       if (selectedHoras.length === 0) setHorasError(true);
       if (fecha === '') setFechaError(true);
     } else {
-      setOpenModal(false);
-      setSelectedButtonIndex(null);
-      setSelectedRowIndex(null);
+      // Construir el cuerpo de la solicitud
+      const cuerpoSolicitud = {
+        ambiente_id: modalData.id, // Usar el ID del ambiente seleccionado
+        fecha: fecha,
+        horasDisponibles: selectedHoras.map(hora => ({
+          horaInicio: hora.split(' - ')[0],
+          horaFin: hora.split(' - ')[1]
+        }))
+      };
 
-      if (fechaError) setFechaError(false);
+      try {
+        // Enviar la solicitud POST
+        const respuesta = await fetch('http://127.0.0.1:8000/api/horariosDisponibles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(cuerpoSolicitud)
+        });
 
-      setSnackbarMessage('Horario registrado');
-      setSnackbarOpen(true);
-      setShowUndoButton(true);
+        if (!respuesta.ok) {
+          throw new Error('No se pudo completar la solicitud.');
+        }
 
-      setFecha('');
-      setSelectedHoras([]);
+        // Mostrar mensaje de éxito
+        setSnackbarMessage('Horario registrado');
+        setSnackbarOpen(true);
+        setShowUndoButton(true);
+
+        // Limpiar estados
+        setFecha('');
+        setSelectedHoras([]);
+      } catch (error) {
+        console.error('Error al enviar los horarios:', error);
+      }
     }
   };
 
@@ -119,13 +142,13 @@ const TablaDatos = ({ datos }) => {
           </TableRow> 
         </TableHead>
         <TableBody>
-          {datos.map((fila, index) => (
+        {Array.isArray(datos) && datos.map((fila, index) => (
             <TableRow
               key={index}
               sx={{ bgcolor: selectedRowIndex === index ? '#F2F2F2' : 'inherit' }}
             >
               <TableCell>{fila.fecha}</TableCell>
-              <TableCell>{fila.nombreAmbiente}</TableCell>
+              <TableCell>{fila.nombre}</TableCell>
               <TableCell>{fila.capacidad}</TableCell>
               <TableCell>{fila.descripcion}</TableCell>
               <TableCell align="center">

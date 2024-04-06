@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import ReservaLayout from '../layout/ReservaLayout';
 import TablaDatos from '../components/TablaDatos';
 import { Box, Paper, Grid, Typography, TextField, InputAdornment, IconButton } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 
 const CrearHorario = () => {
-  // Supongamos que tienes un array de objetos llamado `datos`
-  const datos = [
-    {  fecha: '2022-03-28', nombreAmbiente: 'Aula 101', capacidad: 30, descripcion: 'Aula de teoría' },
-    {  fecha: '2022-03-29', nombreAmbiente: 'Laboratorio 201', capacidad: 20, descripcion: 'Laboratorio de computo' },
-    // Agrega más objetos según sea necesario
-  ];
+  const [ambientes, setAmbientes] = useState([]);
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/list/ambientes')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('No se pudo obtener los datos.');
+        }
+        return response.json();
+      })
+      .then(data => {
+        // Extraer el array de objetos bajo la clave "data"
+        const ambientesData = data.data;
+        setAmbientes(ambientesData); // Establecer los datos obtenidos en el estado
+      })
+      .catch(error => {
+        console.error('Error al obtener los datos:', error);
+      });
+  }, []); // Este efecto se ejecuta solo una vez al montar el componente
 
   return (
     <ReservaLayout>
@@ -60,7 +73,7 @@ const CrearHorario = () => {
                   ),
                 }} />
               </Box>
-              <TablaDatos datos={datos} />
+              <TablaDatos datos={ambientes} />
             </Paper>
           </Box>
         </Grid>
