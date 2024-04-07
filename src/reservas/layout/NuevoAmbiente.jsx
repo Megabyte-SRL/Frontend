@@ -21,6 +21,8 @@ const NuevoAmbiente = () => {
   const [lugarValue, setLugarValue] = useState('');
   const [pisoValue, setPisoValue] = useState('');
   const [edificioValue, setEdificioValue] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleAulaChange = (event) => {
     setAulaValue(event.target.value);
@@ -101,13 +103,51 @@ const NuevoAmbiente = () => {
 
     }),
     validateOnChange: false,
-    onSubmit: (formValue) => {
+    onSubmit: async(formValue) => {
       console.log("Registro Ubicacion OK");
       setLugarValue(formValue.lugar)
       setPisoValue(formValue.piso)
       setEdificioValue(formValue.edificio)
       console.log(formValue);
 
+      const formData = {
+        aula: aulaValue,
+        capacidad: capacidadValue,
+        descripcion: descripcionValue,
+        ubicacion: {
+          lugar: formValue.lugar,
+          piso: formValue.piso,
+          edificio: formValue.edificio
+        }
+      };
+
+      try {
+        const response = await fetch('http://localhost:8080/api/ambientes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        const data = await response.json();
+        if (response.ok) {
+          // Manejar respuesta exitosa
+          setSuccessMessage(data.msg);
+          setErrorMessage('');
+        } else {
+          // Manejar errores
+          setErrorMessage(data.msg);
+          setSuccessMessage('');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setErrorMessage('Error al procesar la solicitud.');
+        setSuccessMessage('');
+      }
+
+
+      console.log("mostrando objeto")
+      console.log(formData);
 
       handleCloseModal();
 
@@ -170,16 +210,7 @@ const NuevoAmbiente = () => {
           </Select>
         </Box>
 
-        {/* <TextField label="Piso" fullWidth variant="outlined" sx={{ mb: 2 }}
-          name="piso"
-          onChange={formik2.handleChange}
-          value={formik2.values.piso}
-          error={formik2.errors.piso}
-          helperText={formik2.errors.piso}
-        /> */}
 
-
-        {/* <TextField label="Edificio" fullWidth variant="outlined" sx={{ mb: 2 }} /> */}
         <Box sx={{ mb: 2 }}>
           <InputLabel id="edificio-label">Edificio</InputLabel>
           <Select label="Edificio" fullWidth variant="outlined"
