@@ -18,6 +18,19 @@ const TablaDatos = ({ datos }) => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [showUndoButton, setShowUndoButton] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null); // Estado para el ancla del popover
+  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
+
+    // Función para abrir el Snackbar
+  const showSnackbar = () => {
+    setIsSnackbarVisible(true);
+  };
+
+  // Función para cerrar el Snackbar
+  const hideSnackbar = () => {
+    setIsSnackbarVisible(false);
+  };
+
+
 
   const handleClick = (index) => {
     setSelectedButtonIndex(index);
@@ -63,7 +76,7 @@ const TablaDatos = ({ datos }) => {
         if (!respuesta.ok) {
           throw new Error('No se pudo completar la solicitud.');
         }
-
+        setOpenModal(false);
         // Mostrar mensaje de éxito
         setSnackbarMessage('Horario registrado');
         setSnackbarOpen(true);
@@ -76,16 +89,6 @@ const TablaDatos = ({ datos }) => {
         console.error('Error al enviar los horarios:', error);
       }
     }
-  };
-
-  const handleUndo = () => {
-    setSelectedHoras([]);
-    setFecha('');
-
-    setShowUndoButton(false);
-    setSnackbarOpen(false);
-    setSnackbarMessage('Acción deshecha');
-    setSnackbarOpen(true);
   };
 
   const handleFechaChange = (event) => {
@@ -320,15 +323,10 @@ const TablaDatos = ({ datos }) => {
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            width: '25rem',
+            width: '20rem',
           }}
         >
           {snackbarMessage}
-          {showUndoButton && (
-            <Button sx={{marginLeft:'5rem'}} color="inherit" size="small" onClick={handleUndo}>
-              DESHACER
-            </Button>
-          )}
         </MuiAlert>
       </Snackbar>
     </TableContainer>
