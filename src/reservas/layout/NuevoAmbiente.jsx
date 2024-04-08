@@ -280,8 +280,8 @@ const NuevoAmbiente = () => {
 
               <Grid container spacing={2}>
               <Grid item xs={6}>
-                <Typography variant="body1" sx={{ marginBottom: '8px' }}>Identificador de ambiente:</Typography>
-                <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
+                <Typography variant="body1" sx={{ marginBottom: '8px' }}>Identificador de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
+                
               </Grid>
               <Grid item xs={6}>
                 
@@ -305,8 +305,8 @@ const NuevoAmbiente = () => {
               </Grid>
 
               <Grid item xs={6}>
-                <Typography variant="body1">Capacidad de ambiente:</Typography>
-                <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
+                <Typography variant="body1">Capacidad de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
+                
               </Grid>
               <Grid item xs={6}>
                 <TextField
@@ -325,8 +325,8 @@ const NuevoAmbiente = () => {
               </Grid>
 
               <Grid item xs={6}>
-                <Typography variant="body1">Descripción de ambiente:</Typography>
-                <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
+                <Typography variant="body1">Descripción de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
+                
               </Grid>
               <Grid item xs={6}>
                 <TextField
