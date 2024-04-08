@@ -277,6 +277,7 @@ const NuevoAmbiente = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1">Identificador de ambiente:</Typography>
+                  <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
                   <TextField label="Ingrese identificador de ambiente" variant="outlined"
                     style={{ flex: 1, backgroundColor: 'white' }}
                     inputProps={{
@@ -298,6 +299,7 @@ const NuevoAmbiente = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1">Capacidad de ambiente:</Typography>
+                  <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
                   <TextField
                     // onChange={handleCapacidadChange}
                     //value={capacidadValue}
@@ -319,6 +321,7 @@ const NuevoAmbiente = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
+                  <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
                   <TextField
                     label="Ingrese descripción de ambiente"
                     multiline rows={4} variant="outlined"
@@ -330,6 +333,7 @@ const NuevoAmbiente = () => {
                     helperText={formik.errors.descripcion}
                   />
                 </div>
+                <Typography variant="body1" sx={{ color: 'red' }}>* Campos Obligatorios</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
                   {/* <Button type='submit' variant="contained" color="primary" onClick={handleOpenModal}> */}
 
@@ -338,7 +342,7 @@ const NuevoAmbiente = () => {
                     SIGUIENTE
                   </Button>
                   <Button variant="contained" color="secondary">
-                    CANCEL
+                    CANCELAR
                   </Button>
                 </Box>
 
