@@ -338,7 +338,7 @@ const NuevoAmbiente = () => {
                     SIGUIENTE
                   </Button>
                   <Button variant="contained" color="secondary">
-                    CANCELAR
+                    CANCEL
                   </Button>
                 </Box>
 
