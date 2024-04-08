@@ -137,7 +137,6 @@ const TablaDatos = ({ datos }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Fecha</TableCell>
             <TableCell>Nombre Ambiente</TableCell>
             <TableCell>Capacidad</TableCell>
             <TableCell>Descripción</TableCell>
@@ -150,7 +149,6 @@ const TablaDatos = ({ datos }) => {
               key={index}
               sx={{ bgcolor: selectedRowIndex === index ? '#F2F2F2' : 'inherit' }}
             >
-              <TableCell>{fila.fecha}</TableCell>
               <TableCell>{fila.nombre}</TableCell>
               <TableCell>{fila.capacidad}</TableCell>
               <TableCell>{fila.descripcion}</TableCell>
