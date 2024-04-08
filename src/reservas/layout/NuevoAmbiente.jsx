@@ -215,17 +215,17 @@ const NuevoAmbiente = () => {
                 </div>
 
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                {/* <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1">Accesibilidad:</Typography>
-                  {/* <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }} defaultValue="no">
+                   <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }} defaultValue="no">
                     <FormControlLabel value="si" control={<Radio />} label="Si" />
                     <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup> */}
-                </div>
+                  </RadioGroup> 
+                </div> */}
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                     <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
-                    <TextField onChange={handleDescripcionChange} value={descripcionValueValue}label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
+                    <TextField onChange={handleDescripcionChange} value={descripcionValue}label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
                 </div>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
                   <Button variant="contained" color="primary" onClick={handleOpenModal}>
