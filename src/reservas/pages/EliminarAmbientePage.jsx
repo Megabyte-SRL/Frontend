@@ -2,11 +2,30 @@ import { Box, Paper, Grid, Typography, TextField, InputAdornment, IconButton } f
 import { DeleteTable } from '../components';
 import { Search as SearchIcon } from '@mui/icons-material'
 import ReservaLayout from '../layout/ReservaLayout'
-import { useFetch } from '../../hooks/useFetch';
+import { useEffect, useState } from 'react';
 
 const EliminarAmbientePage = () => {
+    const [ambientes, setAmbientes] = useState([]);
 
-    const { data } = useFetch('http://localhost:8080/api/list/ambientes')
+    useEffect(() => {
+        obtenerListaAmbientes();
+    }, []);
+
+    const obtenerListaAmbientes = () => {
+        fetch('http://localhost:8080/api/list/ambientes')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener la lista de ambientes');
+                }
+                return response.json();
+            })
+            .then(data => {
+                setAmbientes(data);
+            })
+            .catch(error => {
+                console.error('Error al obtener la lista de ambientes:', error);
+            });
+    };
 
     return (
         <ReservaLayout>
@@ -59,7 +78,7 @@ const EliminarAmbientePage = () => {
                                 }} />
                             </Box>
 
-                            <DeleteTable data={data} />
+                            <DeleteTable data={ambientes} />
                         </Paper>
                     </Box>
                 </Grid>
