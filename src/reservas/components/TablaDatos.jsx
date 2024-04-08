@@ -216,12 +216,23 @@ const TablaDatos = ({ datos }) => {
                   </Typography>
                 </Grid>
                 <Grid item xs={3.5}>
-                  <TextField id="fecha" type="date" fullWidth onChange={handleFechaChange} sx={{ mb: 1,marginLeft: '-5%' }} />
+                  <TextField 
+                    id="fecha" 
+                    type="date" 
+                    fullWidth 
+                    onChange={handleFechaChange} 
+                    InputProps={{
+                      inputProps: { 
+                        locale: 'es' 
+                      } 
+                    }}
+                    sx={{ mb: 1,marginLeft: '-5%' }} 
+                  />
                   {fechaError && (
-                      <Typography variant="body2" color="error">
+                    <Typography variant="body2" color="error">
                       * Campo obligatorio
-                      </Typography>
-                    )}
+                    </Typography>
+                  )}
                 </Grid>
                 
               <Grid item xs={2} sx={{paddingBottom: '4%' }}>
