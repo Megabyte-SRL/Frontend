@@ -64,14 +64,10 @@ const NuevoAmbiente = () => {
     },
 
     validationSchema: Yup.object({
-      idAmbiente: Yup.string().matches(/^[a-zA-Z0-9@#-]+$/, "Ingrese solo letras, números, espacios y los caracteres @,#,-").required("Ingrese solo letras, números, espacios y los caracteres @,#,-"),
-      capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros positivos de hasta 3 dígitos").required("Ingrese solo números"),
-
-      descripcion: Yup.string()
-  .matches(/^[a-zA-Z0-9\s]+$/, "Ingrese solo caracteres alfanuméricos")
-  .min(50, 'Mínimo 50 caracteres')
-  .max(200, 'Máximo 200 caracteres')
-  .required('La descripción es requerida'),
+      idAmbiente: Yup.string().matches(/^[a-zA-Z0-9@#-\s]+$/, "Ingrese solo letras, números, espacios y los caracteres @,#,-").required("Ingrese solo letras, números, espacios y los caracteres @,#,-"),
+capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros positivos de hasta 3 dígitos").required("Ingrese solo números"),
+      descripcion: Yup.string().matches(/^[a-zA-Z0-9\s.,();:]+$/, "Ingrese solo caracteres alfanuméricos").min(50, 'Mínimo 50 caracteres').max(200, 'Máximo 200 caracteres')
+      .required('La descripción es requerida'),
 
     }),
     validateOnChange: false,
