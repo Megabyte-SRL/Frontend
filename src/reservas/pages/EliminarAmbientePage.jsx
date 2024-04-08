@@ -1,8 +1,8 @@
+import React, { useEffect, useState } from 'react';
 import { Box, Paper, Grid, Typography, TextField, InputAdornment, IconButton } from '@mui/material'
 import { DeleteTable } from '../components';
 import { Search as SearchIcon } from '@mui/icons-material'
 import ReservaLayout from '../layout/ReservaLayout'
-import { useEffect, useState } from 'react';
 
 const EliminarAmbientePage = () => {
     const [ambientes, setAmbientes] = useState([]);
@@ -19,11 +19,11 @@ const EliminarAmbientePage = () => {
                 }
                 return response.json();
             })
-            .then(data => {
+            .then(({ data }) => {
                 setAmbientes(data);
             })
-            .catch(error => {
-                console.error('Error al obtener la lista de ambientes:', error);
+            .catch(({ msg }) => {
+                console.error(msg);
             });
     };
 
@@ -32,6 +32,7 @@ const EliminarAmbientePage = () => {
             <Grid container justifyContent="center">
                 <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
                     <Box
+                        id='eliminar-ambiente-box'
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -87,4 +88,4 @@ const EliminarAmbientePage = () => {
     );
 };
 
-export default EliminarAmbientePage
+export default EliminarAmbientePage;
