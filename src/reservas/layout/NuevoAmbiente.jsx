@@ -70,7 +70,7 @@ capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros p
       .required('La descripción es requerida'),
 
     }),
-    validateOnChange: false,
+    validateOnChange: true,
     onSubmit: (formValue) => {
       console.log("Registro OK");
       setAulaValue(formValue.idAmbiente);
