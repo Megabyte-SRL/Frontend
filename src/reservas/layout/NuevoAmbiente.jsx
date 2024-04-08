@@ -273,66 +273,76 @@ const NuevoAmbiente = () => {
                 REGISTRO DE AMBIENTES
               </Typography>
 
+              
               <form style={{ margin: '0  100px' }} onSubmit={formik.handleSubmit}>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <Typography variant="body1">Identificador de ambiente:</Typography>
-                  <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
-                  <TextField label="Ingrese identificador de ambiente" variant="outlined"
-                    style={{ flex: 1, backgroundColor: 'white' }}
-                    inputProps={{
-                      //pattern: '^[a-zA-Z0-9@#- ]+$',
-                      maxLength: 20,
-                      minLength: 5,
-                      title: 'Ingrese solo letras, números, espacios y los caracteres @,#,-'
-                    }
-                    }
-                    //onChange={handleAulaChange}
-                    //value={aulaValue}
-                    name="idAmbiente"
-                    onChange={formik.handleChange}
-                    value={formik.values.idAmbiente}
-                    error={formik.errors.idAmbiente}
-                    helperText={formik.errors.idAmbiente}
-                  />
-                </div>
+                
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <Typography variant="body1">Capacidad de ambiente:</Typography>
-                  <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
-                  <TextField
-                    // onChange={handleCapacidadChange}
-                    //value={capacidadValue}
-                    label="Ingrese capacidad de ambiente"
-                    type="number"
-                    variant="outlined"
-                    style={{ flex: 1, backgroundColor: 'white' }}
-                    name="capacidad"
-                    onChange={formik.handleChange}
-                    value={formik.values.capacidad}
-                    error={formik.errors.capacidad}
-                    helperText={formik.errors.capacidad}
-                  />
+              <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="body1" sx={{ marginBottom: '8px' }}>Identificador de ambiente:</Typography>
+                <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                
+                <TextField
+                  label="Ingrese identificador de ambiente"
+                  variant="outlined"
+                  style={{ flex: 1, backgroundColor: 'white' }}
+                  fullWidth
+                  inputProps={{
+                    maxLength: 20,
+                    minLength: 5,
+                    title: 'Ingrese solo letras, números, espacios y los caracteres @,#,-'
+                  }}
+                  name="idAmbiente"
+                  onChange={formik.handleChange}
+                  value={formik.values.idAmbiente}
+                  error={formik.errors.idAmbiente}
+                  helperText={formik.errors.idAmbiente}
+                />
+              </Grid>
 
-                </div>
+              <Grid item xs={6}>
+                <Typography variant="body1">Capacidad de ambiente:</Typography>
+                <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Ingrese capacidad de ambiente"
+                  type="number"
+                  variant="outlined"
+                  style={{ flex: 1, backgroundColor: 'white' }}
+                  fullWidth
+                  name="capacidad"
+                  onChange={formik.handleChange}
+                  value={formik.values.capacidad}
+                  error={formik.errors.capacidad}
+                  helperText={formik.errors.capacidad}
+                />
+              </Grid>
 
+              <Grid item xs={6}>
+                <Typography variant="body1">Descripción de ambiente:</Typography>
+                <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  label="Ingrese descripción de ambiente"
+                  multiline
+                  rows={4}
+                  variant="outlined"
+                  style={{ flex: 1, backgroundColor: 'white' }}
+                  fullWidth
+                  name="descripcion"
+                  onChange={formik.handleChange}
+                  value={formik.values.descripcion}
+                  error={formik.errors.descripcion}
+                  helperText={formik.errors.descripcion}
+                />
+              </Grid>
+            </Grid>
 
-
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
-                  <Typography variant="body1" sx={{ color: 'red' }}> *</Typography>
-                  <TextField
-                    label="Ingrese descripción de ambiente"
-                    multiline rows={4} variant="outlined"
-                    style={{ flex: 1, backgroundColor: 'white' }}
-                    name="descripcion"
-                    onChange={formik.handleChange}
-                    value={formik.values.descripcion}
-                    error={formik.errors.descripcion}
-                    helperText={formik.errors.descripcion}
-                  />
-                </div>
                 <Typography variant="body1" sx={{ color: 'red' }}>* Campos Obligatorios</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
                   {/* <Button type='submit' variant="contained" color="primary" onClick={handleOpenModal}> */}
