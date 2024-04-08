@@ -4,12 +4,37 @@ import MuiAlert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const DeleteTable = ({ datos }) => {
+export const DeleteTable = ({ data }) => {
     const [openModal, setOpenModal] = useState(false)
     const [selectedButtonIndex, setSelectedButtonIndex] = useState(null)
     const [selectedRowIndex, setSelectedRowIndex] = useState(null)
     const [snackbarMessage, setSnackbarMessage] = useState('')
     const [snackbarOpen, setSnackbarOpen] = useState(false)
+
+    const handleEliminar = (id) => {
+        fetch(`http://localhost:8080/api/ambientes/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al eliminar el ambiente');
+                }
+                setSnackbarMessage('Ambiente Borrado')
+                setSnackbarOpen(true)
+            })
+            .catch(error => {
+                console.error('Error al eliminar el ambiente:', error);
+                setSnackbarMessage('Error al eliminar el ambiente')
+                setSnackbarOpen(true)
+            })
+            .finally(() => {
+                setOpenModal(false)
+                setSelectedRowIndex(null)
+            });
+    }
 
     const handleClick = (index) => {
         setSelectedButtonIndex(index)
@@ -22,15 +47,6 @@ export const DeleteTable = ({ datos }) => {
         setSelectedButtonIndex(null)
         setSelectedRowIndex(null)
         setSnackbarMessage('Acción deshecha')
-    }
-
-    const handleAceptar = () => {
-        setOpenModal(false)
-        setSelectedButtonIndex(null)
-        setSelectedRowIndex(null)
-
-        setSnackbarMessage('Ambiente Borrado')
-        setSnackbarOpen(true)
     }
 
     const handleSnackbarClose = (event, reason) => {
@@ -51,7 +67,7 @@ export const DeleteTable = ({ datos }) => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {datos.map((fila, index) => (
+                    {data.map((fila, index) => (
                         <TableRow
                             key={index}
                             sx={{ bgcolor: selectedRowIndex === index ? '#F2F2F2' : 'inherit' }}
@@ -111,7 +127,7 @@ export const DeleteTable = ({ datos }) => {
                                 marginX: '10%',
                                 marginY: '4%',
                             }}
-                            onClick={handleAceptar}>
+                            onClick={() => handleEliminar(data[selectedRowIndex].id)}>
                             Aceptar
                         </Button>
                         <Button
