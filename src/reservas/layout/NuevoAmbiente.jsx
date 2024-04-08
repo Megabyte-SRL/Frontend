@@ -264,7 +264,7 @@ const NuevoAmbiente = () => {
             <Paper sx={{
               marginTop: '-5%',
               boxShadow: '0px 0px 10px 2px rgba(0,0,0,0.2)', // Ajusta el sombreado para el marco
-              padding: '2%',
+              padding: '8%',
               width: '100%',
               maxWidth: 'auto',
               backgroundColor: '#F3F6F9', // Cambia el color de fondo al interior del marco
@@ -300,6 +300,7 @@ const NuevoAmbiente = () => {
                   value={formik.values.idAmbiente}
                   error={formik.errors.idAmbiente}
                   helperText={formik.errors.idAmbiente}
+                  sx={{ width: '110%' }}
                 />
               </Grid>
 
@@ -319,6 +320,7 @@ const NuevoAmbiente = () => {
                   value={formik.values.capacidad}
                   error={formik.errors.capacidad}
                   helperText={formik.errors.capacidad}
+                  sx={{ width: '110%' }}
                 />
               </Grid>
 
@@ -339,6 +341,7 @@ const NuevoAmbiente = () => {
                   value={formik.values.descripcion}
                   error={formik.errors.descripcion}
                   helperText={formik.errors.descripcion}
+                  sx={{ width: '110%' }}
                 />
               </Grid>
             </Grid>
