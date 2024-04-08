@@ -4,7 +4,7 @@ import MuiAlert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
 import DeleteIcon from '@mui/icons-material/Delete';
 
-export const DeleteTable = ({ data }) => {
+export const DeleteTable = ({ data = [] }) => {
     const [openModal, setOpenModal] = useState(false)
     const [selectedButtonIndex, setSelectedButtonIndex] = useState(null)
     const [selectedRowIndex, setSelectedRowIndex] = useState(null)
@@ -59,7 +59,6 @@ export const DeleteTable = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Fecha</TableCell>
                         <TableCell>Nombre Ambiente</TableCell>
                         <TableCell>Capacidad</TableCell>
                         <TableCell>Descripción</TableCell>
@@ -72,8 +71,7 @@ export const DeleteTable = ({ data }) => {
                             key={index}
                             sx={{ bgcolor: selectedRowIndex === index ? '#F2F2F2' : 'inherit' }}
                         >
-                            <TableCell>{fila.fecha}</TableCell>
-                            <TableCell>{fila.nombreAmbiente}</TableCell>
+                            <TableCell>{fila.nombre}</TableCell>
                             <TableCell>{fila.capacidad}</TableCell>
                             <TableCell>{fila.descripcion}</TableCell>
                             <TableCell align="center">
@@ -119,7 +117,7 @@ export const DeleteTable = ({ data }) => {
                         confirme esta accion
                     </Typography>
 
-                    <Grid spacing={5} align='center'>
+                    <Grid container spacing={5} align='center'>
                         <Button
                             variant="contained"
                             sx={{
