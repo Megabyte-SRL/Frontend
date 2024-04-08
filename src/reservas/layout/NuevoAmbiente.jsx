@@ -10,6 +10,7 @@ const NuevoAmbiente = () => {
   //copiar aula y capacidad
   const [aulaValue, setAulaValue] = useState('');
   const [capacidadValue, setCapacidadValue] = useState('');
+  const [descripcionValue, setDescripcionValue] = useState('');
   //05042024 json
   const [lugarValue, setLugarValue] = useState('');
   const [pisoValue, setPisoValue] = useState('');
@@ -23,6 +24,10 @@ const NuevoAmbiente = () => {
 
   const handleCapacidadChange = (event) => {
     setCapacidadValue(event.target.value);
+  };
+
+  const handleDescripcionChange = (event) => {
+    setDescripcionValue(event.target.value);
   };
   //manejamos lugar y piso 05042024
   const handleLugarChange = (event) => {
@@ -39,8 +44,9 @@ const NuevoAmbiente = () => {
 
   const handleSubmit = async () => {
     const formData = {
-      aula: aulaValue,
+      nombre: aulaValue,
       capacidad: capacidadValue,
+      descripcion: descripcionValue,
       ubicacion: {
         lugar: lugarValue,
         piso: pisoValue,
@@ -91,7 +97,7 @@ const NuevoAmbiente = () => {
   };
 
   const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
-  const pisoOptions =['','1er Piso', '2do Piso','3er Piso','4to Piso','5to Piso','6to Piso'];
+  const pisoOptions =['',1, 2,3,4,5,6,7];
 
   const modalBody = (
     <Box
@@ -211,15 +217,15 @@ const NuevoAmbiente = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                   <Typography variant="body1">Accesibilidad:</Typography>
-                  <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }} defaultValue="no">
+                  {/* <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }} defaultValue="no">
                     <FormControlLabel value="si" control={<Radio />} label="Si" />
                     <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup>
+                  </RadioGroup> */}
                 </div>
                 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                     <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
-                    <TextField label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
+                    <TextField onChange={handleDescripcionChange} value={descripcionValueValue}label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
                 </div>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
                   <Button variant="contained" color="primary" onClick={handleOpenModal}>
