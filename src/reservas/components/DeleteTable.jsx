@@ -1,22 +1,43 @@
-import { Add as AddIcon } from '@mui/icons-material'
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, Button } from '@mui/material'
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, Button, Grid } from '@mui/material'
 import { useState } from 'react'
-import IconButton from '@mui/material/IconButton'
 import MuiAlert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
+import DeleteIcon from '@mui/icons-material/Delete';
 
-
-export const DeleteTable = ({ datos }) => {
-    const [modalData, setModalData] = useState({})
+export const DeleteTable = ({ data }) => {
     const [openModal, setOpenModal] = useState(false)
     const [selectedButtonIndex, setSelectedButtonIndex] = useState(null)
     const [selectedRowIndex, setSelectedRowIndex] = useState(null)
     const [snackbarMessage, setSnackbarMessage] = useState('')
     const [snackbarOpen, setSnackbarOpen] = useState(false)
 
+    const handleEliminar = (id) => {
+        fetch(`http://localhost:8080/api/ambientes/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al eliminar el ambiente');
+                }
+                setSnackbarMessage('Ambiente Borrado')
+                setSnackbarOpen(true)
+            })
+            .catch(error => {
+                console.error('Error al eliminar el ambiente:', error);
+                setSnackbarMessage('Error al eliminar el ambiente')
+                setSnackbarOpen(true)
+            })
+            .finally(() => {
+                setOpenModal(false)
+                setSelectedRowIndex(null)
+            });
+    }
+
     const handleClick = (index) => {
         setSelectedButtonIndex(index)
-        setModalData(datos[index])
         setSelectedRowIndex(index)
         setOpenModal(true)
     }
@@ -26,15 +47,6 @@ export const DeleteTable = ({ datos }) => {
         setSelectedButtonIndex(null)
         setSelectedRowIndex(null)
         setSnackbarMessage('Acción deshecha')
-    }
-
-    const handleAceptar = () => {
-        setOpenModal(false)
-        setSelectedButtonIndex(null)
-        setSelectedRowIndex(null)
-
-        setSnackbarMessage('Ambiente Borrado')
-        setSnackbarOpen(true)
     }
 
     const handleSnackbarClose = (event, reason) => {
@@ -51,11 +63,11 @@ export const DeleteTable = ({ datos }) => {
                         <TableCell>Nombre Ambiente</TableCell>
                         <TableCell>Capacidad</TableCell>
                         <TableCell>Descripción</TableCell>
-                        <TableCell>Eliminar</TableCell>
+                        <TableCell align="center">Eliminar</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {datos.map((fila, index) => (
+                    {data.map((fila, index) => (
                         <TableRow
                             key={index}
                             sx={{ bgcolor: selectedRowIndex === index ? '#F2F2F2' : 'inherit' }}
@@ -65,19 +77,18 @@ export const DeleteTable = ({ datos }) => {
                             <TableCell>{fila.capacidad}</TableCell>
                             <TableCell>{fila.descripcion}</TableCell>
                             <TableCell align="center">
-                                <IconButton
+                                <DeleteIcon
                                     aria-label="Agregar"
+                                    fontSize="large"
                                     sx={{
-                                        backgroundColor: selectedButtonIndex === index ? '#176BC6' : '#545454',
-                                        color: 'white',
+                                        color: '#0073E6',
                                         '&:hover': {
-                                            backgroundColor: selectedButtonIndex === index ? '#176BC6' : '#545454',
+                                            color: selectedButtonIndex === index ? '#176BC6' : '#545454',
                                         },
                                     }}
                                     onClick={() => handleClick(index)}
                                 >
-                                    <AddIcon />
-                                </IconButton>
+                                </DeleteIcon>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -95,7 +106,6 @@ export const DeleteTable = ({ datos }) => {
                         top: '50%',
                         left: '50%',
                         transform: 'translate(-50%, -50%)',
-                        width: '30%',
                         bgcolor: 'background.paper',
                         boxShadow: 24,
                         px: 4,
@@ -108,28 +118,29 @@ export const DeleteTable = ({ datos }) => {
                     <Typography variant="h4" gutterBottom sx={{ textAlign: 'center' }}>
                         confirme esta accion
                     </Typography>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            ml: 3,
-                            marginRight: '40%',
-                            marginTop: '4%',
-                            fontSize: '120%'
-                        }}
-                        onClick={handleAceptar}>
-                        Aceptar
-                    </Button>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            fontSize: '120%',
-                            color: '#176BC6',
-                            border: '1px solid #176BC6',
-                            bgcolor: 'white',
-                        }}
-                        onClick={handleCloseModal}>
-                        Cancelar
-                    </Button>
+
+                    <Grid spacing={5} align='center'>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                fontSize: '120%',
+                                marginX: '10%',
+                                marginY: '4%',
+                            }}
+                            onClick={() => handleEliminar(data[selectedRowIndex].id)}>
+                            Aceptar
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                fontSize: '120%',
+                                marginX: '10%',
+                                marginY: '4%',
+                            }}
+                            onClick={handleCloseModal}>
+                            Cancelar
+                        </Button>
+                    </Grid>
                 </Box>
             </Modal>
             <Snackbar
