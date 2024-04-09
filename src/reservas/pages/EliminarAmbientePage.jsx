@@ -1,25 +1,38 @@
+import React, { useEffect, useState } from 'react';
 import { Box, Paper, Grid, Typography, TextField, InputAdornment, IconButton } from '@mui/material'
 import { DeleteTable } from '../components';
 import { Search as SearchIcon } from '@mui/icons-material'
 import ReservaLayout from '../layout/ReservaLayout'
 
-
-const datos = [
-    { fecha: '2022-03-28', nombreAmbiente: 'Aula 101', capacidad: 30, descripcion: 'Aula de teoría' },
-    { fecha: '2022-03-29', nombreAmbiente: 'Laboratorio 201', capacidad: 20, descripcion: 'Laboratorio de química' },
-    { fecha: '2022-03-30', nombreAmbiente: 'Aula 101', capacidad: 30, descripcion: 'Aula de física' },
-    { fecha: '2022-04-01', nombreAmbiente: 'Sala de Conferencias 301', capacidad: 50, descripcion: 'Sala para presentaciones' },
-    { fecha: '2022-04-02', nombreAmbiente: 'Auditorio 401', capacidad: 100, descripcion: 'Auditorio principal' },
-    { fecha: '2022-04-05', nombreAmbiente: 'Laboratorio 202', capacidad: 25, descripcion: 'Laboratorio de biología' },
-    { fecha: '2022-04-06', nombreAmbiente: 'Aula 102', capacidad: 35, descripcion: 'Aula de matemáticas' },
-]
-
 const EliminarAmbientePage = () => {
+    const [ambientes, setAmbientes] = useState([]);
+
+    useEffect(() => {
+        obtenerListaAmbientes();
+    }, []);
+
+    const obtenerListaAmbientes = () => {
+        fetch('http://localhost:8080/api/list/ambientes')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener la lista de ambientes');
+                }
+                return response.json();
+            })
+            .then(({ data }) => {
+                setAmbientes(data);
+            })
+            .catch(({ msg }) => {
+                console.error(msg);
+            });
+    };
+
     return (
         <ReservaLayout>
             <Grid container justifyContent="center">
                 <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
                     <Box
+                        id='eliminar-ambiente-box'
                         sx={{
                             display: 'flex',
                             justifyContent: 'center',
@@ -66,7 +79,7 @@ const EliminarAmbientePage = () => {
                                 }} />
                             </Box>
 
-                            <DeleteTable datos={datos} />
+                            <DeleteTable data={ambientes} />
                         </Paper>
                     </Box>
                 </Grid>
@@ -75,4 +88,4 @@ const EliminarAmbientePage = () => {
     );
 };
 
-export default EliminarAmbientePage
+export default EliminarAmbientePage;
