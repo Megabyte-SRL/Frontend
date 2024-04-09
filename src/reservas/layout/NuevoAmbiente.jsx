@@ -6,6 +6,7 @@ import ReservaLayout from '../layout/ReservaLayout';
 
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
 
 
 const NuevoAmbiente = () => {
@@ -17,26 +18,7 @@ const NuevoAmbiente = () => {
   const [capacidadValue, setCapacidadValue] = useState('');
   const [descripcionValue, setDescripcionValue] = useState('');
 
-  const [lugarValue, setLugarValue] = useState('');
-  const [pisoValue, setPisoValue] = useState('');
-  const [edificioValue, setEdificioValue] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-
-  const handleAulaChange = (event) => {
-    setAulaValue(event.target.value);
-  };
-
-  const handleCapacidadChange = (event) => {
-    setCapacidadValue(event.target.value);
-  };
-
-  const handleSubmit = () => {
-    // Aquí puedes usar los valores de aulaValue y capacidadValue como desees
-    console.log('Aula:', aulaValue);
-    console.log('Capacidad:', capacidadValue);
-  };
-
+  const { openSnackbar } = useSnackbar();
   const [openModal, setOpenModal] = useState(false);
 
   const handleOpenModal = () => { //controla la apertura del modal
@@ -51,6 +33,8 @@ const NuevoAmbiente = () => {
     setOpenModal(false);
   };
 
+  const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
+  const pisoOptions =['',1, 2,3,4,5,6,7];
 
   /**VAlidadciones Formulario */
 
@@ -103,13 +87,10 @@ const NuevoAmbiente = () => {
     validateOnChange: false,
     onSubmit: async(formValue) => {
       console.log("Registro Ubicacion OK");
-      setLugarValue(formValue.lugar)
-      setPisoValue(formValue.piso)
-      setEdificioValue(formValue.edificio)
       console.log(formValue);
 
       const formData = {
-        aula: aulaValue,
+        nombre: aulaValue,
         capacidad: capacidadValue,
         descripcion: descripcionValue,
         ubicacion: {
@@ -119,41 +100,24 @@ const NuevoAmbiente = () => {
         }
       };
 
-      try {
-        const response = await fetch('http://localhost:8080/api/ambientes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
+      fetch('http://localhost:8080/api/ambientes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+        .then(response => {
+          openSnackbar('Ambiente registrado', 'success');
+        })
+        .catch(error => {
+          openSnackbar('Error al registrar ambiente', 'error');
+        })
+        .finally(() => {
+          handleCloseModal();
         });
-        const data = await response.json();
-        if (response.ok) {
-          // Manejar respuesta exitosa
-          setSuccessMessage(data.msg);
-          setErrorMessage('');
-        } else {
-          // Manejar errores
-          setErrorMessage(data.msg);
-          setSuccessMessage('');
-        }
-      } catch (error) {
-        console.error('Error:', error);
-        setErrorMessage('Error al procesar la solicitud.');
-        setSuccessMessage('');
-      }
-
-
-      console.log("mostrando objeto")
-      console.log(formData);
-
-      handleCloseModal();
-
     }
   })
-
-  const edificioOptions = ['', 'Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
-  const pisoOptions = ['', '1er Piso', '2do Piso', '3er Piso', '4to Piso', '5to Piso', '6to Piso'];
 
   const modalBody = (
     <Box
@@ -344,7 +308,9 @@ const NuevoAmbiente = () => {
         </Grid>
       </Grid>
       <Modal open={openModal} onClose={handleCloseModal}>
-        {modalBody}
+        <div>
+          {modalBody}
+        </div>
       </Modal>
     </ReservaLayout>
   );
