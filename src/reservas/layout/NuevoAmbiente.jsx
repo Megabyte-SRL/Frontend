@@ -269,79 +269,68 @@ capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros p
                 REGISTRO DE AMBIENTES
               </Typography>
 
-              
-              <form style={{ margin: '0  100px' }} onSubmit={formik.handleSubmit}>
-
-                
-
-              <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body1" sx={{ marginBottom: '8px' }}>Identificador de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
-                
-              </Grid>
-              <Grid item xs={6}>
-                
-                <TextField
-                  label="Ingrese identificador de ambiente"
-                  variant="outlined"
-                  style={{ flex: 1, backgroundColor: 'white' }}
-                  fullWidth
-                  inputProps={{
-                    maxLength: 20,
-                    minLength: 5,
-                    title: 'Ingrese solo letras, números, espacios y los caracteres @,#,-'
-                  }}
-                  name="idAmbiente"
-                  onChange={formik.handleChange}
-                  value={formik.values.idAmbiente}
-                  error={formik.errors.idAmbiente}
-                  helperText={formik.errors.idAmbiente}
-                  sx={{ width: '110%' }}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography variant="body1">Capacidad de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
-                
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label="Ingrese capacidad de ambiente"
-                  type="number"
-                  variant="outlined"
-                  style={{ flex: 1, backgroundColor: 'white' }}
-                  fullWidth
-                  name="capacidad"
-                  onChange={formik.handleChange}
-                  value={formik.values.capacidad}
-                  error={formik.errors.capacidad}
-                  helperText={formik.errors.capacidad}
-                  sx={{ width: '110%' }}
-                />
-              </Grid>
-
-              <Grid item xs={6}>
-                <Typography variant="body1">Descripción de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
-                
-              </Grid>
-              <Grid item xs={6}>
-                <TextField
-                  label="Ingrese descripción de ambiente"
-                  multiline
-                  rows={4}
-                  variant="outlined"
-                  style={{ flex: 1, backgroundColor: 'white' }}
-                  fullWidth
-                  name="descripcion"
-                  onChange={formik.handleChange}
-                  value={formik.values.descripcion}
-                  error={formik.errors.descripcion}
-                  helperText={formik.errors.descripcion}
-                  sx={{ width: '110%' }}
-                />
-              </Grid>
-            </Grid>
-
+              <form id='registro-ambiente-form' style={{ margin: '0  100px' }} onSubmit={formik.handleSubmit}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6}>
+                    <Typography variant="body1" sx={{ marginBottom: '8px' }}>Identificador de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Ingrese identificador de ambiente"
+                      variant="outlined"
+                      style={{ flex: 1, backgroundColor: 'white' }}
+                      fullWidth
+                      inputProps={{
+                        maxLength: 20,
+                        minLength: 5,
+                        title: 'Ingrese solo letras, números, espacios y los caracteres @,#,-'
+                      }}
+                      name="idAmbiente"
+                      onChange={formik.handleChange}
+                      value={formik.values.idAmbiente}
+                      error={formik.errors.idAmbiente}
+                      helperText={formik.errors.idAmbiente}
+                      sx={{ width: '110%' }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body1">Capacidad de ambiente:<span style={{ color: 'red' }}> *</span></Typography>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Ingrese capacidad de ambiente"
+                      type="number"
+                      variant="outlined"
+                      style={{ flex: 1, backgroundColor: 'white' }}
+                      fullWidth
+                      name="capacidad"
+                      onChange={formik.handleChange}
+                      value={formik.values.capacidad}
+                      error={formik.errors.capacidad}
+                      helperText={formik.errors.capacidad}
+                      sx={{ width: '110%' }}
+                    />
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Typography variant="body1">Descripción de ambiente:<span style={{ color: 'red' }}> *</span></Typography>                
+                  </Grid>
+                  <Grid item xs={6}>
+                    <TextField
+                      label="Ingrese descripción de ambiente"
+                      multiline
+                      rows={4}
+                      variant="outlined"
+                      style={{ flex: 1, backgroundColor: 'white' }}
+                      fullWidth
+                      name="descripcion"
+                      onChange={formik.handleChange}
+                      value={formik.values.descripcion}
+                      error={formik.errors.descripcion}
+                      helperText={formik.errors.descripcion}
+                      sx={{ width: '110%' }}
+                    />
+                  </Grid>
+                </Grid>
                 <Typography variant="body1" sx={{ color: 'red' }}>* Campos Obligatorios</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
                   {/* <Button type='submit' variant="contained" color="primary" onClick={handleOpenModal}> */}
@@ -354,9 +343,7 @@ capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros p
                     CANCELAR
                   </Button>
                 </Box>
-
               </form>
-
             </Paper>
           </Box>
         </Grid>
