@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, TextField, Button, Grid, Checkbox, FormControl, FormGroup, FormControlLabel, Popover, List, ListItem, ListItemText } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, TextField, Button, Grid, Checkbox, Popover, List, ListItem, ListItemText } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import { Add as AddIcon } from '@mui/icons-material';
-import Snackbar from '@mui/material/Snackbar';
-import MuiAlert from '@mui/material/Alert';
+
+import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
 
 const TablaDatos = ({ datos }) => {
   const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
@@ -14,23 +14,8 @@ const TablaDatos = ({ datos }) => {
   const [fecha, setFecha] = useState('');
   const [horasError, setHorasError] = useState(false);
   const [fechaError, setFechaError] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [showUndoButton, setShowUndoButton] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null); // Estado para el ancla del popover
-  const [isSnackbarVisible, setIsSnackbarVisible] = useState(false);
-
-    // Función para abrir el Snackbar
-  const showSnackbar = () => {
-    setIsSnackbarVisible(true);
-  };
-
-  // Función para cerrar el Snackbar
-  const hideSnackbar = () => {
-    setIsSnackbarVisible(false);
-  };
-
-
+  const { openSnackbar } = useSnackbar();
 
   const handleClick = (index) => {
     setSelectedButtonIndex(index);
@@ -65,7 +50,7 @@ const TablaDatos = ({ datos }) => {
 
       try {
         // Enviar la solicitud POST
-        const respuesta = await fetch('http://127.0.0.1:8000/api/horariosDisponibles', {
+        const respuesta = await fetch('http://localhost:8080/api/horariosDisponibles', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -77,10 +62,8 @@ const TablaDatos = ({ datos }) => {
           throw new Error('No se pudo completar la solicitud.');
         }
         setOpenModal(false);
-        // Mostrar mensaje de éxito
-        setSnackbarMessage('Horario registrado');
-        setSnackbarOpen(true);
-        setShowUndoButton(true);
+
+        openSnackbar('Horario registrado', 'success');
 
         // Limpiar estados
         setFecha('');
@@ -94,14 +77,6 @@ const TablaDatos = ({ datos }) => {
   const handleFechaChange = (event) => {
     setFecha(event.target.value);
     setFechaError(false); // Actualizar el estado de error a false al cambiar la fecha
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setSnackbarOpen(false);
   };
 
   const handleCheckboxChange = (hora) => () => {
@@ -314,30 +289,6 @@ const TablaDatos = ({ datos }) => {
           </Button>
         </Box>
       </Modal>
-        <Snackbar
-          open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'right',
-          }}
-        >
-        <MuiAlert
-          elevation={6}
-          variant="filled"
-          onClose={handleSnackbarClose}
-          severity="success"
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '20rem',
-          }}
-        >
-          {snackbarMessage}
-        </MuiAlert>
-      </Snackbar>
     </TableContainer>
   );
 };

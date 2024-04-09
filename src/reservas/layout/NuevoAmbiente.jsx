@@ -1,8 +1,7 @@
 import React, { useState } from 'react'; //para modal 
-import { Box, Toolbar, List, ListItem, ListItemText, Paper, Grid, Typography, TextField, Radio, RadioGroup, FormControlLabel, Button, Modal, Select, MenuItem,InputLabel, Alert } from '@mui/material';
+import { Box, Paper, Grid, Typography, TextField, Button, Modal, Select, MenuItem, InputLabel } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-//import React from 'react';
 import ReservaLayout from '../layout/ReservaLayout';
 
 import { useFormik } from "formik";
@@ -65,10 +64,9 @@ const NuevoAmbiente = () => {
 
     validationSchema: Yup.object({
       idAmbiente: Yup.string().matches(/^[a-zA-Z0-9@#-\s]+$/, "Ingrese solo letras, números, espacios y los caracteres @,#,-").required("Ingrese solo letras, números, espacios y los caracteres @,#,-"),
-capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros positivos de hasta 3 dígitos").required("Ingrese solo números"),
+      capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros positivos de hasta 3 dígitos").required("Ingrese solo números"),
       descripcion: Yup.string().matches(/^[a-zA-Z0-9\s.,();:]+$/, "Ingrese solo caracteres alfanuméricos").min(50, 'Mínimo 50 caracteres').max(200, 'Máximo 200 caracteres')
       .required('La descripción es requerida'),
-
     }),
     validateOnChange: true,
     onSubmit: (formValue) => {
@@ -89,7 +87,6 @@ capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros p
 
   const formik2 = useFormik({
     initialValues: {
-
       lugar: "",
       piso: "",
       edificio: ""
@@ -154,8 +151,6 @@ capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros p
 
     }
   })
-
-
 
   const edificioOptions = ['', 'Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
   const pisoOptions = ['', '1er Piso', '2do Piso', '3er Piso', '4to Piso', '5to Piso', '6to Piso'];
