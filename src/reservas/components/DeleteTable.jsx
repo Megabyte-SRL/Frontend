@@ -1,15 +1,14 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal, Box, Typography, Button, Grid } from '@mui/material'
 import { useState } from 'react'
-import MuiAlert from '@mui/material/Alert'
-import Snackbar from '@mui/material/Snackbar'
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
+
 export const DeleteTable = ({ data = [] }) => {
-    const [openModal, setOpenModal] = useState(false)
-    const [selectedButtonIndex, setSelectedButtonIndex] = useState(null)
-    const [selectedRowIndex, setSelectedRowIndex] = useState(null)
-    const [snackbarMessage, setSnackbarMessage] = useState('')
-    const [snackbarOpen, setSnackbarOpen] = useState(false)
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
+    const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+    const { openSnackbar } = useSnackbar();
 
     const handleEliminar = (id) => {
         fetch(`http://localhost:8080/api/ambientes/${id}`, {
@@ -19,16 +18,10 @@ export const DeleteTable = ({ data = [] }) => {
             },
         })
             .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al eliminar el ambiente');
-                }
-                setSnackbarMessage('Ambiente Borrado')
-                setSnackbarOpen(true)
+                openSnackbar('Ambiente Borrado', 'success');
             })
             .catch(error => {
-                console.error('Error al eliminar el ambiente:', error);
-                setSnackbarMessage('Error al eliminar el ambiente')
-                setSnackbarOpen(true)
+                openSnackbar('Error al eliminar el ambiente', 'error');
             })
             .finally(() => {
                 setOpenModal(false)
@@ -46,12 +39,6 @@ export const DeleteTable = ({ data = [] }) => {
         setOpenModal(false)
         setSelectedButtonIndex(null)
         setSelectedRowIndex(null)
-        setSnackbarMessage('Acción deshecha')
-    }
-
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') return
-        setSnackbarOpen(false)
     }
 
     return (
@@ -141,30 +128,6 @@ export const DeleteTable = ({ data = [] }) => {
                     </Grid>
                 </Box>
             </Modal>
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right',
-                }}
-            >
-                <MuiAlert
-                    elevation={6}
-                    variant="filled"
-                    onClose={handleSnackbarClose}
-                    severity="success"
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        width: '25rem',
-                    }}
-                >
-                    {snackbarMessage}
-                </MuiAlert>
-            </Snackbar>
         </TableContainer>
     )
 }

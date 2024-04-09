@@ -8,7 +8,7 @@ const CrearHorario = () => {
   const [ambientes, setAmbientes] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/list/ambientes')
+    fetch('http://localhost:8080/api/list/ambientes')
       .then(response => {
         if (!response.ok) {
           throw new Error('No se pudo obtener los datos.');
