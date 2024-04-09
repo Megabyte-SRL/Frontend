@@ -15,6 +15,7 @@ const NuevoAmbiente = () => {
   const [lugarValue, setLugarValue] = useState('');
   const [pisoValue, setPisoValue] = useState('');
   const [edificioValue, setEdificioValue] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -41,6 +42,22 @@ const NuevoAmbiente = () => {
   const handleEdificioChange = (event) => {
     setEdificioValue(event.target.value);
   };
+
+  const alertStyle = {
+    position: 'fixed',
+    bottom: 20,
+    //left: '50%',
+    right: 0,
+    transform: 'translateX(-50%)',
+    zIndex: 1000, // Asegura que la alerta esté por encima de otros elementos
+    animation: 'slide-in 0.5s forwards', // Agrega una animación de desplazamiento
+  };
+  
+  const alertAnimation = `@keyframes slide-in {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(-50%); opacity: 1; }
+  }`;
+  
 
   const handleSubmit = async () => {
     const formData = {
@@ -71,10 +88,28 @@ const NuevoAmbiente = () => {
         setErrorMessage(data.msg);
         setSuccessMessage('');
       }
+      setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 6000);
+
     } catch (error) {
-      console.error('Error:', error);
-      setErrorMessage('Error al procesar la solicitud.');
-      setSuccessMessage('');
+      console.error('Errori:', error);
+      console.log('Error type:', typeof error); // Imprimir el tipo de error
+      console.log('Error object:', error); // Imprimir el objeto de error
+      // Verificar si hay un error de conexión
+      if (error instanceof TypeError) {
+        setErrorMessage('Sin conexion al servidor');
+      } else {
+        setErrorMessage('Error al procesar la solicitud.');
+      } 
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 6000);
+      
+      //setSuccessMessage('');
+      
     }
   };
   
@@ -214,15 +249,6 @@ const NuevoAmbiente = () => {
                   <TextField onChange={handleCapacidadChange} value={capacidadValue} label="Ingrese capacidad de ambiente" type="number" variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
                 </div>
 
-
-                {/* <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
-                  <Typography variant="body1">Accesibilidad:</Typography>
-                   <RadioGroup aria-label="accesibilidad" name="accesibilidad" style={{ display: 'flex', flexDirection: 'row' }} defaultValue="no">
-                    <FormControlLabel value="si" control={<Radio />} label="Si" />
-                    <FormControlLabel value="no" control={<Radio />} label="No" />
-                  </RadioGroup> 
-                </div> */}
-                
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
                     <Typography variant="body1" sx={{ marginRight: '1rem' }}>Descripcion de ambiente:</Typography>
                     <TextField onChange={handleDescripcionChange} value={descripcionValue}label="Ingrese descripción de ambiente" multiline rows={4} variant="outlined" style={{ flex: 1, backgroundColor: 'white' }} />
@@ -243,22 +269,37 @@ const NuevoAmbiente = () => {
         </Grid>
       </Grid>
       <Modal open={openModal} onClose={handleCloseModal}>
-        {modalBody}
+        <div>
+          {modalBody}
+          <style>{alertAnimation}</style> {/* Agrega la animación al estilo */}
+          {showAlert && ( // Mostrar alertas solo si showAlert es true
+             <div style={alertStyle}>
+              <React.Fragment>
+                
+                
+                  {successMessage && ( // Mostrar la Alerta de éxito solo si successMessage está presente
+                    <Alert elevation={6} variant="filled"
+                    sx={{...alertStyle, display: 'flex', justifyContent: 'space-between', 
+                    alignItems: 'center', width: '25rem'}}
+                    severity="success" onClose={() => setShowAlert(false)}>
+                      {successMessage}
+                    </Alert>
+                  )}
+                  {errorMessage && ( // Mostrar la Alerta de error solo si errorMessage está presente
+                    <Alert elevation={6} variant="filled"
+                    sx={{...alertStyle, display: 'flex', justifyContent: 'space-between', 
+                    alignItems: 'center', width: '25rem'}}
+                    severity="error" onClose={() => setShowAlert(false)}>
+                      {errorMessage}
+                    </Alert>
+                  )}
+                
+              </React.Fragment>
+            </div>
+          )}
+        </div>
+        
       </Modal>
-      <Alert
-        open={!!successMessage}
-        severity="success"
-        onClose={handleCloseSuccessMessage}
-      >
-        {successMessage}
-      </Alert>
-      <Alert
-        open={!!errorMessage}
-        severity="error"
-        onClose={handleCloseErrorMessage}
-      >
-        {errorMessage}
-      </Alert>
     </ReservaLayout>
     
   );
