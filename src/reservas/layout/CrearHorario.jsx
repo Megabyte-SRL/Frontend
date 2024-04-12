@@ -8,7 +8,7 @@ const CrearHorario = () => {
   const [ambientes, setAmbientes] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8080/api/list/ambientes')
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/ambientes`)
       .then(response => {
         if (!response.ok) {
           throw new Error('No se pudo obtener los datos.');

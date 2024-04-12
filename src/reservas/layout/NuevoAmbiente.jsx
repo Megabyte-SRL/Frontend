@@ -65,7 +65,7 @@ const NuevoAmbiente = () => {
       console.log("Registro Ubicacion OK");
       console.log(formValue);
 
-      fetch('http://localhost:8080/api/ambientes', {
+      fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/ambientes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -80,7 +80,7 @@ const NuevoAmbiente = () => {
         })
       })
         .then(response => {
-          openSnackbar('Ambiente registrado', 'success');
+          openSnackbar('Ambiente creado correctamente', 'success');
           resetForm();
           formik.resetForm();
           setAmbienteData({});
@@ -112,8 +112,7 @@ const NuevoAmbiente = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Typography variant="body1" align="left">Aula: {ambienteData.name}</Typography>
-
+          <Typography variant="body1" align="left">Aula: {ambienteData.nombre}</Typography>
         </Grid>
         <Grid item xs={6}>
           <Typography variant="body1" align="right">Capacidad:{ambienteData.capacidad} </Typography>
