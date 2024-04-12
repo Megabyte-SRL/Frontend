@@ -2,32 +2,10 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 import { useState } from 'react'
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
-
-export const DeleteTable = ({ data = [] }) => {
+export const DeleteTable = ({ data = [], handleEliminar }) => {
     const [openModal, setOpenModal] = useState(false);
     const [selectedButtonIndex, setSelectedButtonIndex] = useState(null);
     const [selectedRowIndex, setSelectedRowIndex] = useState(null);
-    const { openSnackbar } = useSnackbar();
-
-    const handleEliminar = (id) => {
-        fetch(`http://localhost:8080/api/ambientes/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => {
-                openSnackbar('Ambiente Borrado', 'success');
-            })
-            .catch(error => {
-                openSnackbar('Error al eliminar el ambiente', 'error');
-            })
-            .finally(() => {
-                setOpenModal(false)
-                setSelectedRowIndex(null)
-            });
-    }
 
     const handleClick = (index) => {
         setSelectedButtonIndex(index)
@@ -40,6 +18,12 @@ export const DeleteTable = ({ data = [] }) => {
         setSelectedButtonIndex(null)
         setSelectedRowIndex(null)
     }
+
+    const handleDelete = (id) => {
+        handleEliminar(id);
+        setOpenModal(false);
+        setSelectedRowIndex(null);
+    };
 
     return (
         <TableContainer component={Paper} sx={{ borderRadius: '.5rem' }}>
@@ -112,7 +96,7 @@ export const DeleteTable = ({ data = [] }) => {
                                 marginX: '10%',
                                 marginY: '4%',
                             }}
-                            onClick={() => handleEliminar(data[selectedRowIndex].id)}>
+                            onClick={() => handleDelete(data[selectedRowIndex].id)}>
                             Aceptar
                         </Button>
                         <Button
