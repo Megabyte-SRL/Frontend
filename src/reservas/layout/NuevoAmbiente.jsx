@@ -3,7 +3,7 @@ import { Box, Paper, Grid, Typography, TextField, Button, Modal, Select, MenuIte
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ReservaLayout from '../layout/ReservaLayout';
-
+import { Link } from 'react-router-dom';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
@@ -298,9 +298,11 @@ const NuevoAmbiente = () => {
                   <Button type='submit' variant="contained" color="primary" >
                     SIGUIENTE
                   </Button>
-                  <Button variant="contained" color="secondary">
-                    CANCELAR
-                  </Button>
+                  <Link to="/">
+                    <Button variant="contained" color="secondary">
+                      CANCELAR
+                    </Button>
+                  </Link>
                 </Box>
               </form>
             </Paper>

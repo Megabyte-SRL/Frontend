@@ -3,6 +3,7 @@ import { Box, Collapse, Drawer, List, ListItemButton, ListItemText } from '@mui/
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const LateralBar = ({ anchoCaja = 240 }) => {
     const navigate = useNavigate();
