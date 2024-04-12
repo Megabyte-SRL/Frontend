@@ -3,35 +3,21 @@ import { Box, Paper, Grid, Typography, TextField, Button, Modal, Select, MenuIte
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ReservaLayout from '../layout/ReservaLayout';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
-
 
 const NuevoAmbiente = () => {
   const theme = useTheme();
   const matches = useMediaQuery(theme.breakpoints.down('sm'));
   //copiar aula y capacidad
 
-  const [aulaValue, setAulaValue] = useState('');
-  const [capacidadValue, setCapacidadValue] = useState('');
-  const [descripcionValue, setDescripcionValue] = useState('');
-
+  const [ambienteData, setAmbienteData] = useState({});
   const { openSnackbar } = useSnackbar();
   const [openModal, setOpenModal] = useState(false);
-
-  const handleOpenModal = () => { //controla la apertura del modal
-    // if(aulaValue=='')
-    //   alert('campos erroneos')
-    // else
-
-    setOpenModal(true);
-  };
-
-  const handleCloseModal = () => {//controla el cierre del modal
-    setOpenModal(false);
-  };
+  const navigate = useNavigate();
 
   const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
   const pisoOptions =['',1, 2,3,4,5,6,7];
@@ -43,29 +29,22 @@ const NuevoAmbiente = () => {
       idAmbiente: "",
       capacidad: "",
       descripcion: "",
-
     },
 
     validationSchema: Yup.object({
       idAmbiente: Yup.string().matches(/^[a-zA-Z0-9@#-\s]+$/, "Ingrese solo letras, números, espacios y los caracteres @,#,-").required("Ingrese solo letras, números, espacios y los caracteres @,#,-"),
       capacidad: Yup.string().matches(/^[0-9]{1,3}$/, "Ingrese solo números enteros positivos de hasta 3 dígitos").required("Ingrese solo números"),
-      descripcion: Yup.string().matches(/^[a-zA-Z0-9\s.,();:]+$/, "Ingrese solo caracteres alfanuméricos").min(50, 'Mínimo 50 caracteres').max(200, 'Máximo 200 caracteres')
+      descripcion: Yup.string().matches(/^[0-9\s.,();:\p{L}]+$/u, "Ingrese solo caracteres alfanuméricos").min(50, 'Mínimo 50 caracteres').max(200, 'Máximo 200 caracteres')
       .required('La descripción es requerida'),
     }),
     validateOnChange: true,
     onSubmit: (formValue) => {
-      console.log("Registro OK");
-      setAulaValue(formValue.idAmbiente);
-      setCapacidadValue(formValue.capacidad);
-      setDescripcionValue(formValue.descripcion);
-      handleOpenModal(formValue);
-      console.log(formValue);
-
-      if (aulaValue == '' || capacidadValue == '' || descripcionValue == '')
-        console.log('verificarDatos')
-      else {
-        handleOpenModal();
-      }
+      setAmbienteData({
+        nombre: formValue.idAmbiente,
+        capacidad: formValue.capacidad,
+        descripcion: formValue.descripcion
+      });
+      setOpenModal(true);
     }
   })
 
@@ -77,44 +56,40 @@ const NuevoAmbiente = () => {
     },
 
     validationSchema: Yup.object({
-
       lugar: Yup.string().required("Lugar Requerido"),
       piso: Yup.string(),
       edificio: Yup.string(),
-
-
     }),
     validateOnChange: false,
-    onSubmit: async(formValue) => {
+    onSubmit: async(formValue, { resetForm }) => {
       console.log("Registro Ubicacion OK");
       console.log(formValue);
-
-      const formData = {
-        nombre: aulaValue,
-        capacidad: capacidadValue,
-        descripcion: descripcionValue,
-        ubicacion: {
-          lugar: formValue.lugar,
-          piso: formValue.piso,
-          edificio: formValue.edificio
-        }
-      };
 
       fetch('http://localhost:8080/api/ambientes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...ambienteData,
+          ubicacion: {
+            lugar: formValue.lugar,
+            piso: formValue.piso,
+            edificio: formValue.edificio
+          }
+        })
       })
         .then(response => {
           openSnackbar('Ambiente registrado', 'success');
+          resetForm();
+          formik.resetForm();
+          setAmbienteData({});
         })
         .catch(error => {
           openSnackbar('Error al registrar ambiente', 'error');
         })
         .finally(() => {
-          handleCloseModal();
+          setOpenModal(false);
         });
     }
   })
@@ -137,11 +112,11 @@ const NuevoAmbiente = () => {
       </Typography>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Typography variant="body1" align="left">Aula: {aulaValue}</Typography>
+          <Typography variant="body1" align="left">Aula: {ambienteData.name}</Typography>
 
         </Grid>
         <Grid item xs={6}>
-          <Typography variant="body1" align="right">Capacidad:{capacidadValue} </Typography>
+          <Typography variant="body1" align="right">Capacidad:{ambienteData.capacidad} </Typography>
         </Grid>
       </Grid>
       <form onSubmit={formik2.handleSubmit}>
@@ -170,7 +145,6 @@ const NuevoAmbiente = () => {
           </Select>
         </Box>
 
-
         <Box sx={{ mb: 2 }}>
           <InputLabel id="edificio-label">Edificio</InputLabel>
           <Select label="Edificio" fullWidth variant="outlined"
@@ -191,16 +165,13 @@ const NuevoAmbiente = () => {
           <Button type='submit' variant="contained" color="primary" >
             GUARDAR
           </Button>
-          <Button variant="contained" color="secondary" onClick={handleCloseModal}>
+          <Button variant="contained" color="secondary" onClick={() => setOpenModal(false)}>
             ANTERIOR
           </Button>
         </Box>
       </form>
     </Box>
   );
-
-
-
 
   return (
     <ReservaLayout>
@@ -293,23 +264,19 @@ const NuevoAmbiente = () => {
                 <Typography variant="body1" sx={{ color: 'red' }}>* Campos Obligatorios</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', margin: '0 80px' }}>
                   {/* <Button type='submit' variant="contained" color="primary" onClick={handleOpenModal}> */}
-
-
                   <Button type='submit' variant="contained" color="primary" >
                     SIGUIENTE
                   </Button>
-                  <Link to="/">
-                    <Button variant="contained" color="secondary">
-                      CANCELAR
-                    </Button>
-                  </Link>
+                  <Button variant="contained" color="secondary" onClick={() => navigate('/')}>
+                    CANCELAR
+                  </Button>
                 </Box>
               </form>
             </Paper>
           </Box>
         </Grid>
       </Grid>
-      <Modal open={openModal} onClose={handleCloseModal}>
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <div>
           {modalBody}
         </div>
