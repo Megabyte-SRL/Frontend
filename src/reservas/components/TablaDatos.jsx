@@ -49,8 +49,7 @@ const TablaDatos = ({ datos }) => {
       };
 
       try {
-        // Enviar la solicitud POST
-        const respuesta = await fetch('http://localhost:8080/api/horariosDisponibles', {
+        const respuesta = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/horariosDisponibles`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'

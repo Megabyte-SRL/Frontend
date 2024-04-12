@@ -15,7 +15,7 @@ const EliminarAmbientePage = () => {
     }, []);
 
     const obtenerListaAmbientes = () => {
-        fetch('http://localhost:8080/api/list/ambientes')
+        fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/ambientes`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Error al obtener la lista de ambientes');
@@ -31,7 +31,7 @@ const EliminarAmbientePage = () => {
     };
 
     const handleEliminar = (id) => {
-        fetch(`http://localhost:8080/api/ambientes/${id}`, {
+        fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/ambientes/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
