@@ -4,8 +4,11 @@ import { DeleteTable } from '../components';
 import { Search as SearchIcon } from '@mui/icons-material'
 import ReservaLayout from '../layout/ReservaLayout'
 
+import { useSnackbar } from '../organisms/snackbarProvider/SnackbarProvider';
+
 const EliminarAmbientePage = () => {
     const [ambientes, setAmbientes] = useState([]);
+    const { openSnackbar } = useSnackbar();
 
     useEffect(() => {
         obtenerListaAmbientes();
@@ -25,6 +28,22 @@ const EliminarAmbientePage = () => {
             .catch(({ msg }) => {
                 console.error(msg);
             });
+    };
+
+    const handleEliminar = (id) => {
+        fetch(`http://localhost:8080/api/ambientes/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => {
+                openSnackbar('Ambiente Borrado', 'success');
+                obtenerListaAmbientes();
+            })
+            .catch(error => {
+                openSnackbar('Error al eliminar el ambiente', 'error');
+            })
     };
 
     return (
@@ -78,8 +97,7 @@ const EliminarAmbientePage = () => {
                                     ),
                                 }} />
                             </Box>
-
-                            <DeleteTable data={ambientes} />
+                            <DeleteTable data={ambientes} handleEliminar={handleEliminar} />
                         </Paper>
                     </Box>
                 </Grid>
