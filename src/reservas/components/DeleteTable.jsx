@@ -22,12 +22,12 @@ export const DeleteTable = ({ data }) => {
                 if (!response.ok) {
                     throw new Error('Error al eliminar el ambiente');
                 }
-                setSnackbarMessage('Ambiente Borrado')
+                setSnackbarMessage(`${data.msg || 'Ambiente Borrado'}`);
                 setSnackbarOpen(true)
             })
             .catch(error => {
                 console.error('Error al eliminar el ambiente:', error);
-                setSnackbarMessage('Error al eliminar el ambiente')
+                setSnackbarMessage(`${data.msg || 'Ocurrió un error'}`);
                 setSnackbarOpen(true)
             })
             .finally(() => {
@@ -59,7 +59,6 @@ export const DeleteTable = ({ data }) => {
             <Table>
                 <TableHead>
                     <TableRow>
-                        <TableCell>Fecha</TableCell>
                         <TableCell>Nombre Ambiente</TableCell>
                         <TableCell>Capacidad</TableCell>
                         <TableCell>Descripción</TableCell>
@@ -72,8 +71,7 @@ export const DeleteTable = ({ data }) => {
                             key={index}
                             sx={{ bgcolor: selectedRowIndex === index ? '#F2F2F2' : 'inherit' }}
                         >
-                            <TableCell>{fila.fecha}</TableCell>
-                            <TableCell>{fila.nombreAmbiente}</TableCell>
+                            <TableCell>{fila.nombre}</TableCell>
                             <TableCell>{fila.capacidad}</TableCell>
                             <TableCell>{fila.descripcion}</TableCell>
                             <TableCell align="center">
