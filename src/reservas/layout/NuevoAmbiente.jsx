@@ -19,7 +19,7 @@ const NuevoAmbiente = () => {
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
 
-  const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
+  const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE', 'Eficio nuevo'];
   const pisoOptions =['',1, 2,3,4,5,6,7];
 
   /**VAlidadciones Formulario */

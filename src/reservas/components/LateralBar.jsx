@@ -34,7 +34,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
             >
                 <List>
                     <ListItemButton id='crear-button' onClick={handleSubMenuClick}>
-                        <ListItemText primary="Crear" />
+                        <ListItemText primary="Ambiente" />
                         {openSubMenu ? <ExpandLess /> : <ExpandMore />}
                     </ListItemButton>
                     <Collapse in={openSubMenu} timeout="auto" unmountOnExit>
@@ -44,7 +44,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                                 onClick={(_event) => navigate('/nuevo-ambiente')}
                                 sx={{ pl: 4 }}
                             >
-                                <ListItemText primary="Ambientes" />
+                                <ListItemText primary="Nuevo" />
                             </ListItemButton>
                             <ListItemButton
                                 id='crear-horarios-button'
@@ -53,10 +53,24 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                             >
                                 <ListItemText primary="Horarios" />
                             </ListItemButton>
+                            <ListItemButton
+                                id='carga-masiva-button'
+                                onClick={(_event) => navigate('/carga-masiva')}
+                                sx={{ pl: 4 }}
+                            >
+                                <ListItemText primary="Masiva" />
+                            </ListItemButton>
+                            <ListItemButton
+                                id='eliminar-ambientes-button'
+                                onClick={(_event) => navigate('/eliminar-ambiente')}
+                                sx={{ pl: 4 }}
+                            >
+                                <ListItemText primary="Eliminar" />
+                            </ListItemButton>
                         </List>
                     </Collapse>
                 </List>
-                <List>
+                {/* <List>
                     <ListItemButton
                         id='eliminar-button'
                         onClick={handleEliminarSubMenuClick}
@@ -75,7 +89,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                             </ListItemButton>
                         </List>
                     </Collapse>
-                </List>
+                </List> */}
             </Drawer>
         </Box>
     );
