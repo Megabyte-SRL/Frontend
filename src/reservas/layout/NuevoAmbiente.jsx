@@ -173,7 +173,7 @@ const NuevoAmbiente = () => {
   );
 
   return (
-    <ReservaLayout>
+    <div>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
           <Box
@@ -280,7 +280,7 @@ const NuevoAmbiente = () => {
           {modalBody}
         </div>
       </Modal>
-    </ReservaLayout>
+    </div>
   );
 };
 

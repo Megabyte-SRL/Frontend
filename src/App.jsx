@@ -1,3 +1,4 @@
+import ReservaLayout from "./reservas/layout/ReservaLayout"
 import AppRouter from "./router/AppRouter"
 import AppTheme from "./theme/AppTheme"
 
@@ -5,9 +6,11 @@ import AppTheme from "./theme/AppTheme"
 function App() {
   return (
     <AppTheme>
-      <AppRouter/>
+      <ReservaLayout>
+        <AppRouter/>
+      </ReservaLayout>
     </AppTheme>
   )
 }
 
-export default App
+export default App;
