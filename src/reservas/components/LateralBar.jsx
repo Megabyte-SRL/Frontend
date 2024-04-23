@@ -90,6 +90,11 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                         </List>
                     </Collapse>
                 </List> */}
+                <List>
+                    <ListItemButton id='ver-button' onClick={() => navigate('/visualizar-horario')}>
+                        <ListItemText primary="Habilitar Fecha" />
+                    </ListItemButton>
+                </List>
             </Drawer>
         </Box>
     );
