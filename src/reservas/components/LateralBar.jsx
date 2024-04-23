@@ -53,6 +53,9 @@ const LateralBar = ({ anchoCaja = 240 }) => {
           <ListItemButton id='lista-solicitudes' onClick={(_e) => navigate('/dashboard/solicitudes')}>
             <ListItemText primary='Solicitudes' />
           </ListItemButton>
+          <ListItemButton id='ver-button' onClick={() => navigate('/dashboard/visualizar-horario')}>
+            <ListItemText primary="Habilitar Fecha" />
+          </ListItemButton>
         </List>
       </Drawer>
     </Box>
