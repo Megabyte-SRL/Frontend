@@ -4,7 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import NavBar from '../components/NavBar';
 import LateralBar from '../components/LateralBar';
-import imagen from './escudo-01.png';
+//import imagen from './escudo-01.png';
 
 const ReservaLayout = ({children}) => {
 
@@ -21,19 +21,19 @@ const ReservaLayout = ({children}) => {
       {/**main */}
       <Box component='main' sx={{flexGrow: 1, p: 3}}>
         <Toolbar/>
-        <Paper
+        {/*<Paper
           sx={{
             flexGrow: 1,
-            backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url(${imagen})`, // degradado transparente del fondo
+            //backgroundImage: `linear-gradient(rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.6)), url(${imagen})`, // degradado transparente del fondo
             backgroundSize: '48%',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
             minHeight: '100%', // Para ocupar toda la altura disponible
             ...(isSmallScreen && { backgroundSize: 'contain' }), // pant pequeña, ajustar la imagen
           }}
-        >
+        >*/}
           {children}
-        </Paper>
+        {/*</Paper>*/}
       </Box>
     </Box>
   )

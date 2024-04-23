@@ -50,19 +50,18 @@ const LateralBar = ({ anchoCaja = 240 }) => {
               </ListItemButton>
             </List>
           </Collapse>
-          <ListItemButton id='lista-solicitudes' onClick={(_e) => navigate('/dashboard/solicitudes')}>
-            <ListItemText primary='Solicitudes' />
+          <ListItemButton id='reserva-solicitudes' onClick={() => navigate('/dashboard/solicitudes')}>
+            <ListItemText primary='Reserva' />
           </ListItemButton>
           <ListItemButton id='ver-button' onClick={() => navigate('/dashboard/visualizar-horario')}>
             <ListItemText primary="Habilitar Fecha" />
           </ListItemButton>
-          <ListItemButton
+          {/*<ListItemButton
             id='reservaD-button'
-            onClick={() => navigate('/reservaD')}
-            sx={{ pl: 4 }}
+            onClick={() => navigate('/dashboard/reservaD')}
           >
             <ListItemText primary="ReservaD" />
-          </ListItemButton>
+          </ListItemButton>*/}
         </List>
       </Drawer>
     </Box>
