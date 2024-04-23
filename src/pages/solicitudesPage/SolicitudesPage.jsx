@@ -11,12 +11,18 @@ const SolicitudesPage = () => {
   ]; 
 
   const rows = [
-    { id: 1, fecha: '15/5/2024', ambiente: 'auditorio', horario: '6:45-8:15', estado: 'Disponible' }, 
-    { id: 2, fecha: '15/5/2024', ambiente: 'auditorio', horario: 'Horario', estado: 'Disponible' }, 
-    { id: 3, fecha: '15/5/2024', ambiente: 'auditorio', horario: 'Horario', estado: 'Disponible' }, 
-    { id: 4, fecha: '15/5/2024', ambiente: 'auditorio', horario: 'Horario', estado: 'Disponible' }, 
-    { id: 5, fecha: '15/5/2024', ambiente: 'auditorio', horario: 'Horario', estado: 'Disponible' }, 
-    { id: 6, fecha: '15/5/2024', ambiente: 'auditorio', horario: 'Horario', estado: 'Disponible' }, 
+    { id: 1, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '6:45-8:15', estado: 'Solicitado' }, 
+    { id: 2, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '8:15-9:45', estado: 'Solicitado' }, 
+    { id: 3, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '9:45-11:15', estado: 'Disponible' }, 
+    { id: 4, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '11:15-12:45', estado: 'Disponible' }, 
+    { id: 5, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '12:45-14:15', estado: 'Disponible' }, 
+    { id: 6, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '14:15-15:45', estado: 'Disponible' }, 
+    { id: 7, fecha: '15/5/2024', ambiente: '692 A', horario: '6:45-8:15', estado: 'Reservado' }, 
+    { id: 8, fecha: '15/5/2024', ambiente: '692 A', horario: '8:15-9:45', estado: 'Reservado' }, 
+    { id: 9, fecha: '15/5/2024', ambiente: '692 A', horario: '9:45-11:15', estado: 'Disponible' }, 
+    { id: 10, fecha: '15/5/2024', ambiente: '692 A', horario: '11:15-12:45', estado: 'Disponible' }, 
+    { id: 11, fecha: '15/5/2024', ambiente: '692 A', horario: '12:45-14:15', estado: 'Solicitado' }, 
+    { id: 12, fecha: '15/5/2024', ambiente: '692 A', horario: '14:15-15:45', estado: 'Solicitado' }, 
   ];
 
   return (
@@ -42,10 +48,10 @@ const SolicitudesPage = () => {
             }}
           >
             <Typography variant='h4' align='center' gutterBottom>
-              Solicitudes ambientes
+              Reserva ambientes
             </Typography>
             <Typography variant='body1' gutterBottom sx={{ marginLeft: '5%' }}>
-              Buscar solicitudes ambientes:
+              Buscar horarios ambientes:
             </Typography>
 
             <CustomTable
