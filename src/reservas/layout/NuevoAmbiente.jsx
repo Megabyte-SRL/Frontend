@@ -2,7 +2,6 @@ import React, { useState } from 'react'; //para modal
 import { Box, Paper, Grid, Typography, TextField, Button, Modal, Select, MenuItem, InputLabel } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import ReservaLayout from '../layout/ReservaLayout';
 import { useNavigate } from 'react-router-dom';
 
 import { useFormik } from "formik";
