@@ -67,6 +67,13 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                             >
                                 <ListItemText primary="Eliminar" />
                             </ListItemButton>
+                            <ListItemButton
+                                id='reservaD-button'
+                                onClick={(_event) => navigate('/reservaD')}
+                                sx={{ pl: 4 }}
+                            >
+                                <ListItemText primary="ReservaD" />
+                            </ListItemButton>
                         </List>
                     </Collapse>
                 </List>
