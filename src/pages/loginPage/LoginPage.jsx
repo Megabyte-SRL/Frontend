@@ -1,9 +1,11 @@
-import { Link as RouterLink } from 'react-router-dom'
-import { Button, Grid, Link, TextField, Typography } from '@mui/material'
-import React from 'react'
-import AuthLayout from '../layout/AuthLayout'
-import { useFormik } from 'formik'
-import * as Yup from "yup"
+import React from 'react';
+
+import { Link as RouterLink } from 'react-router-dom';
+import { Button, Grid, Link, TextField } from '@mui/material';
+import { useFormik } from 'formik';
+import * as Yup from "yup";
+
+import FormCard from '../../components/molecules/formCard/FormCard';
 
 const LoginPage = () => {
 
@@ -27,13 +29,9 @@ const LoginPage = () => {
 
   console.log(formik.errors);
 
-
-
   return (
-
-    <AuthLayout titulo='Login'>
+    <FormCard titulo='Login'>
       <form onSubmit={formik.handleSubmit}>
-
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
             <TextField
@@ -68,26 +66,17 @@ const LoginPage = () => {
               <Button type='submit' variant='contained' fullWidth>
                 Login
               </Button>
-
             </Grid>
-
-
           </Grid>
-
           <Grid container direction='row' justifyContent='end'>
             <Link component={RouterLink} color='inherit' to="/auth/register">
               Crear una Cuenta
             </Link>
-
           </Grid>
-
-
         </Grid>
       </form>
-    </AuthLayout>
-
-
-  )
+    </FormCard>
+  );
 }
 
-export default LoginPage
+export default LoginPage;

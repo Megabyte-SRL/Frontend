@@ -9,7 +9,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
   const [openAmbientesSubMenu, setOpenAmbientesSubMenu] = useState(false);
 
   const handleSubMenuClick = () => {
-    navigate('/ambientes');
+    navigate('/dashboard/ambientes');
     setOpenAmbientesSubMenu(!openAmbientesSubMenu);
   };
 
@@ -36,21 +36,21 @@ const LateralBar = ({ anchoCaja = 240 }) => {
             <List component="div" disablePadding>
               <ListItemButton
                 id='crear-ambientes-button'
-                onClick={() => navigate('/nuevo-ambiente')}
+                onClick={() => navigate('/dashboard/nuevo-ambiente')}
                 sx={{ pl: 4 }}
               >
                 <ListItemText primary="Nuevo" />
               </ListItemButton>
               <ListItemButton
                 id='carga-masiva-button'
-                onClick={() => navigate('/carga-masiva')}
+                onClick={() => navigate('/dashboard/carga-masiva')}
                 sx={{ pl: 4 }}
               >
                 <ListItemText primary="Masiva" />
               </ListItemButton>
             </List>
           </Collapse>
-          <ListItemButton id='lista-solicitudes' onClick={(_e) => navigate('/solicitudes')}>
+          <ListItemButton id='lista-solicitudes' onClick={(_e) => navigate('/dashboard/solicitudes')}>
             <ListItemText primary='Solicitudes' />
           </ListItemButton>
         </List>
