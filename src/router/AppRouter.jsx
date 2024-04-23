@@ -10,6 +10,7 @@ import AmbientesPage from '../pages/ambientesPage/AmbientesPage'
 import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
 import HabilitarFechaPage from '../reservas/pages/HabilitarFechaPage'
 import { Visualizacion } from '../reservas/pages/Visualizacion'
+import ReservaDocente from '../reservas/pages/ReservaDocente'
 
 const AppRouter = () => {
   return (
@@ -29,6 +30,7 @@ const AppRouter = () => {
         <Route path='solicitudes' element={<SolicitudesPage />} />
         <Route path="visualizar-horario" element={<HabilitarFechaPage />} />
         <Route path="visualizar" element={<Visualizacion />} />
+        <Route path="reservaD" element={<ReservaDocente />} />
         {/*<Route path="*" element={<Navigate to="/" />} />*/}
       </Route>
       <Route
