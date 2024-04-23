@@ -6,6 +6,7 @@ import NuevoAmbiente from '../layout/NuevoAmbiente'
 import EliminarAmbientePage from '../pages/EliminarAmbientePage'
 import VisualizarHorario from '../pages/HabilitarFechaPage'
 import { Visualizacion } from '../pages/Visualizacion'
+import CSVUploader from '../pages/CSVUploader'
 
 const ReservaRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const ReservaRoutes = () => {
         <Route path="/eliminar-ambiente" element={<EliminarAmbientePage />} />
         <Route path="/visualizar-horario" element={<VisualizarHorario />} />
         <Route path="/visualizar" element={<Visualizacion />} />
+        <Route path="/carga-masiva" element={<CSVUploader />} />
         <Route path="/*" element={<Navigate to="/" />} />
       </Routes>
     </div>
