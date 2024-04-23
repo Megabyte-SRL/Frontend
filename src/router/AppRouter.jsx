@@ -1,14 +1,15 @@
 import React from 'react'
 
 import { Navigate, Route, Routes } from 'react-router-dom'
-import LoginPage from '../loginAuth/pages/LoginPage'
+import LoginPage from '../pages/loginPage/LoginPage'
 import SignUpPage from '../pages/signUpPage/SignUpPage'
 import ReservaPage from '../reservas/pages/ReservaPage'
 import NuevoAmbiente from '../reservas/layout/NuevoAmbiente'
 import CSVUploader from '../reservas/pages/CSVUploader'
 import AmbientesPage from '../pages/ambientesPage/AmbientesPage'
 import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
-import ReservaLayout from '../reservas/layout/ReservaLayout'
+import HabilitarFechaPage from '../reservas/pages/HabilitarFechaPage'
+import { Visualizacion } from '../reservas/pages/Visualizacion'
 
 const AppRouter = () => {
   return (
@@ -26,6 +27,8 @@ const AppRouter = () => {
         <Route path='carga-masiva' element={<CSVUploader />} />
         <Route path='ambientes' element={<AmbientesPage />} />
         <Route path='solicitudes' element={<SolicitudesPage />} />
+        <Route path="visualizar-horario" element={<HabilitarFechaPage />} />
+        <Route path="visualizar" element={<Visualizacion />} />
         {/*<Route path="*" element={<Navigate to="/" />} />*/}
       </Route>
       <Route
