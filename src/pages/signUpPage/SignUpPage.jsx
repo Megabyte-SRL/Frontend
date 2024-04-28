@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { Formik, Form } from 'formik';
-import { Button, Grid } from '@mui/material';
+import { Formik, Form, Field } from 'formik';
+import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
 import * as Yup from 'yup'; 
 
 import CustomFormCard from '../../components/molecules/customFormCard/CustomFormCard';
@@ -14,12 +14,16 @@ const customStyles = {
 
 const SignUpPage = () => {
 
+  const rolesUsuarioOptions = ['admin', 'docente'];
   const validationSchema = Yup.object({
     nombre: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres"),
     apellido: Yup.string().required("Campo requerido"),
     email: Yup.string().email("Formato de correo invalido").required("Campo requerido"),
     password: Yup.string().required("Campo requerido").min(8, "Minimo 8 caracteres"),
-    //rol: Yup.string().required("Campo Requerido")
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref('password'), null], 'La contraseña debe coincidir')
+      .required("Campo requirido"),
+    rol: Yup.string().required("Campo Requerido")
   });
 
   return (
@@ -30,7 +34,8 @@ const SignUpPage = () => {
           apellido: '',
           email: '',
           password: '',
-          //rol: ''
+          confirmPassword: '',
+          rol: ''
         }}
         validationSchema={validationSchema}
         onSubmit={(values, { setSubmitting }) => {
@@ -82,16 +87,28 @@ const SignUpPage = () => {
                   errors={errors}
                 />
               </Grid>
-              {/*
+
               <Grid item xs={12} sx={{ mt: 2 }}>
-                <TextField
-                  label="Repetir contraseña"
+                <CustomTextField
+                  name='repeatPassword'
                   type='password'
+                  label="Repetir contraseña"
                   placeholder='Repetir Contraseña'
-                  fullWidth
+                  touched={touched}
+                  errors={errors}
                 />
               </Grid>
-              */}
+
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <FormControl fullWidth>
+                  <InputLabel>Rol</InputLabel>
+                  <Field as={Select} name='rol' label='Rol'>
+                    {rolesUsuarioOptions.map(rol => (
+                      <MenuItem key={rol} value={rol}>{rol}</MenuItem>
+                    ))}
+                  </Field>
+                </FormControl>
+              </Grid>
 
               <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
                 <Grid item xs={12} sm={12}>
