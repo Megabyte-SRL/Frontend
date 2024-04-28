@@ -2,7 +2,6 @@ import React, { useState } from 'react'; //para modal
 import { Box, Paper, Grid, Typography, TextField, Button, Modal, Select, MenuItem, InputLabel } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import ReservaLayout from '../layout/ReservaLayout';
 import { useNavigate } from 'react-router-dom';
 
 import { useFormik } from "formik";
@@ -173,7 +172,7 @@ const NuevoAmbiente = () => {
   );
 
   return (
-    <ReservaLayout>
+    <div>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
           <Box
@@ -280,7 +279,7 @@ const NuevoAmbiente = () => {
           {modalBody}
         </div>
       </Modal>
-    </ReservaLayout>
+    </div>
   );
 };
 

@@ -3,17 +3,17 @@ import { Box, Collapse, Drawer, List, ListItemButton, ListItemText } from '@mui/
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 
 const LateralBar = ({ anchoCaja = 240 }) => {
-    const navigate = useNavigate();
-    const [openSubMenu, setOpenSubMenu] = useState(false);
-    const [openEliminarSubMenu, setOpenEliminarSubMenu] = useState(false);
+  const navigate = useNavigate();
+  const [openAmbientesSubMenu, setOpenAmbientesSubMenu] = useState(false);
 
-    const handleSubMenuClick = () => {
-        setOpenSubMenu(!openSubMenu);
-    };
+  const handleSubMenuClick = () => {
+    navigate('/dashboard/ambientes');
+    setOpenAmbientesSubMenu(!openAmbientesSubMenu);
+  };
 
+<<<<<<< HEAD
     const handleEliminarSubMenuClick = () => {
         setOpenEliminarSubMenu(!openEliminarSubMenu);
     };
@@ -100,6 +100,61 @@ const LateralBar = ({ anchoCaja = 240 }) => {
             </Drawer>
         </Box>
     );
+=======
+  return (
+    <Box 
+        id='lateral-bar-box'
+        component='nav'
+        sx={{width:{sm:anchoCaja}, flexShrink:{sm:0}}}
+    >
+      <Drawer
+        variant='permanent'
+        open={true}
+        sx={{
+          display: {xs: 'block'},
+           '& .MuiDrawer-paper': {boxSizing: 'border-box', width: anchoCaja, marginTop:13}
+        }}
+      >
+        <List>
+          <ListItemButton id='crear-button' onClick={handleSubMenuClick}>
+            <ListItemText primary="Ambientes" />
+              {openAmbientesSubMenu ? <ExpandLess /> : <ExpandMore />}
+          </ListItemButton>
+          <Collapse in={openAmbientesSubMenu} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              <ListItemButton
+                id='crear-ambientes-button'
+                onClick={() => navigate('/dashboard/nuevo-ambiente')}
+                sx={{ pl: 4 }}
+              >
+                <ListItemText primary="Nuevo" />
+              </ListItemButton>
+              <ListItemButton
+                id='carga-masiva-button'
+                onClick={() => navigate('/dashboard/carga-masiva')}
+                sx={{ pl: 4 }}
+              >
+                <ListItemText primary="Masiva" />
+              </ListItemButton>
+            </List>
+          </Collapse>
+          <ListItemButton id='reserva-solicitudes' onClick={() => navigate('/dashboard/solicitudes')}>
+            <ListItemText primary='Reserva' />
+          </ListItemButton>
+          <ListItemButton id='ver-button' onClick={() => navigate('/dashboard/visualizar-horario')}>
+            <ListItemText primary="Habilitar Fecha" />
+          </ListItemButton>
+          {/*<ListItemButton
+            id='reservaD-button'
+            onClick={() => navigate('/dashboard/reservaD')}
+          >
+            <ListItemText primary="ReservaD" />
+          </ListItemButton>*/}
+        </List>
+      </Drawer>
+    </Box>
+  );
+>>>>>>> 12484f46999fbfb3b50699e8da6fd15df1a1b311
 }
 
 export default LateralBar;
