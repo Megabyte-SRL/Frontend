@@ -17,7 +17,6 @@ const AppRouter = () => {
     <Routes>
       {/*rutas para el login */}
       <Route path='/login' element={<LoginPage />} />
-      <Route path='/signup' element={<SignUpPage />} />
 
       {/* rutas para la reserva */}
       <Route
@@ -31,6 +30,7 @@ const AppRouter = () => {
         <Route path="visualizar-horario" element={<HabilitarFechaPage />} />
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
+        <Route path='signup' element={<SignUpPage />} />
         {/*<Route path="*" element={<Navigate to="/" />} />*/}
       </Route>
       <Route
