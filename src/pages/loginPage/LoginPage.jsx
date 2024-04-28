@@ -5,7 +5,13 @@ import { Button, Grid, Link, TextField } from '@mui/material';
 import { useFormik } from 'formik';
 import * as Yup from "yup";
 
-import FormCard from '../../components/molecules/formCard/FormCard';
+import CustomFormCard from '../../components/molecules/customFormCard/CustomFormCard';
+
+const customStyles = {
+  minHeight: '100vh',
+  backgroundColor: 'primary.main', 
+  padding: 4
+};
 
 const LoginPage = () => {
 
@@ -30,7 +36,7 @@ const LoginPage = () => {
   console.log(formik.errors);
 
   return (
-    <FormCard titulo='Login'>
+    <CustomFormCard titulo='Login' styles={customStyles}>
       <form onSubmit={formik.handleSubmit}>
         <Grid container>
           <Grid item xs={12} sx={{ mt: 2 }}>
@@ -68,14 +74,9 @@ const LoginPage = () => {
               </Button>
             </Grid>
           </Grid>
-          <Grid container direction='row' justifyContent='end'>
-            <Link component={RouterLink} color='inherit' to="/auth/register">
-              Crear una Cuenta
-            </Link>
-          </Grid>
         </Grid>
       </form>
-    </FormCard>
+    </CustomFormCard>
   );
 }
 
