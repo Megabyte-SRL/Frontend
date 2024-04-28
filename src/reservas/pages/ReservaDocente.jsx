@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TextField, InputAdornment, IconButton, Checkbox, Button,List, ListItem, ListItemText  } from '@mui/material';
+import {
+  Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TextField,
+  InputAdornment, IconButton, Checkbox, Button, List, ListItem, ListItemText, Dialog, DialogTitle,
+  DialogContent, DialogActions
+} from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import ReservaLayout from '../layout/ReservaLayout';
 
 const ReservaDocente = () => {
     const [datos, setDatos] = useState([]);
     const [selectedRows, setSelectedRows] = useState([]);
-    const [selectedHoras, setSelectedHoras] = useState([]); // Estado para almacenar las horas seleccionadas
+    const [selectedHoras, setSelectedHoras] = useState([]);
     const [listOpen, setListOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false); // Estado para controlar el modal
 
     useEffect(() => {
         obtenerDatos();
@@ -51,16 +56,25 @@ const ReservaDocente = () => {
     const toggleList = () => {
         setListOpen((prevState) => !prevState);
     };
+
+    const handleModalOpen = () => {
+        setModalOpen(true);
+    };
+
+    const handleModalClose = () => {
+        setModalOpen(false);
+    };
+
     return (
         <ReservaLayout>
             <TableContainer component={Paper} sx={{ borderRadius: '.5rem' }}>
             <Box sx={{
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '3rem', // Reduce el margen superior
-                marginBottom: '0.5rem', // Reduce el margen inferior
-                maxWidth: '88%', // Ajusta el ancho máximo del Box
-                gap: '.5rem', // Espacio entre elementos
+                marginTop: '3rem',
+                marginBottom: '0.5rem',
+                maxWidth: '88%',
+                gap: '.5rem',
             }}>
                 <Typography variant="body1">Fecha:</Typography>
                 <TextField
@@ -70,12 +84,12 @@ const ReservaDocente = () => {
                     InputProps={{
                         inputProps: { locale: 'es' },
                     }}
-                    sx={{ width: '30%' }} // Ajusta el ancho a un valor más pequeño
+                    sx={{ width: '30%' }}
                 />
                 <Typography variant="body1">Horarios:</Typography>
                 <Button
                     variant="outlined"
-                    sx={{ width: '30%', height: '2.5rem' }} // Ajusta el ancho y altura del botón
+                    sx={{ width: '30%', height: '2.5rem' }}
                     onClick={toggleList}
                 >
                     Lista{listOpen}
@@ -106,7 +120,7 @@ const ReservaDocente = () => {
                             </InputAdornment>
                         ),
                     }}
-                    sx={{ width: '30%' }} // Ajusta el ancho a un valor más pequeño
+                    sx={{ width: '30%' }}
                 />
                 <Typography variant="body1">Capacidad:</Typography>
                 <TextField
@@ -120,7 +134,7 @@ const ReservaDocente = () => {
                             </InputAdornment>
                         ),
                     }}
-                    sx={{ width: '30%' }} // Ajusta el ancho a un valor más pequeño
+                    sx={{ width: '30%' }}
                 />
                 <Typography variant="body1">Estado:</Typography>
                 <TextField
@@ -134,14 +148,15 @@ const ReservaDocente = () => {
                             </InputAdornment>
                         ),
                     }}
-                    sx={{ width: '30%' }} // Ajusta el ancho a un valor más pequeño
+                    sx={{ width: '30%' }}
                 />
                 <Button
                     variant="contained"
+                    onClick={handleModalOpen}
                     sx={{
                         backgroundColor: 'blue',
                         color: 'white',
-                        padding: '0.5rem 2rem', // Ajusta el padding del botón
+                        padding: '0.5rem 2rem',
                         borderRadius: '8px',
                         marginRight: '1rem',
                         marginLeft: '2%',
@@ -156,39 +171,97 @@ const ReservaDocente = () => {
                         },
                     }}
                 >
-                    Reservar
+                    SIGUIENTE
                 </Button>
             </Box>
-                <Table>
-                    <TableHead >
-                        <TableRow>
-                            <TableCell>Fecha</TableCell>
-                            <TableCell>Horario</TableCell>
-                            <TableCell>Ambiente</TableCell>
-                            <TableCell>Capacidad</TableCell>
-                            <TableCell>Estado</TableCell>
-                            <TableCell>Seleccionar</TableCell>
+
+            {/* Modal para el formulario */}
+            <Dialog open={modalOpen} onClose={handleModalClose} 
+                sx={{ 
+                    '& .MuiDialog-container': { // Accede al contenedor del modal
+                    '& .MuiPaper-root': { // Estilo para el papel que es la superficie del modal
+                        backgroundColor: '#FEFFFF', // Cambia el color de fondo
+                        color: '#333', // Cambia el color del texto
+                    }
+                    }
+                }}>
+                <DialogTitle>SOLICITUD DE AMBIENTE</DialogTitle>
+                <DialogContent>
+                    {/* Agrega los campos del formulario que necesites aquí */}
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Nombre de la Asignatura"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Numero de estudiantes"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Tipo de examen"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                    />
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="name"
+                        label="Descripcion de solicitud"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                    />
+                    {/* Agrega más campos si es necesario */}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleModalClose}>CANCELAR</Button>
+                    <Button onClick={handleModalClose}>ENVIAR</Button>
+                </DialogActions>
+            </Dialog>
+
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Fecha</TableCell>
+                        <TableCell>Horario</TableCell>
+                        <TableCell>Ambiente</TableCell>
+                        <TableCell>Capacidad</TableCell>
+                        <TableCell>Estado</TableCell>
+                        <TableCell>Seleccionar</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {Array.isArray(datos) && datos.map((fila, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{fila.fecha}</TableCell>
+                            <TableCell>{fila.horario}</TableCell>
+                            <TableCell>{fila.nombre}</TableCell>
+                            <TableCell>{fila.capacidad}</TableCell>
+                            <TableCell>{fila.estado}</TableCell>
+                            <TableCell>
+                                <Checkbox
+                                    checked={selectedRows.includes(index)}
+                                    onChange={handleCheckboxChange(index)}
+                                />
+                            </TableCell>
                         </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {Array.isArray(datos) && datos.map((fila, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{fila.fecha}</TableCell>
-                                <TableCell>{fila.horario}</TableCell>
-                                <TableCell>{fila.nombre}</TableCell>
-                                <TableCell>{fila.capacidad}</TableCell>
-                                <TableCell>{fila.estado}</TableCell>
-                                <TableCell>
-                                    <Checkbox
-                                        checked={selectedRows.includes(index)}
-                                        onChange={handleCheckboxChange(index)}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
         </ReservaLayout>
     );
 };
