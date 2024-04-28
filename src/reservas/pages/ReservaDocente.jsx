@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, TextField,
   InputAdornment, IconButton, Checkbox, Button, List, ListItem, ListItemText, Dialog, DialogTitle,
-  DialogContent, DialogActions
+  DialogContent, DialogActions, Select, MenuItem
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import ReservaLayout from '../layout/ReservaLayout';
@@ -13,6 +13,7 @@ const ReservaDocente = () => {
     const [selectedHoras, setSelectedHoras] = useState([]);
     const [listOpen, setListOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false); // Estado para controlar el modal
+    const [tipoExamen, setTipoExamen] = useState(''); // Estado para almacenar el tipo de examen seleccionado
 
     useEffect(() => {
         obtenerDatos();
@@ -59,10 +60,15 @@ const ReservaDocente = () => {
 
     const handleModalOpen = () => {
         setModalOpen(true);
+        
     };
 
     const handleModalClose = () => {
         setModalOpen(false);
+    };
+
+    const handleChange = (event) => {
+        setTipoExamen(event.target.value);
     };
 
     return (
@@ -136,20 +142,7 @@ const ReservaDocente = () => {
                     }}
                     sx={{ width: '30%' }}
                 />
-                <Typography variant="body1">Estado:</Typography>
-                <TextField
-                    variant="outlined"
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton>
-                                    <SearchIcon color="primary" />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ width: '30%' }}
-                />
+                
                 <Button
                     variant="contained"
                     onClick={handleModalOpen}
@@ -178,20 +171,21 @@ const ReservaDocente = () => {
             {/* Modal para el formulario */}
             <Dialog open={modalOpen} onClose={handleModalClose} 
                 sx={{ 
-                    '& .MuiDialog-container': { // Accede al contenedor del modal
-                    '& .MuiPaper-root': { // Estilo para el papel que es la superficie del modal
-                        backgroundColor: '#FEFFFF', // Cambia el color de fondo
-                        color: '#333', // Cambia el color del texto
+                    '& .MuiDialog-container': {
+                    '& .MuiPaper-root': {
+                        backgroundColor: '#FEFFFF',
+                        color: '#333',
                     }
                     }
                 }}>
-                <DialogTitle>SOLICITUD DE AMBIENTE</DialogTitle>
+                <DialogTitle sx={{ textAlign: 'center' }}>SOLICITUD DE AMBIENTE</DialogTitle>
+      
                 <DialogContent>
                     {/* Agrega los campos del formulario que necesites aquí */}
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="name"
+                        id="nombreAsignatura"
                         label="Nombre de la Asignatura"
                         type="text"
                         fullWidth
@@ -200,25 +194,34 @@ const ReservaDocente = () => {
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="name"
+                        id="numEstudiantes"
                         label="Numero de estudiantes"
-                        type="text"
+                        type="number"
                         fullWidth
                         variant="standard"
                     />
+                    <Select
+                      value={tipoExamen}
+                      onChange={handleChange}
+                      fullWidth
+                      variant="standard"
+                      displayEmpty
+                      id="tipoExamen"
+                      label="Tipo de examen"
+                    >
+                      <MenuItem value="" disabled>
+                        Seleccione el tipo de examen
+                      </MenuItem>
+                      <MenuItem value="examenMesa">Examen de Mesa</MenuItem>
+                      <MenuItem value="primerParcial">Primer Parcial</MenuItem>
+                      <MenuItem value="segundoParcial">Segundo Parcial</MenuItem>
+                      <MenuItem value="examenFinal">Examen Final</MenuItem>
+                      <MenuItem value="exSegundaInstancia">Examen de 2da Instancia</MenuItem>
+                    </Select>
                     <TextField
                         autoFocus
                         margin="dense"
-                        id="name"
-                        label="Tipo de examen"
-                        type="text"
-                        fullWidth
-                        variant="standard"
-                    />
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        id="name"
+                        id="descSolicitud"
                         label="Descripcion de solicitud"
                         type="text"
                         fullWidth
@@ -227,8 +230,13 @@ const ReservaDocente = () => {
                     {/* Agrega más campos si es necesario */}
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleModalClose}>CANCELAR</Button>
-                    <Button onClick={handleModalClose}>ENVIAR</Button>
+                <Button variant="text" onClick={handleModalClose} sx={{ color: 'black', border: '1px solid black', borderRadius: '8px' }}>
+                CANCELAR
+                </Button>
+                <Button variant="contained" color="primary" onClick={handleModalClose}>
+                ENVIAR
+                </Button>
+                
                 </DialogActions>
             </Dialog>
 
