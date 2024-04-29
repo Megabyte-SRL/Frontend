@@ -11,6 +11,7 @@ import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
 import HabilitarFechaPage from '../reservas/pages/HabilitarFechaPage'
 import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
+import RequireAuth from './RequireAuth'
 
 const AppRouter = () => {
   return (
@@ -21,7 +22,7 @@ const AppRouter = () => {
       {/* rutas para la reserva */}
       <Route
         path='/dashboard'
-        element={<ReservaPage />}
+        element={<RequireAuth><ReservaPage /></RequireAuth>}
       >
         <Route path='nuevo-ambiente' element={<NuevoAmbiente />} />
         <Route path='carga-masiva' element={<CSVUploader />} />

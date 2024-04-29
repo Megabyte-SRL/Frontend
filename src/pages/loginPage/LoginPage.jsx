@@ -5,6 +5,9 @@ import { useFormik } from 'formik';
 import * as Yup from "yup";
 
 import CustomFormCard from '../../components/molecules/customFormCard/CustomFormCard';
+import { useAuth } from '../../hooks/useAuth';
+import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import { useNavigate } from 'react-router-dom';
 
 const customStyles = {
   minHeight: '100vh',
@@ -13,6 +16,9 @@ const customStyles = {
 };
 
 const LoginPage = () => {
+  const { openSnackbar } = useSnackbar();
+  const auth = useAuth();
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues:{
@@ -26,9 +32,26 @@ const LoginPage = () => {
     }),
     validateOnChange:false,
 
-    onSubmit:(formValue) =>{
-      console.log("registro OK");
-      console.log(formValue);
+    onSubmit: async (formValue, { resetForm }) => {
+      fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formValue)
+      })
+        .then(async response => {
+          const { data } = await response.json();
+          auth.login(data.token, data.rol);
+          navigate('/dashboard');
+        })
+        .catch(error => {
+          console.log('error: ', error);
+          openSnackbar('Error al iniciar sesión', 'error');
+        })
+        .finally(() => {
+          resetForm();
+        })
     }
   })
 
@@ -42,7 +65,7 @@ const LoginPage = () => {
             <TextField
               name='email'
               label="Correo"
-              //type='email'
+              type='email'
               placeholder='correo@gmail.com'
               fullWidth
               onChange={formik.handleChange}
