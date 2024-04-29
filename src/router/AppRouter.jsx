@@ -11,18 +11,18 @@ import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
 import HabilitarFechaPage from '../reservas/pages/HabilitarFechaPage'
 import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
+import RequireAuth from './RequireAuth'
 
 const AppRouter = () => {
   return (
     <Routes>
       {/*rutas para el login */}
       <Route path='/login' element={<LoginPage />} />
-      <Route path='/signup' element={<SignUpPage />} />
 
       {/* rutas para la reserva */}
       <Route
         path='/dashboard'
-        element={<ReservaPage />}
+        element={<RequireAuth><ReservaPage /></RequireAuth>}
       >
         <Route path='nuevo-ambiente' element={<NuevoAmbiente />} />
         <Route path='carga-masiva' element={<CSVUploader />} />
@@ -31,6 +31,7 @@ const AppRouter = () => {
         <Route path="visualizar-horario" element={<HabilitarFechaPage />} />
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
+        <Route path='signup' element={<SignUpPage />} />
         {/*<Route path="*" element={<Navigate to="/" />} />*/}
       </Route>
       <Route
