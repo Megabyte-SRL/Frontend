@@ -53,7 +53,7 @@ const LoginPage = () => {
             })
             .finally(() => {
               resetForm();
-            })
+            });
         }}
       >
         {({ errors, touched, isValid, dirty }) => (

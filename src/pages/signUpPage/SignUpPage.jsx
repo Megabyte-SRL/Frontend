@@ -6,6 +6,7 @@ import * as Yup from 'yup';
 
 import CustomFormCard from '../../components/molecules/customFormCard/CustomFormCard';
 import CustomTextField from '../../components/atoms/customTextField/CustomTextField';
+import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 
 const customStyles = {
   minHeight: '100vh',
@@ -13,6 +14,7 @@ const customStyles = {
 };
 
 const SignUpPage = () => {
+  const { openSnackbar } = useSnackbar();
 
   const rolesUsuarioOptions = ['admin', 'docente'];
   const validationSchema = Yup.object({
@@ -22,7 +24,7 @@ const SignUpPage = () => {
     password: Yup.string().required("Campo requerido").min(8, "Minimo 8 caracteres"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'La contraseña debe coincidir')
-      .required("Campo requirido"),
+      .required('Campo requerido'),
     rol: Yup.string().required("Campo Requerido")
   });
 
@@ -38,9 +40,29 @@ const SignUpPage = () => {
           rol: ''
         }}
         validationSchema={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          console.log('Form values:');
-          console.log(values);
+        onSubmit={async (formValues, { resetForm }) => {
+          fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/usuarios`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              nombre: formValues.nombre,
+              apellido: formValues.apellido,
+              email: formValues.email,
+              password: formValues.password,
+              rol: formValues.rol
+            })
+          })
+            .then(async response => {
+              const data = await response.json();
+              console.log('Registrar usuario response: ', data);
+              openSnackbar('Usuario creado correctamente', 'success');
+              resetForm();
+            })
+            .catch(async error => {
+              openSnackbar('Error al registrar usuario', 'error');
+            });
         }}
       >
         {({ errors, touched, isValid, dirty }) => (
@@ -90,7 +112,7 @@ const SignUpPage = () => {
 
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <CustomTextField
-                  name='repeatPassword'
+                  name='confirmPassword'
                   type='password'
                   label="Repetir contraseña"
                   placeholder='Repetir Contraseña'
