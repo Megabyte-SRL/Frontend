@@ -6,6 +6,8 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon } from '@mui/icons-material';
 import ReservaLayout from '../layout/ReservaLayout';
+import { Popover } from '@mui/material';
+
 
 const ReservaDocente = () => {
     const [datos, setDatos] = useState([]);
@@ -14,6 +16,8 @@ const ReservaDocente = () => {
     const [listOpen, setListOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false); // Estado para controlar el modal
     const [tipoExamen, setTipoExamen] = useState(''); // Estado para almacenar el tipo de examen seleccionado
+    const [anchorEl, setAnchorEl] = useState(null);
+
 
     useEffect(() => {
         obtenerDatos();
@@ -71,6 +75,14 @@ const ReservaDocente = () => {
         setTipoExamen(event.target.value);
     };
 
+    const handleListClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    
+    const handleListClose = () => {
+        setAnchorEl(null);
+    };
+
     return (
         <ReservaLayout>
             <TableContainer component={Paper} sx={{ borderRadius: '.5rem' }}>
@@ -96,11 +108,25 @@ const ReservaDocente = () => {
                 <Button
                     variant="outlined"
                     sx={{ width: '30%', height: '2.5rem' }}
-                    onClick={toggleList}
+                    onClick={handleListClick}
+                    aria-describedby="list-popover"
                 >
-                    Lista{listOpen}
+                    Lista
                 </Button>
-                {listOpen && (
+                <Popover
+                    id="list-popover"
+                    open={Boolean(anchorEl)}
+                    anchorEl={anchorEl}
+                    onClose={handleListClose}
+                    anchorOrigin={{
+                        vertical: 'bottom',
+                        horizontal: 'left',
+                    }}
+                    transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'left',
+                    }}
+                >
                     <List>
                         <ListItem dense button onClick={handleSelectAll}>
                             <ListItemText primary="Seleccionar todo" />
@@ -113,7 +139,7 @@ const ReservaDocente = () => {
                             </ListItem>
                         ))}
                     </List>
-                )}
+                </Popover>
                 <Typography variant="body1">Ambiente:</Typography>
                 <TextField
                     variant="outlined"
