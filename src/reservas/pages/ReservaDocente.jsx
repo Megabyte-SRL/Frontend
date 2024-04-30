@@ -46,6 +46,14 @@ const ReservaDocente = () => {
         }
     };
 
+    const handleCheckboxChangeHora = (hora) => () => {
+        if (selectedHoras.includes(hora)) {
+            setSelectedHoras(selectedHoras.filter((h) => h !== hora));
+        } else {
+            setSelectedHoras([...selectedHoras, hora]);
+        }
+    };
+
     const handleFechaChange = (event) => {
         setFecha(event.target.value);
         setFechaError(false); // Actualizar el estado de error a false al cambiar la fecha
@@ -187,7 +195,7 @@ const ReservaDocente = () => {
                             <Checkbox checked={selectedHoras.length === 10} />
                         </ListItem>
                         {['6:45 - 8:15', '8:15 - 9:45', '9:45 - 11:15', '11:15 - 12:45', '12:45 - 14:15', '14:15 - 15:45', '15:45 - 17:15', '17:15 - 18:45', '18:45 - 20:15', '20:15 - 21:45'].map((hora, index) => (
-                            <ListItem key={index} dense button onClick={handleCheckboxChange(hora)}>
+                            <ListItem key={index} dense button onClick={handleCheckboxChangeHora(hora)}>
                                 <ListItemText primary={hora} />
                                 <Checkbox checked={selectedHoras.includes(hora)} />
                             </ListItem>
