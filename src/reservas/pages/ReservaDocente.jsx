@@ -17,6 +17,8 @@ const ReservaDocente = () => {
     const [modalOpen, setModalOpen] = useState(false); // Estado para controlar el modal
     const [tipoExamen, setTipoExamen] = useState(''); // Estado para almacenar el tipo de examen seleccionado
     const [anchorEl, setAnchorEl] = useState(null);
+    const [capacidadFiltro, setCapacidadFiltro] = useState('');
+    const [ambienteFiltro, setAmbienteFiltro] = useState('');
 
 
     useEffect(() => {
@@ -36,14 +38,13 @@ const ReservaDocente = () => {
         }
     };
 
-    const handleCheckboxChange = (hora) => () => {
-        if (selectedHoras.includes(hora)) {
-          setSelectedHoras(selectedHoras.filter((h) => h !== hora));
+    const handleCheckboxChange = (index) => () => {
+        if (selectedRows.includes(index)) {
+            setSelectedRows(selectedRows.filter((i) => i !== index));
         } else {
-          setSelectedHoras([...selectedHoras, hora]);
+            setSelectedRows([...selectedRows, index]);
         }
-        setHorasError(false); // Actualizar el estado de error a false al cambiar las horas seleccionadas
-      };
+    };
 
     const handleFechaChange = (event) => {
         setFecha(event.target.value);
@@ -81,6 +82,59 @@ const ReservaDocente = () => {
     
     const handleListClose = () => {
         setAnchorEl(null);
+    };
+
+    const handleCapacidadChange = (event) => {
+        setCapacidadFiltro(event.target.value);
+    };
+    
+    const filtrarDatosPorCapacidad = () => {
+        if (!capacidadFiltro) {
+            return datos;
+        }
+    
+        // Convertir la capacidad y capacidadFiltro a cadenas para comparar los valores
+        const capacidadFiltroStr = capacidadFiltro.toString();
+    
+        return datos.filter((dato) => {
+            const capacidadStr = dato.capacidad.toString();
+            // Filtrar datos cuya capacidad comience con capacidadFiltro
+            return capacidadStr.startsWith(capacidadFiltroStr);
+        });
+    };
+
+    const handleAmbienteChange = (event) => {
+        setAmbienteFiltro(event.target.value);
+    };
+
+    const filtrarDatosPorAmbiente = () => {
+        if (!ambienteFiltro) {
+            return datos;
+        }
+    
+        // Convertir los valores a cadenas y filtrar datos por ambiente
+        const ambienteFiltroStr = ambienteFiltro.toLowerCase();
+    
+        return datos.filter((dato) => {
+            const ambienteStr = dato.nombre.toLowerCase();
+            return ambienteStr.includes(ambienteFiltroStr);
+        });
+    };
+
+    const filtrarDatos = () => {
+        let datosFiltrados = datos;
+    
+        if (capacidadFiltro) {
+            const capacidadFiltroStr = capacidadFiltro.toString();
+            datosFiltrados = datosFiltrados.filter((dato) => dato.capacidad.toString().startsWith(capacidadFiltroStr));
+        }
+    
+        if (ambienteFiltro) {
+            const ambienteFiltroStr = ambienteFiltro.toLowerCase();
+            datosFiltrados = datosFiltrados.filter((dato) => dato.nombre.toLowerCase().includes(ambienteFiltroStr));
+        }
+    
+        return datosFiltrados;
     };
 
     return (
@@ -141,57 +195,63 @@ const ReservaDocente = () => {
                     </List>
                 </Popover>
                 <Typography variant="body1">Ambiente:</Typography>
-                <TextField
-                    variant="outlined"
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton>
-                                    <SearchIcon color="primary" />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ width: '30%' }}
-                />
-                <Typography variant="body1">Capacidad:</Typography>
-                <TextField
-                    variant="outlined"
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton>
-                                    <SearchIcon color="primary" />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
-                    sx={{ width: '30%' }}
-                />
+                    <TextField
+                        id="ambienteFiltro"
+                        type="text"
+                        value={ambienteFiltro}
+                        onChange={handleAmbienteChange}
+                        sx={{ width: '30%' }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton>
+                                        <SearchIcon color="primary" />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                 <Typography variant="body1">Capacidad:</Typography>
+                    <TextField
+                        id="capacidadFiltro"
+                        type="number"
+                        value={capacidadFiltro}
+                        onChange={handleCapacidadChange}
+                        sx={{ width: '30%' }}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton>
+                                        <SearchIcon color="primary" />
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
                 
-                <Button
-                    variant="contained"
-                    onClick={handleModalOpen}
-                    sx={{
-                        backgroundColor: 'blue',
-                        color: 'white',
-                        padding: '0.5rem 2rem',
-                        borderRadius: '8px',
-                        marginRight: '1rem',
-                        marginLeft: '2%',
-                        '&:hover': {
-                            backgroundColor: 'darkblue',
-                        },
-                        '&:focus': {
-                            boxShadow: '0 0 0 3px rgba(0, 0, 255, 0.5)',
-                        },
-                        '&:active': {
-                            backgroundColor: 'navy',
-                        },
-                    }}
-                >
-                    SIGUIENTE
-                </Button>
+                    <Button
+                        variant="contained"
+                        onClick={handleModalOpen}
+                        sx={{
+                            backgroundColor: 'blue',
+                            color: 'white',
+                            padding: '0.5rem 2rem',
+                            borderRadius: '8px',
+                            marginRight: '1rem',
+                            marginLeft: '2%',
+                            '&:hover': {
+                                backgroundColor: 'darkblue',
+                            },
+                            '&:focus': {
+                                boxShadow: '0 0 0 3px rgba(0, 0, 255, 0.5)',
+                            },
+                            '&:active': {
+                                backgroundColor: 'navy',
+                            },
+                        }}
+                    >
+                        SIGUIENTE
+                    </Button>
             </Box>
 
             {/* Modal para el formulario */}
@@ -278,7 +338,7 @@ const ReservaDocente = () => {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {Array.isArray(datos) && datos.map((fila, index) => (
+                    {filtrarDatos().map((fila, index) => (
                         <TableRow key={index}>
                             <TableCell>{fila.fecha}</TableCell>
                             <TableCell>{fila.horario}</TableCell>
