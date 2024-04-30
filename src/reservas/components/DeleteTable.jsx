@@ -88,27 +88,31 @@ export const DeleteTable = ({ data = [], handleEliminar }) => {
                         confirme esta accion
                     </Typography>
 
-                    <Grid container spacing={5} align='center'>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                fontSize: '120%',
-                                marginX: '10%',
-                                marginY: '4%',
-                            }}
-                            onClick={() => handleDelete(data[selectedRowIndex].id)}>
-                            Aceptar
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                fontSize: '120%',
-                                marginX: '10%',
-                                marginY: '4%',
-                            }}
-                            onClick={handleCloseModal}>
-                            Cancelar
-                        </Button>
+                    <Grid container align='center'>
+                        <Grid item xs={6}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    fontSize: '120%',
+                                    marginX: '10%',
+                                    marginY: '4%',
+                                }}
+                                onClick={() => handleDelete(data[selectedRowIndex].id)}>
+                                Aceptar
+                            </Button>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Button
+                                variant="outlined"
+                                sx={{
+                                    fontSize: '120%',
+                                    marginX: '10%',
+                                    marginY: '4%',
+                                }}
+                                onClick={handleCloseModal}>
+                                Cancelar
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Box>
             </Modal>
