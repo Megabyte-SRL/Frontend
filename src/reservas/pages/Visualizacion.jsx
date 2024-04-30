@@ -8,7 +8,15 @@ export const Visualizacion = () => {
     useEffect(() => {
         const savedPeriodoInscripcion = localStorage.getItem('periodoInscripcion')
         if (savedPeriodoInscripcion) {
-            setPeriodoActivo(true)
+            const fechas = savedPeriodoInscripcion.split(',')
+            if (fechas.length === 2) {
+                const fechaInicio = new Date(fechas[0])
+                const fechaFin = new Date(fechas[1])
+                const fechaActual = new Date()
+                if (fechaActual >= fechaInicio && fechaActual <= fechaFin) {
+                    setPeriodoActivo(true)
+                }
+            }
         }
     }, [])
 

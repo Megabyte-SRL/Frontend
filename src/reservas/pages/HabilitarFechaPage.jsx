@@ -34,15 +34,16 @@ const HabilitarFechaPage = () => {
 
         const fechaInicioDate = new Date(fechaInicio)
         const fechaFinDate = new Date(fechaFin)
-        const fechaActual = new Date()
+        const fechaMinima = new Date()
+        fechaMinima.setDate(fechaMinima.getDate() - 1)
 
-        if (fechaInicioDate < fechaActual) {
-            setError('La fecha de inicio no puede ser anterior a la fecha actual.')
+        if (fechaInicioDate < fechaMinima) {
+            setError('La fecha de inicio debe ser igual o posterior a la fecha actual.')
             return
         }
 
-        if (fechaFinDate < fechaInicioDate) {
-            setError('La fecha fin no puede ser anterior a la fecha de inicio.')
+        if (fechaFinDate <= fechaInicioDate) {
+            setError('La fecha fin no puede ser anterior o igual a la fecha de inicio.')
             return
         }
 
@@ -50,10 +51,11 @@ const HabilitarFechaPage = () => {
 
         const inicioFormatted = addDays(fechaInicioDate, 1).toLocaleDateString()
         const finFormatted = addDays(fechaFinDate, 1).toLocaleDateString()
+
         const periodoInscripcionText = `Período de inscripción: ${inicioFormatted} hasta ${finFormatted}`
         setPeriodoInscripcion(periodoInscripcionText)
         setPeriodoActivo(true)
-        localStorage.setItem('periodoInscripcion', periodoInscripcionText)
+        localStorage.setItem('periodoInscripcion', [fechaInicioDate, fechaFinDate])
     }
 
     const addDays = (date, days) => {
@@ -151,6 +153,28 @@ const HabilitarFechaPage = () => {
                                 <Typography variant="body1" textAlign="center">{periodoInscripcion}</Typography>
                             </Box>
                         )}
+
+                        <Box
+                            sx={{
+                                borderRadius: '5px',
+                                padding: '10px',
+                                marginTop: '20px',
+                            }}
+                        >
+                            <Typography
+                                variant="body1"
+                                textAlign="center"
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center'
+                            }} >
+                                <a target='_blank' href="http://websis.umss.edu.bo/cron_inscripcion.asp?ID=127&SERVICIO=u&codser=UMSS&idCat=36" rel="noreferrer" >Cronograma de inscripciones umss</a>
+                                <a target='_blank' href="http://www.fcyt.umss.edu.bo/" rel="noreferrer" >Noticias Facultad Ciencias y tecnologia</a>
+                                {/* <a target='_blank' href="https://fach.umss.edu.bo/calendario-academico/" rel="noreferrer">Calendario academico arq</a> */}
+                                {/* <a target='_blank' href="http://www.fcyt.umss.edu.bo/calendario/" rel="noreferrer" >Calendario academico fcyt</a> */}
+                            </Typography>
+                        </Box>
                     </Box>
                 </Box>
             </Container>
