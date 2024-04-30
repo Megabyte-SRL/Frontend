@@ -88,7 +88,8 @@ export const DeleteTable = ({ data = [], handleEliminar }) => {
                         confirme esta accion
                     </Typography>
 
-                    <Grid container spacing={5} align='center'>
+                    <Grid container align='center'>
+                        <Grid item xs={6}>
                         <Button
                             variant="contained"
                             sx={{
@@ -99,6 +100,8 @@ export const DeleteTable = ({ data = [], handleEliminar }) => {
                             onClick={() => handleDelete(data[selectedRowIndex].id)}>
                             Aceptar
                         </Button>
+                            </Grid>
+                            <Grid item xs={6}>
                         <Button
                             variant="outlined"
                             sx={{
@@ -108,7 +111,8 @@ export const DeleteTable = ({ data = [], handleEliminar }) => {
                             }}
                             onClick={handleCloseModal}>
                             Cancelar
-                        </Button>
+                            </Button>
+                        </Grid>
                     </Grid>
                 </Box>
             </Modal>
