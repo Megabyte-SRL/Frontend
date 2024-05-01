@@ -237,29 +237,7 @@ const ReservaDocente = () => {
                         }}
                     />
                 
-                    <Button
-                        variant="contained"
-                        onClick={handleModalOpen}
-                        sx={{
-                            backgroundColor: 'blue',
-                            color: 'white',
-                            padding: '0.5rem 2rem',
-                            borderRadius: '8px',
-                            marginRight: '1rem',
-                            marginLeft: '2%',
-                            '&:hover': {
-                                backgroundColor: 'darkblue',
-                            },
-                            '&:focus': {
-                                boxShadow: '0 0 0 3px rgba(0, 0, 255, 0.5)',
-                            },
-                            '&:active': {
-                                backgroundColor: 'navy',
-                            },
-                        }}
-                    >
-                        SIGUIENTE
-                    </Button>
+                   
             </Box>
 
             {/* Modal para el formulario */}
@@ -354,10 +332,28 @@ const ReservaDocente = () => {
                             <TableCell>{fila.capacidad}</TableCell>
                             <TableCell>{fila.estado}</TableCell>
                             <TableCell>
-                                <Checkbox
-                                    checked={selectedRows.includes(index)}
-                                    onChange={handleCheckboxChange(index)}
-                                />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleModalOpen(index)}
+                                    sx={{
+                                        backgroundColor: 'blue',
+                                        color: 'white',
+                                        padding: '0.5rem',
+                                        borderRadius: '8px',
+                                        '&:hover': {
+                                            backgroundColor: 'darkblue',
+                                        },
+                                        '&:focus': {
+                                            boxShadow: '0 0 0 3px rgba(0, 0, 255, 0.5)',
+                                        },
+                                        '&:active': {
+                                            backgroundColor: 'navy',
+                                        },
+                                    }}
+                                >
+                                    Reserva
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
