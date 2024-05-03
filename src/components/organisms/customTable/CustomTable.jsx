@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Paper,
@@ -18,6 +18,20 @@ const CustomTable = ({
   rows = [],
   onClickRow,
 }) => {
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  }
+
+  const displayRows = rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <TableContainer component={Paper} sx={{ borderRadius: '.5rem' }}>
       <Table>
@@ -29,7 +43,7 @@ const CustomTable = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map((row) => (
+          {displayRows.map((row) => (
             <CustomTableRow
               key={row.id}
               columns={columns}
@@ -42,8 +56,11 @@ const CustomTable = ({
       <TablePagination
         rowsPerPageOptions={[10, 25, 50]}
         component='div'
-        rowsPerPage={10}
-        page={0}
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
         labelRowsPerPage='Filas por página:'
       />
     </TableContainer>

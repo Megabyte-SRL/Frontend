@@ -8,7 +8,7 @@ import NuevoAmbiente from '../reservas/layout/NuevoAmbiente'
 import CSVUploader from '../reservas/pages/CSVUploader'
 import AmbientesPage from '../pages/ambientesPage/AmbientesPage'
 import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
-import HabilitarFechaPage from '../reservas/pages/HabilitarFechaPage'
+import HabilitarFechaPage from '../pages/habilitarFechaPage/HabilitarFechaPage'
 import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
 import RequireAuth from './RequireAuth'
@@ -32,7 +32,6 @@ const AppRouter = () => {
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
         <Route path='signup' element={<SignUpPage />} />
-        {/*<Route path="*" element={<Navigate to="/" />} />*/}
       </Route>
       <Route
         path="*"
