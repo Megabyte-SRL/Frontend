@@ -28,7 +28,7 @@ const FormAgregarHorario = ({
         resetForm();
       }}
     >
-      {({ handleSubmit, setFieldValue, values, isValid }) => (
+      {({ handleSubmit, setFieldValue, values, isValid, dirty}) => (
         <Form onSubmit={handleSubmit}>
           <Typography variant='h5' gutterBottom sx={{ textAlign: 'center' }}>
             Ambiente seleccionado
@@ -44,7 +44,7 @@ const FormAgregarHorario = ({
           <Grid container spacing={2}>
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Field
-                component={TextField}
+                as={TextField}
                 name='fecha'
                 type='date'
                 label='Fecha'
@@ -80,12 +80,12 @@ const FormAgregarHorario = ({
                 </Field>
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
               <Button
                 type='submit'
                 color='primary'
                 variant='contained'
-                disabled={!isValid}
+                disabled={!isValid || !dirty}
               >
                 Registrar
               </Button>

@@ -50,7 +50,7 @@ const SolicitarAmbienteForm = ({
                 errors={errors}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
               <Button
                 type='submit'
                 color='primary'
