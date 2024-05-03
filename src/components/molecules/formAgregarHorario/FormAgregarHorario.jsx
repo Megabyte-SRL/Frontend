@@ -4,6 +4,7 @@ import { Button, Grid, FormControl, InputLabel, Select, MenuItem, TextField, Typ
 import { Field, Formik, Form } from 'formik';
 import * as Yup from 'yup';
 import { useSnackbar } from '../../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import CustomTextField from '../../atoms/customTextField/CustomTextField';
 
 const FormAgregarHorario = ({
   row = {},
@@ -12,30 +13,20 @@ const FormAgregarHorario = ({
   const horas = ['6:45 - 8:15', '8:15 - 9:45', '9:45 - 11:15', '11:15 - 12:45', '12:45 - 14:15', '14:15 - 15:45', '15:45 - 17:15', '17:15 - 18:45', '18:45 - 20:15', '20:15 - 21:45'];
 
   const { openSnackbar } = useSnackbar();
-  const [selectedHoras, setSelectedHoras] = useState([]);
-
-  const handleSelectHorasChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setSelectedHoras(
-      typeof value === 'string' ? value.split(',') : value,
-    );
-  };
 
   const validationSchema = Yup.object({
-    fecha: Yup.date().required('La fecha disponible es requerida'),
+    fecha: Yup.string().required('La fecha disponible es requerida'),
     hora: Yup.string().required('La hora es requerida'),
   });
 
   return (
     <Formik
       initialValues={{
-        fecha: new Date(),
-        hora: ''
+        fecha: new Date().toISOString().substring(0, 10),
+        horas: []
       }}
       validationSchema={validationSchema}
-      onSubmit={async (values) => {
+      onSubmit={async (values, { resetForm }) => {
         console.log('values: ', values);
         fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/horariosDisponibles`, {
           method: 'POST',
@@ -45,7 +36,7 @@ const FormAgregarHorario = ({
           body: JSON.stringify({
             ambiente_id: row.id,
             fecha: values.fecha,
-            horasDisponibles: selectedHoras.map(hora => ({
+            horasDisponibles: values.horas.map(hora => ({
               horaInicio: hora.split(' - ')[0],
               horaFin: hora.split(' - ')[1]
             }))
@@ -55,14 +46,15 @@ const FormAgregarHorario = ({
             const data = await response.json();
             console.log('Registrar horario response: ', data);
             openSnackbar('Horario registrado exitosamente', 'success');
+            resetForm();
           })
           .catch(async error => {
             openSnackbar('Error al registrar horario', 'error');
           })
       }}
     >
-      {({ submitForm, isSubmitting }) => (
-        <Form>
+      {({ handleSubmit, setFieldValue, values, isValid, dirty, touched, errors }) => (
+        <Form onSubmit={handleSubmit}>
           <Typography variant='h5' gutterBottom sx={{ textAlign: 'center' }}>
             Ambiente seleccionado
           </Typography>
@@ -76,7 +68,7 @@ const FormAgregarHorario = ({
           </div>
           <Grid container spacing={2}>
             <Grid item xs={12} sx={{ mt: 2 }}>
-              <Field
+              {/*<Field
                 component={TextField}
                 name='fecha'
                 type='date'
@@ -84,33 +76,36 @@ const FormAgregarHorario = ({
                 variant='outlined'
                 InputLabelProps={{ shrink: true }}
                 fullWidth
+              />*/}
+              <CustomTextField
+                name='fecha'
+                label='Fecha'
+                placeholder='Fecha'
+                touched={touched}
+                errors={errors}
               />
             </Grid>
             <Grid item xs={12} sx={{ mt: 2 }}>
               <FormControl fullWidth>
                 <InputLabel>Horas</InputLabel>
                 <Field
-                  as={Select}
                   name='horas'
+                  as={Select}
                   label='Horas'
                   multiple
-                  value={selectedHoras}
-                  onChange={handleSelectHorasChange}
+                  value={values.horas}
+                  onChange={(event) => {
+                    setFieldValue('horas', event.target.value)
+                  }}
                   renderValue={(selected) => (
-                    <Box
-                      sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}
-                    >
-                      {selected.map((value) => (
-                        <Chip key={value} label={value} />
-                      ))}
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                      {selected.map((value) => <Chip key={value} label={value} />)}
                     </Box>
                   )}
+                  fullWidth
                 >
                   {horas.map((hora) => (
-                    <MenuItem
-                      key={hora}
-                      value={hora}
-                    >
+                    <MenuItem key={hora} value={hora}>
                       {hora}
                     </MenuItem>
                   ))}
@@ -122,6 +117,7 @@ const FormAgregarHorario = ({
                 type='submit'
                 color='primary'
                 variant='contained'
+                //disabled={!isValid || !dirty}
               >
                 Registrar
               </Button>

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+
 import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import CustomTable from '../../components/organisms/customTable/CustomTable';
 import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
@@ -26,6 +27,7 @@ const SolicitudesPage = () => {
     }
   ]; 
 
+  const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState({
     id: 0,
@@ -36,26 +38,31 @@ const SolicitudesPage = () => {
     estado: ''
   });
 
+  useEffect(() => {
+    obtenerListaHorariosDisponibles();
+  }, []);
+
+  const obtenerListaHorariosDisponibles = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al obtener la lista de horarios disponibles');
+        }
+        return response.json();
+      })
+      .then(({ data }) => {
+        setHorariosDisponibles(data);
+      })
+      .catch(({ msg }) => {
+        console.error(msg);
+      });
+  };
+
   const handleOpenSolicitationForm = (row) => {
     setSelectedRow(row);
     setOpenModal(true);
   }
   
-  const rows = [
-    { id: 1, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '6:45-8:15', estado: 'Solicitado', capacidad: 100 }, 
-    { id: 2, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '8:15-9:45', estado: 'Solicitado', capacidad: 100 }, 
-    { id: 3, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '9:45-11:15', estado: 'Disponible', capacidad: 100 }, 
-    { id: 4, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '11:15-12:45', estado: 'Disponible', capacidad: 100 }, 
-    { id: 5, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '12:45-14:15', estado: 'Disponible', capacidad: 100 }, 
-    { id: 6, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '14:15-15:45', estado: 'Disponible', capacidad: 100 }, 
-    { id: 7, fecha: '15/5/2024', ambiente: '692 A', horario: '6:45-8:15', estado: 'Reservado', capacidad: 100 }, 
-    { id: 8, fecha: '15/5/2024', ambiente: '692 A', horario: '8:15-9:45', estado: 'Reservado', capacidad: 100 }, 
-    { id: 9, fecha: '15/5/2024', ambiente: '692 A', horario: '9:45-11:15', estado: 'Disponible', capacidad: 100 }, 
-    { id: 10, fecha: '15/5/2024', ambiente: '692 A', horario: '11:15-12:45', estado: 'Disponible', capacidad: 100 }, 
-    { id: 11, fecha: '15/5/2024', ambiente: '692 A', horario: '12:45-14:15', estado: 'Solicitado', capacidad: 100 }, 
-    { id: 12, fecha: '15/5/2024', ambiente: '692 A', horario: '14:15-15:45', estado: 'Solicitado', capacidad: 100 }, 
-  ];
-
   return (
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
@@ -87,7 +94,7 @@ const SolicitudesPage = () => {
 
             <CustomTable
               columns={columns}
-              rows={rows}
+              rows={horariosDisponibles}
               onClickRow={(row) => console.log(row)}
             />
             <CustomModal
