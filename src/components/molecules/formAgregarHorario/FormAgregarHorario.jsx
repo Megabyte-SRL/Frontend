@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Button, Grid, FormControl, InputLabel, Select, MenuItem, TextField, Typography, Popover, Box, Chip } from '@mui/material';
 import { Field, Formik, Form } from 'formik';
 import * as Yup from 'yup';
-import { useSnackbar } from '../../../reservas/organisms/snackbarProvider/SnackbarProvider';
-import CustomTextField from '../../atoms/customTextField/CustomTextField';
 
 const FormAgregarHorario = ({
   row = {},
-  onClose = () => {}
+  onClose = () => {},
+  onSubmit = () => {}
 }) => {
   const horas = ['6:45 - 8:15', '8:15 - 9:45', '9:45 - 11:15', '11:15 - 12:45', '12:45 - 14:15', '14:15 - 15:45', '15:45 - 17:15', '17:15 - 18:45', '18:45 - 20:15', '20:15 - 21:45'];
 
-  const { openSnackbar } = useSnackbar();
-
   const validationSchema = Yup.object({
     fecha: Yup.string().required('La fecha disponible es requerida'),
-    hora: Yup.string().required('La hora es requerida'),
+    horas: Yup.array().of(Yup.string()).min(1, 'Seleccione al menos una hora').required('La hora es requerida'),
   });
 
   return (
@@ -27,33 +24,11 @@ const FormAgregarHorario = ({
       }}
       validationSchema={validationSchema}
       onSubmit={async (values, { resetForm }) => {
-        console.log('values: ', values);
-        fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/horariosDisponibles`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            ambiente_id: row.id,
-            fecha: values.fecha,
-            horasDisponibles: values.horas.map(hora => ({
-              horaInicio: hora.split(' - ')[0],
-              horaFin: hora.split(' - ')[1]
-            }))
-          })
-        })
-          .then(async response => {
-            const data = await response.json();
-            console.log('Registrar horario response: ', data);
-            openSnackbar('Horario registrado exitosamente', 'success');
-            resetForm();
-          })
-          .catch(async error => {
-            openSnackbar('Error al registrar horario', 'error');
-          })
+        onSubmit({ ...values, id: row.id });
+        resetForm();
       }}
     >
-      {({ handleSubmit, setFieldValue, values, isValid, dirty, touched, errors }) => (
+      {({ handleSubmit, setFieldValue, values, isValid }) => (
         <Form onSubmit={handleSubmit}>
           <Typography variant='h5' gutterBottom sx={{ textAlign: 'center' }}>
             Ambiente seleccionado
@@ -68,7 +43,7 @@ const FormAgregarHorario = ({
           </div>
           <Grid container spacing={2}>
             <Grid item xs={12} sx={{ mt: 2 }}>
-              {/*<Field
+              <Field
                 component={TextField}
                 name='fecha'
                 type='date'
@@ -76,13 +51,6 @@ const FormAgregarHorario = ({
                 variant='outlined'
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-              />*/}
-              <CustomTextField
-                name='fecha'
-                label='Fecha'
-                placeholder='Fecha'
-                touched={touched}
-                errors={errors}
               />
             </Grid>
             <Grid item xs={12} sx={{ mt: 2 }}>
@@ -117,7 +85,7 @@ const FormAgregarHorario = ({
                 type='submit'
                 color='primary'
                 variant='contained'
-                //disabled={!isValid || !dirty}
+                disabled={!isValid}
               >
                 Registrar
               </Button>

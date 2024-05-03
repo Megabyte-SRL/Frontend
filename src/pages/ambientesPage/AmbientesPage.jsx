@@ -63,6 +63,35 @@ const AmbientesPage = () => {
       });
   };
 
+  const handleOnSubmitHorario = async (values) => {
+    console.log('values: ', values);
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/horariosDisponibles`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ambiente_id: values.id,
+        fecha: values.fecha,
+        horasDisponibles: values.horas.map(hora => ({
+          horaInicio: hora.split(' - ')[0],
+          horaFin: hora.split(' - ')[1]
+        }))
+      })
+    })
+      .then(async response => {
+        const data = await response.json();
+        console.log('Registrar horario response: ', data);
+        openSnackbar('Horario registrado exitosamente', 'success');
+        obtenerListaAmbientes();
+        setOpenModal(false);
+      })
+      .catch(async error => {
+        openSnackbar('Error al registrar horario', 'error');
+      })
+      .finally();
+  };
+
   const handleEliminar = async (id) => {
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/ambientes/${id}`, {
       method: 'DELETE',
@@ -149,6 +178,7 @@ const AmbientesPage = () => {
               <FormAgregarHorario
                 row={selectedRow}
                 onClose={() => setOpenModal(false)}
+                onSubmit={handleOnSubmitHorario}
               />
             </CustomModal>
           </Paper>

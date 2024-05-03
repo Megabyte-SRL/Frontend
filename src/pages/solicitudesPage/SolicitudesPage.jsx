@@ -4,6 +4,7 @@ import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import CustomTable from '../../components/organisms/customTable/CustomTable';
 import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
+import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 
 const SolicitudesPage = () => {
   const columns = [
@@ -27,6 +28,7 @@ const SolicitudesPage = () => {
     }
   ]; 
 
+  const { openSnackbar } = useSnackbar();
   const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState({
@@ -56,6 +58,31 @@ const SolicitudesPage = () => {
       .catch(({ msg }) => {
         console.error(msg);
       });
+  };
+
+  const handleOnSubmitSolicitud = async (values) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/solicitudesAmbientes`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        horarioDisponibleId: values.id,
+        capacidad: values.capacidad,
+        materia: values.materia
+      })
+    })
+      .then(async response => {
+        const data = await response.json();
+        console.log('Registrar solicitud ambiente response: ', data);
+        openSnackbar('Solicitud registrado exitosamente', 'success');
+        obtenerListaHorariosDisponibles();
+        setOpenModal(false);
+      })
+      .catch(async error => {
+        openSnackbar('Error al registrar horario', 'error');
+      })
   };
 
   const handleOpenSolicitationForm = (row) => {
@@ -105,6 +132,7 @@ const SolicitudesPage = () => {
               <SolicitarAmbienteForm
                 row={selectedRow}
                 onClose={() => setOpenModal(false)}
+                onSubmit={handleOnSubmitSolicitud}
               />
             </CustomModal>
           </Paper>
