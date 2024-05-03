@@ -51,7 +51,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
             </List>
           </Collapse>
           <ListItemButton id='reserva-solicitudes' onClick={() => navigate('/dashboard/solicitudes')}>
-            <ListItemText primary='Reserva' />
+            <ListItemText primary='Crear solicitud ambiente' />
           </ListItemButton>
           <ListItemButton id='ver-button' onClick={() => navigate('/dashboard/visualizar-horario')}>
             <ListItemText primary="Habilitar Fecha" />
