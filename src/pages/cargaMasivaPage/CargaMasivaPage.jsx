@@ -46,7 +46,7 @@ const CargaMasivaPage = () => {
               Carga Masiva de Datos CSV
             </Typography>
             
-            <CustomCsvUploader />
+            <CustomCsvUploader setRows={setAmbientes} />
             <CustomTable
               columns={columns}
               rows={ambientes}
