@@ -7,14 +7,14 @@ import CustomCsvUploader from '../../components/organisms/customCsvUploader/Cust
 
 const CargaMasivaPage = () => {
   const columns = [
-    { id: 'ambiente', label: 'Ambiente' },
-    { id: 'capacidad', label: 'Capacidad' },
-    { id: 'descripcion', label: 'Descripción' },
-    { id: 'lugar', label: 'Lugar' },
-    { id: 'piso', label: 'Piso' },
-    { id: 'edificio', label: 'edificio' },
-    { id: 'fecha', label: 'Fecha' },
-    { id: 'horario', label: 'Horario' },
+    { id: 'Ambiente', label: 'Ambiente' },
+    { id: 'Capacidad', label: 'Capacidad' },
+    { id: 'Descripcion', label: 'Descripción' },
+    { id: 'Lugar', label: 'Lugar' },
+    { id: 'Piso', label: 'Piso' },
+    { id: 'Edificio', label: 'Edificio' },
+    { id: 'Fecha', label: 'Fecha' },
+    { id: 'Horario', label: 'Horario' },
   ];
 
   const { openSnackbar } = useSnackbar();
@@ -46,7 +46,11 @@ const CargaMasivaPage = () => {
               Carga Masiva de Datos CSV
             </Typography>
             
-            <CustomCsvUploader setRows={setAmbientes} />
+            <CustomCsvUploader
+              requiredColumns={columns.map(column => column.id)}
+              setRows={setAmbientes}
+            />
+
             <CustomTable
               columns={columns}
               rows={ambientes}

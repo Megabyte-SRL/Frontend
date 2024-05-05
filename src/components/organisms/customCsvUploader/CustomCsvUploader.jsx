@@ -84,7 +84,6 @@ const styles = {
 };
 
 const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
-  const [columnsValid, setColumnsValid] = useState(false);
   const [errorMessages, setErrorMessages] = useState([]);
   const { CSVReader } = useCSVReader();
   const [zoneHover, setZoneHover] = useState(false);
@@ -94,24 +93,18 @@ const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
 
   const handleFileLoad = (results) => {
     const errors = [];
-    /*
-    results.data.forEach((row, index) => {
-      if (!row.Name) {
-        errors.push(`Error en la fila ${index + 1}: el Nombre es requerido.`);
-      }
-      if (!row.Age || isNaN(Number(row.Age)) || Number(row.Age) <= 0) {
-        errors.push(`Error en la fila ${index + 1}: La Edad debe ser mayor que 0.`);
-      }
-    });
-    */
+    const headers = Object.keys(results.data[0]);
+    const missingColumns = requiredColumns.filter(col => !headers.includes(col));
 
+    if (missingColumns.length > 0) {
+      missingColumns.forEach(col => errors.push(`Falta columna requerida: ${col}`));
+    }
     if (errors.length > 0) {
       setErrorMessages(errors);
-    } else {
-      //console.log('Data is valid: ', results);
-      // Process the valid data as needed
-      setRows(results.data);
+      return;
     }
+
+    setRows(results.data);
   };
 
   return (
@@ -129,6 +122,11 @@ const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
           onDragLeave={(event) => {
           event.preventDefault();
           setZoneHover(false);
+          }}
+          config={{
+            header: true,
+            skipEmptyLines: true,
+            encoding: 'utf-8',
           }}
         >
           {({
