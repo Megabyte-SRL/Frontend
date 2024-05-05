@@ -20,6 +20,31 @@ const CargaMasivaPage = () => {
   const { openSnackbar } = useSnackbar();
   const [ambientes, setAmbientes] = useState([]);
 
+  const handleOnSubmitFile = async (uploadFile) => {
+    console.log('uploadFile: ', uploadFile);
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/ambientes-archivo`, {
+      method: 'POST',
+      body: formData,
+    })
+      .then(async response => {
+        if (!response.ok) {
+          openSnackbar('Error en la peticion', 'error');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Registrar horario response: ', data);
+        openSnackbar(data.msg, 'success');
+      })
+      .catch(error => {
+        console.error('Error al procesar archivo: ', error);
+        openSnackbar('Error al procesar archivo', 'error');
+      })
+  };
+
   return (
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
@@ -47,6 +72,7 @@ const CargaMasivaPage = () => {
             </Typography>
             
             <CustomCsvUploader
+              onSubmit={handleOnSubmitFile}
               requiredColumns={columns.map(column => column.id)}
               setRows={setAmbientes}
             />

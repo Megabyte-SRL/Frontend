@@ -83,15 +83,21 @@ const styles = {
   },
 };
 
-const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
+const CustomCsvUploader = ({
+  requiredColumns = [],
+  setRows = () => {},
+  onSubmit = () => {},
+}) => {
   const [errorMessages, setErrorMessages] = useState([]);
   const { CSVReader } = useCSVReader();
   const [zoneHover, setZoneHover] = useState(false);
   const [removeHoverColor, setRemoveHoverColor] = useState(
     DEFAULT_REMOVE_HOVER_COLOR
   );
+  const [fileUploaded, setFileUploaded] = useState(false);
+  const [uploadFile, setUploadFile] = useState(null);
 
-  const handleFileLoad = (results) => {
+  const handleFileLoad = (results, file) => {
     const errors = [];
     const headers = Object.keys(results.data[0]);
     const missingColumns = requiredColumns.filter(col => !headers.includes(col));
@@ -101,18 +107,21 @@ const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
     }
     if (errors.length > 0) {
       setErrorMessages(errors);
+      setFileUploaded(false);
       return;
     }
 
     setRows(results.data);
+    setFileUploaded(true);
+    setUploadFile(file);
   };
 
   return (
     <Box sx={{ p: 2 }}>
       <Grid item xs={12} sx={{ mt: 2 }}>
         <CSVReader
-          onUploadAccepted={(results) => {
-            handleFileLoad(results);
+          onUploadAccepted={(results, file) => {
+            handleFileLoad(results, file);
             setZoneHover(false);
           }}
           onDragOver={(event) => {
@@ -170,6 +179,7 @@ const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
                       getRemoveFileProps().onClick(event);
                       setErrorMessages([]);
                       setRows([]);
+                      setFileUploaded(false);
                     }}
                   >
                     <Remove color={removeHoverColor} />
@@ -182,12 +192,14 @@ const CustomCsvUploader = ({ requiredColumns = [], setRows }) => {
           )}
         </CSVReader>
       </Grid>
-      <Grid item sx={{ mt: 2, justifyContent: 'center' }}>
+      <Grid item sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
         <Button
           variant='contained'
           component='label'
           startIcon={<CloudUpload />}
           style={{ marginTop: '3px' }}
+          disabled={!fileUploaded}
+          onClick={() => onSubmit(uploadFile)}
         >
           Subir CSV
         </Button>
