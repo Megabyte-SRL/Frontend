@@ -21,7 +21,6 @@ const CargaMasivaPage = () => {
   const [ambientes, setAmbientes] = useState([]);
 
   const handleOnSubmitFile = async (uploadFile) => {
-    console.log('uploadFile: ', uploadFile);
     const formData = new FormData();
     formData.append('file', uploadFile);
 
