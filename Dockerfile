@@ -1,30 +1,45 @@
-FROM node:21-alpine3.18
+# Stage 1: Building the app
+FROM node:21-alpine3.18 AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Copy package.json and yarn lock files
+# Copy package.json and yarn.lock files
 COPY package.json yarn.lock ./
 
 # Install dependencies
 RUN yarn install
 
-# Copy the rest of the your app's source code
+# Copy the rest of the app's source code
 COPY . .
 
-# Ensure the production environment variable is set
+# Set the environment variable for production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 
 # Copy your .env.production file to .env
 COPY .env.production ./.env
 
-# Build your React application using Vite
+# Build the React application using Vite
 RUN yarn build
 
-# Install serve to server your app
-RUN yarn global add serve
+# Stage 2: Serve the app using Nginx
+FROM nginx:alpine
 
-# Command to run the app 
-CMD ["serve", "-s", "dist", "-l", "8000"]
+# Set working directory to nginx asset directory
+WORKDIR /usr/share/nginx/html
 
-EXPOSE 8000
+# Remove default nginx static assets
+RUN rm -rf ./*
+
+# Copy static assets from builder stage
+COPY --from=builder /app/dist .
+
+# Copy Nginx configuration file
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Command to run the app
+CMD ["nginx", "-g", "daemon off;"]
