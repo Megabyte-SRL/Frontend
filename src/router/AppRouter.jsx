@@ -5,13 +5,13 @@ import LoginPage from '../pages/loginPage/LoginPage'
 import SignUpPage from '../pages/signUpPage/SignUpPage'
 import ReservaPage from '../reservas/pages/ReservaPage'
 import NuevoAmbiente from '../reservas/layout/NuevoAmbiente'
-import CSVUploader from '../reservas/pages/CSVUploader'
 import AmbientesPage from '../pages/ambientesPage/AmbientesPage'
 import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
 import HabilitarFechaPage from '../pages/habilitarFechaPage/HabilitarFechaPage'
 import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
 import RequireAuth from './RequireAuth'
+import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
 
 const AppRouter = () => {
   return (
@@ -25,7 +25,7 @@ const AppRouter = () => {
         element={<RequireAuth><ReservaPage /></RequireAuth>}
       >
         <Route path='nuevo-ambiente' element={<NuevoAmbiente />} />
-        <Route path='carga-masiva' element={<CSVUploader />} />
+        <Route path='carga-masiva' element={<CargaMasivaPage />} />
         <Route path='ambientes' element={<AmbientesPage />} />
         <Route path='solicitudes' element={<SolicitudesPage />} />
         <Route path="visualizar-horario" element={<HabilitarFechaPage />} />
