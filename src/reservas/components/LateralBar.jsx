@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { Box, Collapse, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -8,10 +9,21 @@ const LateralBar = ({ anchoCaja = 240 }) => {
   const navigate = useNavigate();
   const [openAmbientesSubMenu, setOpenAmbientesSubMenu] = useState(false);
 
-  const handleSubMenuClick = () => {
-    navigate('/dashboard/ambientes');
+  const handleAmbientesClick = () => {
+    if (openAmbientesSubMenu) {
+      navigate('/dashboard');
+    } else {
+      navigate('/dashboard/ambientes');
+    }
     setOpenAmbientesSubMenu(!openAmbientesSubMenu);
   };
+
+  const handleOtherItemClick = (path) => {
+    if (openAmbientesSubMenu) {
+      setOpenAmbientesSubMenu(false);
+    }
+    navigate(path);
+  }
 
   return (
     <Box 
@@ -28,7 +40,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
         }}
       >
         <List>
-          <ListItemButton id='crear-button' onClick={handleSubMenuClick}>
+          <ListItemButton id='crear-button' onClick={handleAmbientesClick}>
             <ListItemText primary="Ambientes" />
               {openAmbientesSubMenu ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
@@ -50,21 +62,15 @@ const LateralBar = ({ anchoCaja = 240 }) => {
               </ListItemButton>
             </List>
           </Collapse>
-          <ListItemButton id='reserva-solicitudes' onClick={() => navigate('/dashboard/solicitudes')}>
-            <ListItemText primary='Reserva' />
+          <ListItemButton id='reserva-solicitudes' onClick={() => handleOtherItemClick('/dashboard/solicitudes')}>
+            <ListItemText primary='Crear solicitud ambiente' />
           </ListItemButton>
-          <ListItemButton id='ver-button' onClick={() => navigate('/dashboard/visualizar-horario')}>
+          <ListItemButton id='ver-button' onClick={() => handleOtherItemClick('/dashboard/visualizar-horario')}>
             <ListItemText primary="Habilitar Fecha" />
           </ListItemButton>
-          <ListItemButton id='registrar-usuario-button' onClick={() => navigate('/dashboard/signup')}>
+          <ListItemButton id='registrar-usuario-button' onClick={() => handleOtherItemClick('/dashboard/signup')}>
             <ListItemText primary="Usuarios" />
           </ListItemButton>
-          {/*<ListItemButton
-            id='reservaD-button'
-            onClick={() => navigate('/dashboard/reservaD')}
-          >
-            <ListItemText primary="ReservaD" />
-          </ListItemButton>*/}
         </List>
       </Drawer>
     </Box>

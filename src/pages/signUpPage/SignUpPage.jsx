@@ -145,6 +145,7 @@ const SignUpPage = () => {
                   </Button>
                 </Grid>
               </Grid>
+
             </Grid>
           </Form>
         )}

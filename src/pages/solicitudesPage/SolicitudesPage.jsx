@@ -1,30 +1,95 @@
-import React from 'react';
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+
+import { Box, Button, Grid, Paper, Typography } from '@mui/material';
 import CustomTable from '../../components/organisms/customTable/CustomTable';
+import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
+import CustomModal from '../../components/organisms/customModal/CustomModal';
+import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 
 const SolicitudesPage = () => {
   const columns = [
     { id: 'fecha', label: 'Fecha'},
     { id: 'ambiente', label: 'Ambiente'},
     { id: 'horario', label: 'Horario'},
+    { id: 'capacidad', label: 'Capacidad'},
     { id: 'estado', label: 'Estado'},
+    {
+      id: 'acciones',
+      label: 'Acciones',
+      render: (row) => (
+        <Button
+          color='primary'
+          variant='contained'
+          onClick={() => handleOpenSolicitationForm(row)}
+        >
+          Solicitar
+        </Button>
+      )
+    }
   ]; 
 
-  const rows = [
-    { id: 1, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '6:45-8:15', estado: 'Solicitado' }, 
-    { id: 2, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '8:15-9:45', estado: 'Solicitado' }, 
-    { id: 3, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '9:45-11:15', estado: 'Disponible' }, 
-    { id: 4, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '11:15-12:45', estado: 'Disponible' }, 
-    { id: 5, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '12:45-14:15', estado: 'Disponible' }, 
-    { id: 6, fecha: '15/5/2024', ambiente: 'Auditorio', horario: '14:15-15:45', estado: 'Disponible' }, 
-    { id: 7, fecha: '15/5/2024', ambiente: '692 A', horario: '6:45-8:15', estado: 'Reservado' }, 
-    { id: 8, fecha: '15/5/2024', ambiente: '692 A', horario: '8:15-9:45', estado: 'Reservado' }, 
-    { id: 9, fecha: '15/5/2024', ambiente: '692 A', horario: '9:45-11:15', estado: 'Disponible' }, 
-    { id: 10, fecha: '15/5/2024', ambiente: '692 A', horario: '11:15-12:45', estado: 'Disponible' }, 
-    { id: 11, fecha: '15/5/2024', ambiente: '692 A', horario: '12:45-14:15', estado: 'Solicitado' }, 
-    { id: 12, fecha: '15/5/2024', ambiente: '692 A', horario: '14:15-15:45', estado: 'Solicitado' }, 
-  ];
+  const { openSnackbar } = useSnackbar();
+  const [horariosDisponibles, setHorariosDisponibles] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState({
+    id: 0,
+    fecha: '',
+    ambiente: '',
+    horario: '',
+    capacidad: 0,
+    estado: ''
+  });
 
+  useEffect(() => {
+    obtenerListaHorariosDisponibles();
+  }, []);
+
+  const obtenerListaHorariosDisponibles = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al obtener la lista de horarios disponibles');
+        }
+        return response.json();
+      })
+      .then(({ data }) => {
+        setHorariosDisponibles(data);
+      })
+      .catch(({ msg }) => {
+        console.error(msg);
+      });
+  };
+
+  const handleOnSubmitSolicitud = async (values) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/solicitudesAmbientes`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token"),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        horarioDisponibleId: values.id,
+        capacidad: values.capacidad,
+        materia: values.materia
+      })
+    })
+      .then(async response => {
+        const data = await response.json();
+        console.log('Registrar solicitud ambiente response: ', data);
+        openSnackbar('Solicitud registrado exitosamente', 'success');
+        obtenerListaHorariosDisponibles();
+        setOpenModal(false);
+      })
+      .catch(async error => {
+        openSnackbar('Error al registrar horario', 'error');
+      })
+  };
+
+  const handleOpenSolicitationForm = (row) => {
+    setSelectedRow(row);
+    setOpenModal(true);
+  }
+  
   return (
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
@@ -48,7 +113,7 @@ const SolicitudesPage = () => {
             }}
           >
             <Typography variant='h4' align='center' gutterBottom>
-              Reserva ambientes
+              Crear solicitudes ambientes
             </Typography>
             <Typography variant='body1' gutterBottom sx={{ marginLeft: '5%' }}>
               Buscar horarios ambientes:
@@ -56,9 +121,20 @@ const SolicitudesPage = () => {
 
             <CustomTable
               columns={columns}
-              rows={rows}
+              rows={horariosDisponibles}
               onClickRow={(row) => console.log(row)}
             />
+            <CustomModal
+              open={openModal}
+              onClose={() => setOpenModal(false)}
+              title='Solicitar Ambiente'
+            >
+              <SolicitarAmbienteForm
+                row={selectedRow}
+                onClose={() => setOpenModal(false)}
+                onSubmit={handleOnSubmitSolicitud}
+              />
+            </CustomModal>
           </Paper>
         </Box>
       </Grid>
