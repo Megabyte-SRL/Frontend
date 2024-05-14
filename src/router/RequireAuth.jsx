@@ -10,6 +10,7 @@ const RequireAuth = ({ children }) => {
   if (!auth.isAuthenticated) {
     return <Navigate to='/login' state={{ from: location }} replace />;
   }
+
   return children;
 }
 

@@ -12,6 +12,7 @@ const ReservaLayout = ({children}) => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
+
   return (
     <Box sx={{display: 'flex',  minHeight: '100vh'}}>
       {/* BarraNavegacion */}

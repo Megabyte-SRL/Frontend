@@ -14,6 +14,7 @@ import RequireAuth from './RequireAuth'
 import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
 import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
 import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
+import DocentePage from '../pages/docentesPage/DocentePage'
 
 const AppRouter = () => {
   return (
@@ -37,6 +38,13 @@ const AppRouter = () => {
         <Route path='carga-masiva-docentes' element={<CargaMasivaDocentePage />} />
         <Route path='verificar-solicitudes' element={<VerficarSolicitudesPage />} />
       </Route>
+
+      {/* rutas para la solicitud del Docente */}
+      <Route path='/solicitudDocente' element={<RequireAuth><DocentePage /></RequireAuth>}>
+        <Route path='solicitudes' element={<SolicitudesPage />} />
+      </Route>
+
+
       <Route
         path="*"
         element={<Navigate to='/login' replace />}
