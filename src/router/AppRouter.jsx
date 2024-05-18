@@ -12,6 +12,7 @@ import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
 import RequireAuth from './RequireAuth'
 import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
+import Profile  from '../pages/profile/Profile'
 
 const AppRouter = () => {
   return (
@@ -32,6 +33,7 @@ const AppRouter = () => {
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
         <Route path='signup' element={<SignUpPage />} />
+        <Route path='profile' element={<Profile/>} />
       </Route>
       <Route
         path="*"

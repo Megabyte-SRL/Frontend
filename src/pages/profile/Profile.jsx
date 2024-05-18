@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
-import { Formik, Form, Field } from 'formik';
-import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import { Formik, Form } from 'formik';
+import { Button, Grid, Typography } from '@mui/material';
 import * as Yup from 'yup'; 
 
 import CustomFormCard from '../../components/molecules/customFormCard/CustomFormCard';
@@ -13,29 +13,25 @@ const customStyles = {
   padding: 4,
 };
 
-const SignUpPage = () => {
+const Profile = () => {
   const { openSnackbar } = useSnackbar();
 
-
-  const rolesUsuarioOptions = ['Administrador', 'Docente'];
   const validationSchema = Yup.object({
-    nombre: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras"),
-    apellido: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El apellido solo puede contener letras"),
-    email: Yup.string().email("Formato de correo invalido").required("Campo requerido").matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, "Correo electrónico inválido"),
-    password: Yup.string().required("Campo requerido").min(8, "Minimo 8 caracteres").max(25, "Máximo 25 caracteres"),
+    nombre: Yup.string().min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras"),
+    apellido: Yup.string().min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El apellido solo puede contener letras"),
+    email: Yup.string().email("Formato de correo invalido").matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, "Correo electrónico inválido"),
+    password: Yup.string().min(8, "Minimo 8 caracteres").max(25, "Máximo 25 caracteres"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'La contraseña debe coincidir')
-      .required('Campo requerido'),
-    rol: Yup.string().required("Campo Requerido")
   });
 
   return (
-    <CustomFormCard titulo='Crear usuario' styles={customStyles}>
+    <CustomFormCard titulo='Perfil' styles={customStyles}>
       <Formik
         initialValues={{
-          nombre: '',
-          apellido: '',
-          email: '',
+          nombre: 'Lizeth Shirley',
+          apellido: 'Amorraga',
+          email: 'liz@gmail.com',
           password: '',
           confirmPassword: '',
           rol: ''
@@ -73,7 +69,6 @@ const SignUpPage = () => {
                 <CustomTextField
                   name='nombre'
                   label='Nombre'
-                  placeholder='Nombre'
                   touched={touched}
                   errors={errors}
                 />
@@ -81,10 +76,7 @@ const SignUpPage = () => {
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <CustomTextField
                   name='apellido'
-                  //helperText={touched.apellido ? errors.apellido : ''}
-                  //error={touched.apellido && Boolean(errors.apellido)}
                   label='Apellido'
-                  placeholder='Apellido'
                   touched={touched}
                   errors={errors}
                 />
@@ -94,11 +86,16 @@ const SignUpPage = () => {
                   name='email'
                   type='email'
                   label='Correo'
-                  placeholder='correo@gmail.com'
                   touched={touched}
                   errors={errors}
                 />
               </Grid>
+
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <Typography variant="h7" >
+                  Cambiar contraseña
+                </Typography>
+                </Grid>
 
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <CustomTextField
@@ -122,27 +119,14 @@ const SignUpPage = () => {
                 />
               </Grid>
 
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <FormControl fullWidth>
-                  <InputLabel>Rol</InputLabel>
-                  <Field as={Select} name='rol' label='Rol'>
-                    {rolesUsuarioOptions.map(rol => (
-                      <MenuItem key={rol} value={rol}>{rol}</MenuItem>
-                    ))}
-                  </Field>
-                </FormControl>
-              </Grid>
-
-              <Grid container spacing={2} sx={{ mt: 2, mb: 2 }}>
+              <Grid container spacing={2} sx={{ mt: 2, mb: 2, textAlign: 'center' }}>
                 <Grid item xs={12} sm={12}>
                   <Button
                     type='submit'
                     color='primary'
                     variant='contained'
-                    disabled={!isValid || !dirty}
-                    fullWidth
                   >
-                    Crear cuenta
+                    Actualizar cuenta
                   </Button>
                 </Grid>
               </Grid>
@@ -154,4 +138,4 @@ const SignUpPage = () => {
   );
 }
 
-export default SignUpPage;
+export default Profile;
