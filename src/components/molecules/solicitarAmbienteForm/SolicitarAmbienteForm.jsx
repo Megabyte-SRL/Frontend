@@ -4,7 +4,6 @@ import * as Yup from 'yup';
 import { Button, Grid, TextField, Typography, Checkbox, MenuItem } from '@mui/material';
 
 const SolicitarAmbienteForm = ({
-  row = {},
   onClose = () => {},
   onSubmit = () => {}
 }) => {
@@ -15,44 +14,44 @@ const SolicitarAmbienteForm = ({
   });
 
   const [fechaHora, setFechaHora] = useState(new Date());
-  const [fechaRegistro, setFechaRegistro] = useState(null); // Variable para almacenar la fecha de registro
-  const [pesoTotal, setPesoTotal] = useState(0); // Variable para almacenar el peso total
+  const [fechaRegistro, setFechaRegistro] = useState(null);
+  const [pesoTotal, setPesoTotal] = useState(0);
+  const [pesoTipoReserva, setPesoTipoReserva] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setFechaHora(new Date());
-    }, 1000); // Actualizar cada segundo
+    }, 1000);
 
     return () => clearInterval(interval);
-  }, []); // Ejecutar solo una vez al montar el componente
+  }, []);
 
   const obtenerFechaHoraActual = () => {
-    const fechaHoraActual = new Date();
-    setFechaRegistro(fechaHoraActual);
+    setFechaRegistro(new Date());
   };
 
-  const handleSeleccionDocente = (docente, seleccionado) => {
-    if (seleccionado) {
-      setPesoTotal(prevPeso => prevPeso + 1); // Aumentar el peso si se selecciona un docente
-    } else {
-      setPesoTotal(prevPeso => prevPeso - 1); // Disminuir el peso si se deselecciona un docente
-    }
+  const actualizarPesoDocentes = (docentes) => {
+    const peso = docentes.length;
+    setPesoTotal(peso + pesoTipoReserva);
   };
 
-  const handleSeleccionTipoReserva = (tipoReserva) => {
-    switch (tipoReserva) {
+  const actualizarPesoTipoReserva = (nuevoTipoReserva) => {
+    let peso = 0;
+    switch (nuevoTipoReserva) {
       case 'Examen Mesa':
       case 'Parcial':
-        setPesoTotal(prevPeso => prevPeso + 2);
+        peso = 2;
         break;
       case 'Emergencia':
-        setPesoTotal(prevPeso => prevPeso + 3);
+        peso = 3;
         break;
       case 'Clases normal':
       default:
-        setPesoTotal(prevPeso => prevPeso + 1);
+        peso = 1;
         break;
     }
+    setPesoTotal((prevPeso) => prevPeso - pesoTipoReserva + peso);
+    setPesoTipoReserva(peso);
   };
 
   const fechaActual = fechaHora.toLocaleDateString('es-ES');
@@ -73,14 +72,13 @@ const SolicitarAmbienteForm = ({
       }}
       validationSchema={validationSchema}
       onSubmit={async (values, { resetForm }) => {
-        onSubmit({ ...values, id: row.id });
+        onSubmit({ ...values, id: new Date().getTime() });
         resetForm();
-        obtenerFechaHoraActual(); // Al enviar el formulario, se registra la fecha y hora actual
+        obtenerFechaHoraActual();
       }}
     >
       {({ values, errors, touched, isValid, dirty, setFieldValue }) => (
         <Form>
-          {/* Fecha y hora */}
           <Typography variant="subtitle2" sx={{ textAlign: 'right', mt: -4 }}>
             {fechaActual} - {horaActual}
           </Typography>
@@ -147,26 +145,15 @@ const SolicitarAmbienteForm = ({
                     },
                   },
                 }}
+                onChange={(e) => {
+                  const { value } = e.target;
+                  setFieldValue('docentes', value);
+                  actualizarPesoDocentes(value);
+                }}
               >
                 {docentes.map((docente) => (
                   <MenuItem key={docente} value={docente}>
-                    <Checkbox
-                      checked={values.docentes.includes(docente)}
-                      onChange={(e) => {
-                        const docentesSelected = [...values.docentes];
-                        if (e.target.checked) {
-                          docentesSelected.push(docente);
-                          handleSeleccionDocente(docente, true); // Aumentar el peso si se selecciona un docente
-                        } else {
-                          const index = docentesSelected.indexOf(docente);
-                          if (index > -1) {
-                            docentesSelected.splice(index, 1);
-                            handleSeleccionDocente(docente, false); // Disminuir el peso si se deselecciona un docente
-                          }
-                        }
-                        setFieldValue('docentes', docentesSelected);
-                      }}
-                    />
+                    <Checkbox checked={values.docentes.includes(docente)} />
                     <Typography>{docente}</Typography>
                   </MenuItem>
                 ))}
@@ -182,8 +169,8 @@ const SolicitarAmbienteForm = ({
                 variant='outlined'
                 sx={{ mb: 5 }}
                 onChange={(e) => {
-                  handleSeleccionTipoReserva(e.target.value);
                   setFieldValue('tipoReserva', e.target.value);
+                  actualizarPesoTipoReserva(e.target.value);
                 }}
               >
                 {tiposReserva.map((tipo) => (
@@ -211,13 +198,11 @@ const SolicitarAmbienteForm = ({
               </Button>
             </Grid>
           </Grid>
-          {/* Aquí puedes mostrar la fecha y hora de registro */}
           {fechaRegistro && (
             <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
               Fecha y hora de registro: {fechaRegistro.toLocaleString('es-ES')}
             </Typography>
           )}
-          {/* Aquí puedes mostrar el peso total */}
           <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
             Peso total: {pesoTotal}
           </Typography>
