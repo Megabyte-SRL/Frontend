@@ -1,38 +1,26 @@
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Typography, Paper, Modal, Button, Grid } from '@mui/material'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { visuallyHidden } from '@mui/utils'
 import PropTypes from 'prop-types'
+import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider'
 
-const createData = (id, fecha, ambiente, horario, capacidad, estado) => ({
+const createData = (id, fecha, ambiente, horario, capacidad, estado, prioridad) => ({
     id,
     fecha,
     ambiente,
     horario,
     capacidad,
     estado,
+    prioridad,
 })
 
 const rows = [
-    createData(1, '2023-05-15', 'Aula 101', '08:00 - 10:00', 30, 'Pendiente'),
-    createData(2, '2023-05-15', 'Aula 102', '10:00 - 12:00', 25, 'Aprobado'),
-    createData(3, '2023-05-16', 'Aula 103', '12:00 - 14:00', 20, 'Rechazado'),
-    createData(4, '2023-05-16', 'Aula 104', '14:00 - 16:00', 35, 'Pendiente'),
-    createData(5, '2023-05-17', 'Aula 105', '16:00 - 18:00', 40, 'Aprobado'),
-    createData(6, '2023-05-18', 'Aula 106', '08:00 - 10:00', 30, 'Pendiente'),
-    createData(7, '2023-05-18', 'Aula 107', '10:00 - 12:00', 25, 'Aprobado'),
-    createData(8, '2023-05-19', 'Aula 108', '12:00 - 14:00', 20, 'Rechazado'),
-    createData(9, '2023-05-19', 'Aula 109', '14:00 - 16:00', 35, 'Pendiente'),
-    createData(10, '2023-05-20', 'Aula 110', '16:00 - 18:00', 40, 'Aprobado'),
-    createData(11, '2023-05-21', 'Aula 111', '08:00 - 10:00', 30, 'Pendiente'),
-    createData(12, '2023-05-21', 'Aula 112', '10:00 - 12:00', 25, 'Aprobado'),
-    createData(13, '2023-05-22', 'Aula 113', '12:00 - 14:00', 20, 'Rechazado'),
-    createData(14, '2023-05-22', 'Aula 114', '14:00 - 16:00', 35, 'Pendiente'),
-    createData(15, '2023-05-23', 'Aula 115', '16:00 - 18:00', 40, 'Aprobado'),
-    createData(16, '2023-05-24', 'Aula 116', '08:00 - 10:00', 30, 'Pendiente'),
-    createData(17, '2023-05-24', 'Aula 117', '10:00 - 12:00', 25, 'Aprobado'),
-    createData(18, '2023-05-25', 'Aula 118', '12:00 - 14:00', 20, 'Rechazado'),
-    createData(19, '2023-05-25', 'Aula 119', '14:00 - 16:00', 35, 'Pendiente'),
-    createData(20, '2023-05-26', 'Aula 120', '16:00 - 18:00', 40, 'Aprobado'),
+    createData(1, '2023-05-16', 'Aula 101', '08:00 - 10:00', 30, 'Pendiente', 3),
+    createData(2, '2023-05-15', 'Aula 102', '10:00 - 12:00', 25, 'Pendiente', 2),
+    createData(3, '2023-05-16', 'Aula 103', '12:00 - 14:00', 20, 'Pendiente', 5),
+    createData(4, '2023-05-16', 'Aula 104', '14:00 - 16:00', 35, 'Rechazado', 1),
+    createData(5, '2023-05-17', 'Aula 105', '16:00 - 18:00', 40, 'Aprobado', 4),
+    createData(6, '2023-05-18', 'Aula 106', '08:00 - 10:00', 30, 'Aprobado', 6),
 ]
 
 const headCells = [
@@ -40,6 +28,7 @@ const headCells = [
     { id: 'ambiente', numeric: false, disablePadding: false, label: 'Ambiente' },
     { id: 'horario', numeric: false, disablePadding: false, label: 'Horario' },
     { id: 'capacidad', numeric: true, disablePadding: false, label: 'Capacidad' },
+    { id: 'prioridad', numeric: true, disablePadding: false, label: 'Prioridad' },
     { id: 'estado', numeric: false, disablePadding: false, label: 'Estado' },
 ]
 
@@ -111,6 +100,41 @@ const AprobarSolicitudesPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [open, setOpen] = useState(false)
     const [selectedRow, setSelectedRow] = useState(null)
+    const [data, setData] = useState(rows)
+    const { openSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        const updatePriorities = () => {
+            const updatedData = [...data];
+            const ambientes = {};
+
+            // Agrupar por ambiente y ordenar por fecha
+            updatedData.forEach(row => {
+                if (!ambientes[row.ambiente]) {
+                    ambientes[row.ambiente] = [];
+                }
+                ambientes[row.ambiente].push(row);
+            });
+
+            for (const ambiente in ambientes) {
+                if (ambientes[ambiente].length > 1) {
+                    // Ordenar por fecha
+                    ambientes[ambiente].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+                    // Aumentar prioridad de la primera fecha
+                    let firstDate = new Date(ambientes[ambiente][0].fecha);
+                    ambientes[ambiente].forEach(row => {
+                        if (new Date(row.fecha).getTime() === firstDate.getTime()) {
+                            row.prioridad += 1;
+                        }
+                    });
+                }
+            }
+
+            setData(updatedData);
+        };
+
+        updatePriorities();
+    }, []);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc'
@@ -137,15 +161,33 @@ const AprobarSolicitudesPage = () => {
         setPage(0)
     }
 
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0
+    const handleAccept = () => {
+        const updatedData = data.map((row) =>
+            row.id === selectedRow.id ? { ...row, estado: 'Aprobado' } : row
+        )
+        setData(updatedData)
+        handleClose()
+        openSnackbar('Solicitud aprobada exitosamente', 'success');
+    }
+
+    const handleReject = () => {
+        const updatedData = data.map((row) =>
+            row.id === selectedRow.id ? { ...row, estado: 'Rechazado' } : row
+        )
+        setData(updatedData)
+        handleClose()
+        openSnackbar('Solicitud rechazada exitosamente', 'success');
+    }
+
+    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - data.length) : 0
 
     const visibleRows = useMemo(
         () =>
-            stableSort(rows, getComparator(order, orderBy)).slice(
+            stableSort(data, getComparator(order, orderBy)).slice(
                 page * rowsPerPage,
                 page * rowsPerPage + rowsPerPage
             ),
-        [order, orderBy, page, rowsPerPage]
+        [order, orderBy, page, rowsPerPage, data]
     )
 
     const modalBody = (
@@ -179,6 +221,9 @@ const AprobarSolicitudesPage = () => {
                         <Grid item xs={6}>
                             <Typography variant="body1" align="right"><strong>Capacidad:</strong> {selectedRow.capacidad}</Typography>
                         </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body1" align="left"><strong>Prioridad:</strong> {selectedRow.prioridad}</Typography>
+                        </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body1" align="left"><strong>Estado:</strong> {selectedRow.estado}</Typography>
                         </Grid>
@@ -186,10 +231,10 @@ const AprobarSolicitudesPage = () => {
                 </Box>
             )}
             <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-                <Button onClick={handleClose} variant="contained" color="primary">
+                <Button onClick={handleAccept} variant="contained" color="primary">
                     ACEPTAR
                 </Button>
-                <Button onClick={handleClose} variant="contained" color="error">
+                <Button onClick={handleReject} variant="contained" color="error">
                     RECHAZAR
                 </Button>
             </Box>
@@ -205,7 +250,6 @@ const AprobarSolicitudesPage = () => {
                         justifyContent: 'center',
                         marginTop: '10%',
                         background: 'black',
-                        minHeight: 'calc(100vh - 20px)',
                     }}
                 >
                     <Paper
@@ -218,7 +262,7 @@ const AprobarSolicitudesPage = () => {
                         }}
                     >
                         <Typography variant="h4" align="center" gutterBottom>
-                            Aprobar Solicitudes de Ambiente
+                            Aprobar Solicitudes
                         </Typography>
                         <TableContainer>
                             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
@@ -236,6 +280,7 @@ const AprobarSolicitudesPage = () => {
                                             <TableCell>{row.ambiente}</TableCell>
                                             <TableCell>{row.horario}</TableCell>
                                             <TableCell align="right">{row.capacidad}</TableCell>
+                                            <TableCell align="right">{row.prioridad}</TableCell>
                                             <TableCell>{row.estado}</TableCell>
                                         </TableRow>
                                     ))}
@@ -250,7 +295,7 @@ const AprobarSolicitudesPage = () => {
                         <TablePagination
                             rowsPerPageOptions={[5, 10, 25]}
                             component="div"
-                            count={rows.length}
+                            count={data.length}
                             rowsPerPage={rowsPerPage}
                             page={page}
                             onPageChange={handleChangePage}
