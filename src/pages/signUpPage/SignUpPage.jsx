@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
@@ -18,10 +18,10 @@ const SignUpPage = () => {
 
   const rolesUsuarioOptions = ['admin', 'docente'];
   const validationSchema = Yup.object({
-    nombre: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres"),
-    apellido: Yup.string().required("Campo requerido"),
-    email: Yup.string().email("Formato de correo invalido").required("Campo requerido"),
-    password: Yup.string().required("Campo requerido").min(8, "Minimo 8 caracteres"),
+    nombre: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras"),
+    apellido: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El apellido solo puede contener letras"),
+    email: Yup.string().email("Formato de correo invalido").required("Campo requerido").matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, "Correo electrónico inválido"),
+    password: Yup.string().required("Campo requerido").min(8, "Minimo 8 caracteres").max(25, "Máximo 25 caracteres"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref('password'), null], 'La contraseña debe coincidir')
       .required('Campo requerido'),
