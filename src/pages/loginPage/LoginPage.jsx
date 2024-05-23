@@ -36,8 +36,6 @@ const LoginPage = () => {
         validationSchema={validationSchema}
         onSubmit={async (formValue, { resetForm }) => {
           fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/login`, {
-
-            
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -47,17 +45,12 @@ const LoginPage = () => {
             .then(async response => {
               const { data } = await response.json();
               auth.login(data.token, data.rol);
-              
-
               if(auth.rol === 'admin'){
                 navigate('/dashboard');
               }
-
               if(auth.rol === 'docente'){
                 navigate('/solicitudDocente');
               }
-
-
             })
             .catch(error => {
               console.log('error: ', error);

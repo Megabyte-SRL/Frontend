@@ -8,6 +8,7 @@ const ReservaPage = () => {
 
   const auth = useAuth();
   const navigate = useNavigate();
+
   useEffect(()=>{
     if(auth.rol !='admin'){
       auth.logout();

@@ -1,26 +1,18 @@
 import React, { createContext, useContext, useState } from 'react';
 
-
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
-
-  //const navigate = useNavigate();
-
   const [auth, setAuth] = useState({
     token: sessionStorage.getItem('token'),
     rol: sessionStorage.getItem('rol'),
     isAuthenticated: !!sessionStorage.getItem('token')
   });
 
-  
-
   const login = (token, rol) => {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('rol', rol);
     setAuth({ token, rol, isAuthenticated: true });
-
-
   }
 
   const logout = () => {
@@ -29,16 +21,10 @@ export const AuthProvider = ({ children }) => {
     setAuth({ token: null, rol: null, isAuthenticated: false });
   }
 
-
-
-
-
-
   return (
-    <AuthContext.Provider value={{ ...auth, login, logout}}>
+    <AuthContext.Provider value={{ ...auth, login, logout }}>
       {children}
     </AuthContext.Provider>
-    
   );
 };
 

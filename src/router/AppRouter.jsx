@@ -44,7 +44,6 @@ const AppRouter = () => {
         <Route path='solicitudes' element={<SolicitudesPage />} />
       </Route>
 
-
       <Route
         path="*"
         element={<Navigate to='/login' replace />}
