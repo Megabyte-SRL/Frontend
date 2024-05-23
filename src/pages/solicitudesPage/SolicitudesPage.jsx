@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 
-import { Box, Button, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Chip, Grid, Paper, Typography } from '@mui/material';
+import { green, red, yellow } from '@mui/material/colors';
 import CustomTable from '../../components/organisms/customTable/CustomTable';
 import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
@@ -12,7 +13,28 @@ const SolicitudesPage = () => {
     { id: 'ambiente', label: 'Ambiente'},
     { id: 'horario', label: 'Horario'},
     { id: 'capacidad', label: 'Capacidad'},
-    { id: 'estado', label: 'Estado'},
+    { id: 'estado',
+      label: 'Estado',
+      render: (row) => {
+        switch (row.estado) {
+          case 'disponible':
+            return <Chip
+              label={row.estado}
+              style={{ backgroundColor: green[500], color: 'black' }}
+            />
+          case 'solicitado':
+            return <Chip
+              label={row.estado}
+              style={{ backgroundColor: yellow[500], color: 'black' }}
+            />
+          default:
+            return <Chip
+              label={row.estado}
+              style={{ backgroundColor: red[500], color: 'black' }}
+            />
+        }
+      }
+    },
     {
       id: 'acciones',
       label: 'Acciones',
@@ -61,6 +83,8 @@ const SolicitudesPage = () => {
   };
 
   const handleOnSubmitSolicitud = async (values) => {
+    const [, grupoId] = values.grupo.split('-');
+    
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/solicitudesAmbientes`, {
       method: 'POST',
       headers: {
@@ -69,8 +93,10 @@ const SolicitudesPage = () => {
       },
       body: JSON.stringify({
         horarioDisponibleId: values.id,
+        grupoId: grupoId,
         capacidad: values.capacidad,
-        materia: values.materia
+        tipoReserva: values.tipoReserva,
+        docentes: values.docentes
       })
     })
       .then(async response => {
