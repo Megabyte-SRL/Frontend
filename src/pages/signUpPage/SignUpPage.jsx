@@ -65,29 +65,31 @@ const SignUpPage = () => {
             });
         }}
       >
-        {({ errors, touched, isValid, dirty }) => (
+        {({ values, errors, touched, isValid, dirty }) => (
           <Form>
             <Grid container>
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <CustomTextField
-                  name='nombre'
-                  label='Nombre'
-                  placeholder='Nombre'
-                  touched={touched}
-                  errors={errors}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <CustomTextField
-                  name='apellido'
-                  //helperText={touched.apellido ? errors.apellido : ''}
-                  //error={touched.apellido && Boolean(errors.apellido)}
-                  label='Apellido'
-                  placeholder='Apellido'
-                  touched={touched}
-                  errors={errors}
-                />
-              </Grid>
+              {values.rol === 'docente' && (
+                <>
+                  <Grid item xs={12} sx={{ mt: 2 }}>
+                    <CustomTextField
+                      name='nombre'
+                      label='Nombre'
+                      placeholder='Nombre'
+                      touched={touched}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sx={{ mt: 2 }}>
+                    <CustomTextField
+                      name='apellido'
+                      label='Apellido'
+                      placeholder='Apellido'
+                      touched={touched}
+                      errors={errors}
+                    />
+                  </Grid>
+                </>
+              )}
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <CustomTextField
                   name='email'

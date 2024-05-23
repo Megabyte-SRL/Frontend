@@ -10,13 +10,19 @@ const CustomTextField = ({
   placeholder = '',
   touched = {},
   errors = {},
+  required = false,
 }) => {
   return (
     <Field
       as={TextField}
       name={name}
       type={type}
-      label={label}
+      label={ required ? (
+        <>
+          {label}
+          <span style={{ color: 'red', marginLeft: 2 }}>*</span>
+        </>
+      ) : label}
       placeholder={placeholder}
       helperText={touched[name] ? errors[name] : ''}
       error={touched[name] && Boolean(errors[name])}

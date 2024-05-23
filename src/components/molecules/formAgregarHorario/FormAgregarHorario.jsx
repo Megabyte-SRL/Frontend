@@ -57,8 +57,8 @@ const FormAgregarHorario = ({
               <FormControl fullWidth>
                 <InputLabel>Horas</InputLabel>
                 <Field
-                  name='horas'
                   as={Select}
+                  name='horas'
                   label='Horas'
                   multiple
                   value={values.horas}
