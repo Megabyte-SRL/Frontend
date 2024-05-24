@@ -29,7 +29,7 @@ const CustomModal = ({
         borderRadius: 2,
       }}>
         <Typography id='modal-title' variant='h6' component='h2' sx={{ textAlign: 'center' }}>
-          Solicitar Ambiente
+          {title}
         </Typography>
         <Box id='modal-body' sx={{ mt: 6 }}>
           {React.Children.map(children, (child, index) => (
@@ -39,16 +39,6 @@ const CustomModal = ({
             </React.Fragment>
           ))}
         </Box>
-        {/*
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button onClick={onClose} sx={{ mr: 1 }}>
-            Cancelar
-          </Button>
-          <Button variant='contained' onClick={() => console.log('selected')}>
-            Aceptar
-          </Button>
-        </Box>
-        */}
       </Box>
     </Modal>
   );
