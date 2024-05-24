@@ -1,189 +1,157 @@
-import React, { useState, useEffect } from 'react';
-import { Formik, Form, Field } from 'formik';
 import React, { useEffect, useState } from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { Button, Grid, TextField, Typography, Checkbox, MenuItem } from '@mui/material';
+import { Box, Button, Chip, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+
+import CustomTextField from '../../atoms/customTextField/CustomTextField';
 
 const SolicitarAmbienteForm = ({
+  row = {},
   onClose = () => {},
   onSubmit = () => {}
 }) => {
+  const tiposReserva = ['Examen Mesa', 'Clases normal', 'Parcial', 'Emergencia'];
+
+  const [materias, setMaterias] = useState([]);
+  const [docentes, setDocentes] = useState([]);
+  const [loadingDocentes, setLoadingDocentes] = useState(false);
+
+  useEffect(() => {
+    obtenerListaMateriasGrupos();
+  }, []);
+
+  const obtenerListaMateriasGrupos = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/materiasGrupos`, {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al obtener la lista de horarios disponibles');
+        }
+        return response.json();
+      })
+      .then(({ data }) => {
+        setMaterias(data);
+      })
+      .catch(({ msg }) => {
+        console.error(msg);
+      });
+  };
+
+  const handleMateriaChange = async (event, setFieldValue) => {
+    const selectedValue = event.target.value;
+    const [materiaId, ] = selectedValue.split('-'); 
+
+    setFieldValue('grupo', selectedValue);
+    setFieldValue('docentes', []);
+  
+    setLoadingDocentes(true);
+
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/docentesMateria/${materiaId}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Error al obtener la lista de horarios disponibles');
+        }
+        return response.json();
+      })
+      .then(({ data }) => {
+        setDocentes(data);
+        setLoadingDocentes(false);
+      })
+      .catch(({ msg }) => {
+        console.error(msg);
+        setLoadingDocentes(false);
+      });
+  };
+
+  const obtenerDocenteNombreById = (id) => {
+    const docenteFound = docentes.find(docente => docente.id === id);
+    return docenteFound ? `${docenteFound.nombre} ${docenteFound.apellido}` : id;
+  };
+
   const validationSchema = Yup.object({
     grupo: Yup.string().required('La materia es requerida'),
     capacidad: Yup.number().required('La capacidad es requerida'),
-    materia: Yup.string().required('La materia es requerida'),
     tipoReserva: Yup.string().required('El tipo de reserva es requerido'),
   });
 
-  const [fechaHora, setFechaHora] = useState(new Date());
-  const [fechaRegistro, setFechaRegistro] = useState(null);
-  const [pesoTotal, setPesoTotal] = useState(0);
-  const [pesoTipoReserva, setPesoTipoReserva] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFechaHora(new Date());
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const obtenerFechaHoraActual = () => {
-    setFechaRegistro(new Date());
-  };
-
-  const actualizarPesoDocentes = (docentes) => {
-    const peso = docentes.length;
-    setPesoTotal(peso + pesoTipoReserva);
-  };
-
-  const actualizarPesoTipoReserva = (nuevoTipoReserva) => {
-    let peso = 0;
-    switch (nuevoTipoReserva) {
-      case 'Examen Mesa':
-      case 'Parcial':
-        peso = 2;
-        break;
-      case 'Emergencia':
-        peso = 3;
-        break;
-      case 'Clases normal':
-      default:
-        peso = 1;
-        break;
-    }
-    setPesoTotal((prevPeso) => prevPeso - pesoTipoReserva + peso);
-    setPesoTipoReserva(peso);
-  };
-
-  const fechaActual = fechaHora.toLocaleDateString('es-ES');
-  const horaActual = fechaHora.toLocaleTimeString('es-ES');
-
-  const materias = ['Matemáticas', 'Ciencias', 'Historia', 'Literatura'];
-  const docentes = ['Juan Pérez', 'María García', 'Luis Martínez', 'Ana López'];
-  const tiposReserva = ['Examen Mesa', 'Clases normal', 'Parcial', 'Emergencia'];
-
   return (
     <Formik
-      initialValues={{
-        grupo: '',
-        capacidad: 0,
-        materia: '',
-        detalleReserva: '',
-        docentes: [],
-        tipoReserva: '',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={async (values, { resetForm }) => {
-        onSubmit({ ...values, id: new Date().getTime() });
-        resetForm();
-        obtenerFechaHoraActual();
-      }}
-    >
-      {({ values, errors, touched, isValid, dirty, setFieldValue }) => (
+        initialValues={{
+          grupo: '',
+          capacidad: 0,
+          tipoReserva: '',
+          docentes: []
+        }}
+        validationSchema={validationSchema}
+        onSubmit={async (values, { resetForm, setSubmitting }) => {
+          if (values.capacidad === 0) {
+            // Si la capacidad es 0, no enviar el formulario y mostrar un mensaje de error
+            alert('La capacidad no puede ser 0');
+            return;
+          }
+
+          // Si la capacidad no es 0, enviar el formulario
+          onSubmit({ ...values, id: row.id });
+          resetForm();
+          setSubmitting(false);
+        }}
+      >
+      {({ setFieldValue, values, errors, touched, isValid, dirty }) => (
         <Form>
-          <Typography variant="subtitle2" sx={{ textAlign: 'right', mt: -4 }}>
-            {fechaActual} - {horaActual}
-          </Typography>
-          <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <Field
-                as={TextField}
+          <Grid container>
+            <Grid item xs={12} sx={{ mt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Materia Grupo<span style={{ color: 'red', marginLeft: 2 }}>*</span></InputLabel>
+                <Field
+                  as={Select}
+                  name='grupo'
+                  label='Materia Grupo*'
+                  value={values.grupo}
+                  onChange={(event) => handleMateriaChange(event, setFieldValue)}
+                >
+                  {materias.length === 0 ? (
+                    <MenuItem disabled>Cargando materias...</MenuItem>
+                  ) : (
+                    materias.map(materia => (
+                      <MenuItem
+                        key={`${materia.grupoId}-${materia.grupo}`}
+                        value={`${materia.materiaId}-${materia.grupoId}`}
+                      >
+                        {materia.materia} - {materia.grupo}
+                      </MenuItem>
+                    ))
+                  )}
+                </Field>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sx={{ mt: 2 }}>
+              <CustomTextField
                 name='capacidad'
                 type='number'
                 label='Capacidad'
                 placeholder='Capacidad'
-                fullWidth
-                error={touched.capacidad && Boolean(errors.capacidad)}
-                helperText={touched.capacidad ? errors.capacidad : ''}
-                variant='outlined'
-                sx={{ mb: 5 }}
-              />
-              <Field
-                as={TextField}
-                name='detalleReserva'
-                label='Detalle de Reserva'
-                placeholder='Detalle de Reserva'
-                fullWidth
-                multiline
-                rows={5}
-                sx={{ height: '100%' }}
+                touched={touched}
+                errors={errors}
+                required={true}
               />
             </Grid>
-            <Grid item xs={6}>
-              <Field
-                as={TextField}
-                select
-                name='materia'
-                label='Materia'
-                fullWidth
-                error={touched.materia && Boolean(errors.materia)}
-                helperText={touched.materia ? errors.materia : ''}
-                variant='outlined'
-                sx={{ mb: 5 }}
-              >
-                {materias.map((materia) => (
-                  <MenuItem key={materia} value={materia}>
-                    {materia}
-                  </MenuItem>
-                ))}
-              </Field>
-              <Typography variant="subtitle1">Docentes:</Typography>
-              <Field
-                as={TextField}
-                select
-                name='docentes'
-                label='Docentes'
-                fullWidth
-                variant='outlined'
-                sx={{ mb: 5 }}
-                SelectProps={{
-                  multiple: true,
-                  renderValue: (selected) => selected.join(', '),
-                }}
-                MenuProps={{
-                  PaperProps: {
-                    style: {
-                      maxHeight: 224,
-                    },
-                  },
-                }}
-                onChange={(e) => {
-                  const { value } = e.target;
-                  setFieldValue('docentes', value);
-                  actualizarPesoDocentes(value);
-                }}
-              >
-                {docentes.map((docente) => (
-                  <MenuItem key={docente} value={docente}>
-                    <Checkbox checked={values.docentes.includes(docente)} />
-                    <Typography>{docente}</Typography>
-                  </MenuItem>
-                ))}
-              </Field>
-              <Field
-                as={TextField}
-                select
-                name='tipoReserva'
-                label='Tipo de Reserva'
-                fullWidth
-                error={touched.tipoReserva && Boolean(errors.tipoReserva)}
-                helperText={touched.tipoReserva ? errors.tipoReserva : ''}
-                variant='outlined'
-                sx={{ mb: 5 }}
-                onChange={(e) => {
-                  setFieldValue('tipoReserva', e.target.value);
-                  actualizarPesoTipoReserva(e.target.value);
-                }}
-              >
-                {tiposReserva.map((tipo) => (
-                  <MenuItem key={tipo} value={tipo}>
-                    {tipo}
-                  </MenuItem>
-                ))}
-              </Field>
+            <Grid item xs={12} sx={{ mt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Tipo de reserva</InputLabel>
+                <Field
+                  as={Select}
+                  name='tipoReserva'
+                  label='Tipo de reserva'
+                >
+                  {tiposReserva.map((tipo) => (
+                    <MenuItem key={tipo} value={tipo}>{tipo}</MenuItem>
+                  ))}
+                </Field>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sx={{ mt: 2 }}>
               <FormControl fullWidth>
@@ -248,14 +216,6 @@ const SolicitarAmbienteForm = ({
               </Button>
             </Grid>
           </Grid>
-          {fechaRegistro && (
-            <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
-              Fecha y hora de registro: {fechaRegistro.toLocaleString('es-ES')}
-            </Typography>
-          )}
-          <Typography variant="body2" sx={{ textAlign: 'center', mt: 2 }}>
-            Peso total: {pesoTotal}
-          </Typography>
         </Form>
       )}
     </Formik>
