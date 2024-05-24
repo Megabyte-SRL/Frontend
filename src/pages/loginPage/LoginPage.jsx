@@ -45,7 +45,12 @@ const LoginPage = () => {
             .then(async response => {
               const { data } = await response.json();
               auth.login(data.token, data.rol);
-              navigate('/dashboard');
+              if(auth.rol === 'admin'){
+                navigate('/dashboard');
+              }
+              if(auth.rol === 'docente'){
+                navigate('/solicitudDocente');
+              }
             })
             .catch(error => {
               console.log('error: ', error);

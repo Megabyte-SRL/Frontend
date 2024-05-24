@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Formik, Form, Field } from 'formik';
+import React, { useEffect, useState } from 'react';
+
+import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
 import { Button, Grid, TextField, Typography, Checkbox, MenuItem } from '@mui/material';
 
@@ -8,6 +11,7 @@ const SolicitarAmbienteForm = ({
   onSubmit = () => {}
 }) => {
   const validationSchema = Yup.object({
+    grupo: Yup.string().required('La materia es requerida'),
     capacidad: Yup.number().required('La capacidad es requerida'),
     materia: Yup.string().required('La materia es requerida'),
     tipoReserva: Yup.string().required('El tipo de reserva es requerido'),
@@ -64,6 +68,7 @@ const SolicitarAmbienteForm = ({
   return (
     <Formik
       initialValues={{
+        grupo: '',
         capacidad: 0,
         materia: '',
         detalleReserva: '',
@@ -180,6 +185,51 @@ const SolicitarAmbienteForm = ({
                 ))}
               </Field>
             </Grid>
+            <Grid item xs={12} sx={{ mt: 2 }}>
+              <FormControl fullWidth>
+                <InputLabel>Decentes combinados</InputLabel>
+                {loadingDocentes ? (
+                  <CircularProgress size={24} />
+                ) : (
+                  <Field
+                    as={Select}
+                    name='docentes'
+                    label='Dodentes combinados'
+                    multiple
+                    value={values.docentes}
+                    onChange={(event) => {
+                      setFieldValue('docentes', event.target.value);
+                    }}
+                    renderValue={(selected) => (
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                        {selected.map((value) => (
+                          <Chip
+                            key={value}
+                            label={obtenerDocenteNombreById(value)}
+                          />
+                        ))}
+                      </Box>
+                    )}
+                    fullWidth
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: 48 * 4.5 + 8,
+                          width: 250,
+                        },
+                      },
+                    }}
+                  >
+                    {docentes.map(docente => (
+                      <MenuItem key={docente.id} value={docente.id}>
+                        {docente.nombre} {docente.apellido}
+                      </MenuItem>
+                    ))}
+                  </Field>
+                )}
+              </FormControl>
+            </Grid>
+
             <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
               <Button
                 type='submit'

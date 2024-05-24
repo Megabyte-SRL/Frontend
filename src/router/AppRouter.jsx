@@ -12,6 +12,10 @@ import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
 import RequireAuth from './RequireAuth'
 import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
+import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
+import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
+import DocentePage from '../pages/docentesPage/DocentePage'
+import ProfilePage from '../pages/profilePage/ProfilePage'
 
 const AppRouter = () => {
   return (
@@ -32,7 +36,16 @@ const AppRouter = () => {
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
         <Route path='signup' element={<SignUpPage />} />
+        <Route path='carga-masiva-docentes' element={<CargaMasivaDocentePage />} />
+        <Route path='verificar-solicitudes' element={<VerficarSolicitudesPage />} />
       </Route>
+
+      {/* rutas para la solicitud del Docente */}
+      <Route path='/solicitudDocente' element={<RequireAuth><DocentePage /></RequireAuth>}>
+        <Route path='solicitudes' element={<SolicitudesPage />} />
+        <Route path='profile' element={<ProfilePage/>} />
+      </Route>
+
       <Route
         path="*"
         element={<Navigate to='/login' replace />}
