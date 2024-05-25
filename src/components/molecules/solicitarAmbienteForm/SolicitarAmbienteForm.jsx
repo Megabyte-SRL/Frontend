@@ -2,7 +2,17 @@ import React, { useEffect, useState } from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import * as Yup from 'yup';
-import { Box, Button, Chip, CircularProgress, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select
+} from '@mui/material';
 
 import CustomTextField from '../../atoms/customTextField/CustomTextField';
 
@@ -11,7 +21,7 @@ const SolicitarAmbienteForm = ({
   onClose = () => {},
   onSubmit = () => {}
 }) => {
-  const tiposReserva = ['Examen Mesa', 'Clases normal', 'Parcial', 'Emergencia'];
+  const tiposReserva = ['Emergencia', 'Examen Mesa', 'Parcial', 'Clases normal'];
 
   const [materias, setMaterias] = useState([]);
   const [docentes, setDocentes] = useState([]);
@@ -53,7 +63,7 @@ const SolicitarAmbienteForm = ({
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/docentesMateria/${materiaId}`)
       .then(response => {
         if (!response.ok) {
-          throw new Error('Error al obtener la lista de horarios disponibles');
+          throw new Error('Error al obtener la lista de docentes');
         }
         return response.json();
       })

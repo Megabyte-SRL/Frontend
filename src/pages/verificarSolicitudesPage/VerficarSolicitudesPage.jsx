@@ -1,46 +1,55 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Box, Grid, Paper, Typography } from '@mui/material';
-import CustomTable from '../../components/organisms/customTable/CustomTable';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
 import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
+import useTable from '../../hooks/useTable';
+import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
+
+const fetchSolicitudes = async (params) => {
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+    }
+  });
+
+  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
+  const data = await response.json();
+  return data;
+}
 
 const VerficarSolicitudesPage = () => {
   const columns = [
-    { id: 'fecha', label: 'Fecha'},
-    { id: 'fechaSolicitud', label: 'Fecha solicitud'},
-    { id: 'ambiente', label: 'Ambiente'},
-    { id: 'horario', label: 'Horario'},
-    { id: 'capacidadAmbiente', label: 'Capacidad ambiente'},
-    { id: 'capacidadReserva', label: 'Capacidad reserva' },
-    { id: 'prioridad', label: 'Prioridad' },
+    { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
+    { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
+    { id: 'ambiente', label: 'Ambiente', sortable: true, filterable: true },
+    { id: 'horario', label: 'Horario', sortable: true, filterable: true },
+    { id: 'capacidadAmbiente', label: 'Capacidad ambiente', sortable: true, filterable: true },
+    { id: 'capacidadReserva', label: 'Capacidad reserva', sortable: true, filterable: true },
+    { id: 'prioridad', label: 'Prioridad', sortable: true, filterable: true },
   ];
 
   const { openSnackbar } = useSnackbar();
-  const [solicitudes, setSolicitudes] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
 
-  useEffect(() => {
-    obtenerListaSolicitudes();
-  }, []);
-
-  const obtenerListaSolicitudes = async () => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al obtener la lista de horarios disponibles');
-        }
-        return response.json();
-      })
-      .then(({ data }) => {
-        setSolicitudes(data);
-      })
-      .catch(({ msg }) => {
-        console.error(msg);
-      });
-  };
+  const {
+    data,
+    searchText,
+    handleSearchChange,
+    filters,
+    handleFilterChange,
+    order,
+    orderBy,
+    handleSort,
+    rowsPerPage,
+    page,
+    handlePageChange,
+    handleRowsPerPageChange,
+    totalRows
+  } = useTable(fetchSolicitudes, 'asc', 'fecha');
 
   const handleOnSubmitReserva = async (solicitudId) => {
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
@@ -50,7 +59,7 @@ const VerficarSolicitudesPage = () => {
         const data = await response.json();
         console.log('Registrar solicitud ambiente response: ', data);
         openSnackbar('Solicitud registrado exitosamente', 'success');
-        obtenerListaSolicitudes();
+        fetchSolicitudes();
         setOpenModal(false);
       })
       .catch(async error => {
@@ -59,7 +68,7 @@ const VerficarSolicitudesPage = () => {
   };
 
   const handleOpenReservaForm = (row) => {
-    setSelectedRow(solicitudes.find(solicitud => solicitud.id === row.id));
+    setSelectedRow(data.find(solicitud => solicitud.id === row.id));
     setOpenModal(true);
   };
 
@@ -92,9 +101,9 @@ const VerficarSolicitudesPage = () => {
               Buscar solicitudes:
             </Typography>
             
-            <CustomTable
+            <CustomSearchableTable
               columns={columns}
-              rows={solicitudes.map(
+              data={data.map(
                 solicitud => ({
                   id: solicitud.id,
                   fecha: solicitud.horarioDisponible.fecha,
@@ -106,6 +115,17 @@ const VerficarSolicitudesPage = () => {
                   prioridad: solicitud.prioridad
                 })
               )}
+              order={order}
+              orderBy={orderBy}
+              onSort={handleSort}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              totalRows={totalRows}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              onFilterChange={handleFilterChange}
+              searchText={searchText}
+              onSearchChange={handleSearchChange}
               onClickRow={(row) => handleOpenReservaForm(row)}
             />
             <CustomModal

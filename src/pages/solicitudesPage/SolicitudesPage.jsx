@@ -1,20 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { Box, Button, Chip, Grid, Paper, Typography } from '@mui/material';
 import { green, red, yellow } from '@mui/material/colors';
-import CustomTable from '../../components/organisms/customTable/CustomTable';
 import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import useTable from '../../hooks/useTable';
+import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
+
+const fetchHorariosDisponibles = async (params) => {
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles?${query}`, {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+    }
+  });
+
+  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
+  const data = await response.json();
+  return data;
+};
 
 const SolicitudesPage = () => {
   const columns = [
-    { id: 'fecha', label: 'Fecha'},
-    { id: 'ambiente', label: 'Ambiente'},
-    { id: 'horario', label: 'Horario'},
-    { id: 'capacidad', label: 'Capacidad'},
+    { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
+    { id: 'ambiente', label: 'Ambiente', sortable: true, filterable: true },
+    { id: 'horario', label: 'Horario', sortable: true, filterable: true },
+    { id: 'capacidad', label: 'Capacidad', sortable: true, filterable: true },
     { id: 'estado',
       label: 'Estado',
+      sortable: false,
       render: (row) => {
         switch (row.estado) {
           case 'disponible':
@@ -38,6 +53,7 @@ const SolicitudesPage = () => {
     {
       id: 'acciones',
       label: 'Acciones',
+      sortable: false,
       render: (row) => (
         <Button
           color='primary'
@@ -51,7 +67,6 @@ const SolicitudesPage = () => {
   ]; 
 
   const { openSnackbar } = useSnackbar();
-  const [horariosDisponibles, setHorariosDisponibles] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState({
     id: 0,
@@ -62,25 +77,21 @@ const SolicitudesPage = () => {
     estado: ''
   });
 
-  useEffect(() => {
-    obtenerListaHorariosDisponibles();
-  }, []);
-
-  const obtenerListaHorariosDisponibles = async () => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Error al obtener la lista de horarios disponibles');
-        }
-        return response.json();
-      })
-      .then(({ data }) => {
-        setHorariosDisponibles(data);
-      })
-      .catch(({ msg }) => {
-        console.error(msg);
-      });
-  };
+  const {
+    data,
+    searchText,
+    handleSearchChange,
+    filters,
+    handleFilterChange,
+    order,
+    orderBy,
+    handleSort,
+    rowsPerPage,
+    page,
+    handlePageChange,
+    handleRowsPerPageChange,
+    totalRows
+  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha');
 
   const handleOnSubmitSolicitud = async (values) => {
     const [, grupoId] = values.grupo.split('-');
@@ -103,7 +114,7 @@ const SolicitudesPage = () => {
         const data = await response.json();
         console.log('Registrar solicitud ambiente response: ', data);
         openSnackbar('Solicitud registrado exitosamente', 'success');
-        obtenerListaHorariosDisponibles();
+        fetchHorariosDisponibles();
         setOpenModal(false);
       })
       .catch(async error => {
@@ -114,7 +125,7 @@ const SolicitudesPage = () => {
   const handleOpenSolicitationForm = (row) => {
     setSelectedRow(row);
     setOpenModal(true);
-  }
+  };
   
   return (
     <Grid container justifyContent='center'>
@@ -144,10 +155,20 @@ const SolicitudesPage = () => {
             <Typography variant='body1' gutterBottom sx={{ marginLeft: '5%' }}>
               Buscar horarios ambientes:
             </Typography>
-
-            <CustomTable
+            <CustomSearchableTable
               columns={columns}
-              rows={horariosDisponibles}
+              data={data}
+              order={order}
+              orderBy={orderBy}
+              onSort={handleSort}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              totalRows={totalRows}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              onFilterChange={handleFilterChange}
+              searchText={searchText}
+              onSearchChange={handleSearchChange}
               onClickRow={(row) => console.log(row)}
             />
             <CustomModal
