@@ -10,6 +10,7 @@ const CustomTextField = ({
   placeholder = '',
   touched = {},
   errors = {},
+  mb = 0,
   required = false,
 }) => {
   return (
@@ -27,6 +28,7 @@ const CustomTextField = ({
       helperText={touched[name] ? errors[name] : ''}
       error={touched[name] && Boolean(errors[name])}
       fullWidth
+      sx={{ mb: mb }}
     />
   );
 }
