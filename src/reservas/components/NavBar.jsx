@@ -1,6 +1,5 @@
 import React from 'react'
 
-import { LogoutOutlined } from '@mui/icons-material'
 import { AppBar, Grid, IconButton, Toolbar, Typography, Avatar, Tooltip, Menu, MenuItem, Box } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
@@ -42,7 +41,6 @@ const NavBar = ({ anchoCaja }) => {
     setAnchorElUser(null);
     if (link === 'Perfil') {
       navigate('/dashboard/profile');
-
     }
   };
 
@@ -64,7 +62,7 @@ const NavBar = ({ anchoCaja }) => {
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar {...stringAvatar('Leticia Blanco Coca')} />
+              <Avatar {...stringAvatar(sessionStorage.getItem('nombre'))} />
               </IconButton>
             </Tooltip>
             <Menu
@@ -101,7 +99,7 @@ const NavBar = ({ anchoCaja }) => {
       </Toolbar>
 
     </AppBar>
-  )
+  );
 }
 
-export default NavBar
+export default NavBar;

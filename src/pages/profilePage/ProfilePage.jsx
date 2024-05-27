@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { Formik, Form } from 'formik';
 import { Button, Grid, Typography } from '@mui/material';
@@ -15,72 +15,111 @@ const customStyles = {
 
 const ProfilePage = () => {
   const { openSnackbar } = useSnackbar();
+  const rol = sessionStorage.getItem('rol');
+  const [usuario, setUsuario] = useState(null);
 
-  const validationSchema = Yup.object({
-    nombre: Yup.string().min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras"),
-    apellido: Yup.string().min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El apellido solo puede contener letras"),
-    email: Yup.string().email("Formato de correo invalido").matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, "Correo electrónico inválido"),
-    password: Yup.string().min(8, "Minimo 8 caracteres").max(25, "Máximo 25 caracteres"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref('password'), null], 'La contraseña debe coincidir')
-  });
+  useEffect(() => {
+    const fetchInformacionUsuario = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/informacionUsuario`, {
+          headers: {
+            'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+          }
+        });
+
+        if (!response.ok) throw new Error('Error al obtener la información del usuario');
+        const { data } = await response.json();
+        setUsuario(data);
+      } catch (error) {
+        openSnackbar('Error al obtener la información del usuario', 'error');
+      }
+    };
+
+    fetchInformacionUsuario();
+  }, [openSnackbar]);
+
+  const getValidationSchema = (role) => {
+    const baseSchema = {
+      email: Yup.string().email("Formato de correo invalido").matches(/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/, "Correo electrónico inválido").required('Correo es requerido'),
+      password: Yup.string().min(8, "Minimo 8 caracteres").max(25, "Máximo 25 caracteres").required('Contraseña es requerida'),
+      confirmPassword: Yup.string()
+        .oneOf([Yup.ref('password'), null], 'La contraseña debe coincidir')
+        .required('Repetir contraseña es requerida') 
+    };
+
+    if (role !== 'admin') {
+      return Yup.object({
+        ...baseSchema,
+        nombre: Yup.string().min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras").required('Nombre es requerido'),
+        apellido: Yup.string().min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El apellido solo puede contener letras").required('Apellido es requerido')
+      });
+    }
+
+    return Yup.object(baseSchema);
+  };
+
+  if (!usuario) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <CustomFormCard titulo='Perfil' styles={customStyles}>
       <Formik
         initialValues={{
-          nombre: 'Lizeth Shirley',
-          apellido: 'Amorraga',
-          email: 'liz@gmail.com',
+          nombre: usuario.nombre || '',
+          apellido: usuario.apellido || '',
+          email: usuario.email || '',
           password: '',
           confirmPassword: '',
-          rol: ''
         }}
-        validationSchema={validationSchema}
+        validationSchema={getValidationSchema(rol)}
         onSubmit={async (formValues, { resetForm }) => {
-          fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/usuarios`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              nombre: formValues.nombre,
-              apellido: formValues.apellido,
-              email: formValues.email,
-              password: formValues.password,
-              rol: formValues.rol
-            })
-          })
-            .then(async response => {
-              const data = await response.json();
-              console.log('Registrar usuario response: ', data);
-              openSnackbar('Usuario creado correctamente', 'success');
-              resetForm();
-            })
-            .catch(async error => {
-              openSnackbar('Error al registrar usuario', 'error');
+          try {
+            const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/actualizarUsuario`, {
+              method: 'POST',
+              headers: {
+                'Authorization': 'Bearer ' + sessionStorage.getItem("token"),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(formValues)
             });
+
+            if (!response.ok) {
+              throw new Error('Error al actualizar el usuario');
+            }
+
+            const data = await response.json();
+            openSnackbar('Usuario actualizado correctamente', 'success');
+            resetForm();
+            setUsuario(data);
+          } catch (error) {
+            openSnackbar(error.message || 'Error al actualizar el usuario', 'error');
+          }
         }}
       >
         {({ errors, touched, isValid, dirty }) => (
           <Form>
             <Grid container>
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <CustomTextField
-                  name='nombre'
-                  label='Nombre'
-                  touched={touched}
-                  errors={errors}
-                />
-              </Grid>
-              <Grid item xs={12} sx={{ mt: 2 }}>
-                <CustomTextField
-                  name='apellido'
-                  label='Apellido'
-                  touched={touched}
-                  errors={errors}
-                />
-              </Grid>
+              {rol !== 'admin' && (
+                <>
+                  <Grid item xs={12} sx={{ mt: 2 }}>
+                    <CustomTextField
+                      name='nombre'
+                      label='Nombre'
+                      touched={touched}
+                      errors={errors}
+                    />
+                  </Grid>
+                  <Grid item xs={12} sx={{ mt: 2 }}>
+                    <CustomTextField
+                      name='apellido'
+                      label='Apellido'
+                      touched={touched}
+                      errors={errors}
+                    />
+                  </Grid>
+                </>
+              )}
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <CustomTextField
                   name='email'
@@ -125,6 +164,7 @@ const ProfilePage = () => {
                     type='submit'
                     color='primary'
                     variant='contained'
+                    disabled={!isValid || !dirty}
                   >
                     Actualizar cuenta
                   </Button>
