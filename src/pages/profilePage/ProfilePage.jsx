@@ -7,6 +7,7 @@ import * as Yup from 'yup';
 import CustomFormCard from '../../components/molecules/customFormCard/CustomFormCard';
 import CustomTextField from '../../components/atoms/customTextField/CustomTextField';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import { useAuth } from '../../hooks/useAuth';
 
 const customStyles = {
   minHeight: '100vh',
@@ -17,6 +18,7 @@ const ProfilePage = () => {
   const { openSnackbar } = useSnackbar();
   const rol = sessionStorage.getItem('rol');
   const [usuario, setUsuario] = useState(null);
+  const auth = useAuth();
 
   useEffect(() => {
     const fetchInformacionUsuario = async () => {
@@ -89,9 +91,8 @@ const ProfilePage = () => {
             }
 
             const data = await response.json();
-            openSnackbar('Usuario actualizado correctamente', 'success');
-            resetForm();
-            setUsuario(data);
+            openSnackbar(data.msg, 'success');
+            auth.logout();
           } catch (error) {
             openSnackbar(error.message || 'Error al actualizar el usuario', 'error');
           }
