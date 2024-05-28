@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Box, Button, Modal, Typography } from '@mui/material';
+import { Box, Modal, Typography } from '@mui/material';
 
 const CustomModal = ({
   open = false,
@@ -21,15 +21,24 @@ const CustomModal = ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
+<<<<<<< HEAD
         width: '70%',
         height: '80%',
+=======
+        //width: '70%',
+        //height: '80%',
+>>>>>>> 943e5bd30cbf61aa8eb8e9c3d9e83d96cd6d785d
         bgcolor: 'background.paper',
         boxShadow: 24,
         p: 3,
         borderRadius: 2,
       }}>
         <Typography id='modal-title' variant='h6' component='h2' sx={{ textAlign: 'center' }}>
+<<<<<<< HEAD
           Solicitar Ambiente
+=======
+          {title}
+>>>>>>> 943e5bd30cbf61aa8eb8e9c3d9e83d96cd6d785d
         </Typography>
         <Box id='modal-body' sx={{ mt: 6 }}>
           {React.Children.map(children, (child, index) => (
@@ -39,16 +48,6 @@ const CustomModal = ({
             </React.Fragment>
           ))}
         </Box>
-        {/*
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button onClick={onClose} sx={{ mr: 1 }}>
-            Cancelar
-          </Button>
-          <Button variant='contained' onClick={() => console.log('selected')}>
-            Aceptar
-          </Button>
-        </Box>
-        */}
       </Box>
     </Modal>
   );

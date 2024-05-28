@@ -42,7 +42,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
           '& .MuiDrawer-paper': { boxSizing: 'border-box', width: anchoCaja, marginTop: 13 }
         }}
       >
-        {auth.rol != 'docente' ?
+        {auth.rol !== 'docente' ?
           (
             <List>
               <ListItemButton id='crear-button' onClick={handleAmbientesClick}>
@@ -85,7 +85,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
             </List>
           ) : (
             <List>
-              <ListItemButton id='reserva-solicitudes' onClick={() => handleOtherItemClick('/solicitudDocente/solicitudes')}>
+              <ListItemButton id='reserva-solicitudes' onClick={() => handleOtherItemClick('/dashboard/solicitudes')}>
                 <ListItemText primary='Crear solicitud ambiente' />
               </ListItemButton>
             </List>
