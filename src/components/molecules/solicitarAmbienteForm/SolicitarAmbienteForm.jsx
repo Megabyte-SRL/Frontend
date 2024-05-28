@@ -90,7 +90,6 @@ const SolicitarAmbienteForm = ({
 
   return (
     <Formik
-<<<<<<< HEAD
         initialValues={{
           grupo: '',
           capacidad: 0,
@@ -111,28 +110,6 @@ const SolicitarAmbienteForm = ({
           setSubmitting(false);
         }}
       >
-=======
-      initialValues={{
-        grupo: '',
-        capacidad: 0,
-        tipoReserva: '',
-        docentes: []
-      }}
-      validationSchema={validationSchema}
-      onSubmit={async (values, { resetForm, setSubmitting }) => {
-        if (values.capacidad === 0) {
-          // Si la capacidad es 0, no enviar el formulario y mostrar un mensaje de error
-          alert('La capacidad no puede ser 0');
-          return;
-        }
-
-        // Si la capacidad no es 0, enviar el formulario
-        onSubmit({ ...values, id: row.id });
-        resetForm();
-        setSubmitting(false);
-      }}
-    >
->>>>>>> 943e5bd30cbf61aa8eb8e9c3d9e83d96cd6d785d
       {({ setFieldValue, values, errors, touched, isValid, dirty }) => (
         <Form>
           <Grid container>
