@@ -15,6 +15,7 @@ import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
 import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
 import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
 import ProfilePage from '../pages/profilePage/ProfilePage'
+import AprobarSolicitudesPage from '../pages/aprobarSolicitudesPage/AprobarSolicitudesPage'
 
 const AppRouter = () => {
   return (
@@ -37,6 +38,7 @@ const AppRouter = () => {
         <Route path='signup' element={<SignUpPage />} />
         <Route path='carga-masiva-docentes' element={<CargaMasivaDocentePage />} />
         <Route path='verificar-solicitudes' element={<VerficarSolicitudesPage />} />
+        <Route path='aprobar-solicitudes' element={<AprobarSolicitudesPage />} />
         <Route path='profile' element={<ProfilePage/>} />
       </Route>
 
