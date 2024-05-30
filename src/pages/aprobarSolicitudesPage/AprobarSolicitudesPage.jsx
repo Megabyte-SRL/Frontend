@@ -17,15 +17,6 @@ const createData = (id, fecha, ambiente, horario, capacidad, estado, prioridad) 
     prioridad,
 });
 
-const rows = [
-    createData(1, '2023-05-15', 'Aula 101', '08:00 - 10:00', 30, 'Pendiente', 3),
-    createData(2, '2023-05-15', 'Aula 101', '10:00 - 12:00', 25, 'Aprobado', 2),
-    createData(3, '2023-05-16', 'Aula 103', '12:00 - 14:00', 20, 'Rechazado', 5),
-    createData(4, '2023-05-16', 'Aula 104', '14:00 - 16:00', 35, 'Pendiente', 1),
-    createData(5, '2023-05-17', 'Aula 105', '16:00 - 18:00', 40, 'Aprobado', 4),
-    createData(6, '2023-05-18', 'Aula 106', '08:00 - 10:00', 30, 'Pendiente', 6),
-];
-
 const headCells = [
     { id: 'fecha', numeric: false, disablePadding: true, label: 'Fecha' },
     { id: 'ambiente', numeric: false, disablePadding: false, label: 'Ambiente' },
@@ -103,41 +94,38 @@ const AprobarSolicitudesPage = () => {
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [open, setOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
-    const [data, setData] = useState(rows);
-    const [filteredData, setFilteredData] = useState(rows);
+    const [data, setData] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
     const [searchValue, setSearchValue] = useState(null);
     const { openSnackbar } = useSnackbar();
 
     useEffect(() => {
-        const updatePriorities = () => {
-            const updatedData = [...data];
-            const ambientes = {};
-
-            // Agrupar por ambiente
-            updatedData.forEach(row => {
-                if (!ambientes[row.ambiente]) {
-                    ambientes[row.ambiente] = [];
+        fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Error al obtener la lista de solicitudes');
                 }
-                ambientes[row.ambiente].push(row);
+                return response.json();
+            })
+            .then(({ data }) => {
+                const mappedData = data.map(item =>
+                    createData(
+                        item.id,
+                        item.horarioDisponible.fecha,
+                        item.horarioDisponible.ambiente,
+                        item.horarioDisponible.horario,
+                        item.horarioDisponible.capacidad,
+                        item.estado,
+                        item.prioridad
+                    )
+                );
+                setData(mappedData);
+                setFilteredData(mappedData);
+            })
+            .catch(error => {
+                console.error(error);
+                openSnackbar('Error al obtener la lista de solicitudes', 'error');
             });
-
-            // Incrementar la prioridad solo para la primera fecha en cada grupo
-            for (const ambiente in ambientes) {
-                if (ambientes[ambiente].length > 0) {
-                    // Encontrar la fila con la fecha más temprana
-                    let minDateRow = ambientes[ambiente].reduce((minRow, currentRow) => {
-                        return new Date(currentRow.fecha) < new Date(minRow.fecha) ? currentRow : minRow;
-                    });
-                    // Incrementar la prioridad de la fila con la fecha más temprana
-                    minDateRow.prioridad += 1;
-                }
-            }
-
-            setData(updatedData);
-            setFilteredData(updatedData);
-        };
-
-        updatePriorities();
     }, []);
 
     const handleRequestSort = (event, property) => {
@@ -165,28 +153,53 @@ const AprobarSolicitudesPage = () => {
         setPage(0);
     };
 
-    const handleAccept = () => {
-        const updatedData = data.map((row) =>
-            row.id === selectedRow.id ? { ...row, estado: 'Aprobado' } : row
-        );
-        setData(updatedData);
-        setFilteredData(updatedData.filter(row =>
-            !searchValue || row.ambiente.includes(searchValue)
-        ));
-        handleClose();
-        openSnackbar('Solicitud aprobada exitosamente', 'success');
+    const updateSolicitudState = async (solicitud_id, nuevoEstado) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitud_id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ estado: nuevoEstado }),
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al ${nuevoEstado === 'reservado' ? 'reservar' : 'rechazar'} la solicitud`);
+            }
+
+            openSnackbar(`Solicitud ${nuevoEstado === 'reservado' ? 'reservada' : 'rechazada'} exitosamente`, 'success');
+            return true;
+        } catch (error) {
+            console.error(error);
+            openSnackbar(`Error al ${nuevoEstado === 'reservado' ? 'reservar' : 'rechazar'} la solicitud`, 'error');
+            return false;
+        }
     };
 
-    const handleReject = () => {
-        const updatedData = data.map((row) =>
-            row.id === selectedRow.id ? { ...row, estado: 'Rechazado' } : row
-        );
-        setData(updatedData);
-        setFilteredData(updatedData.filter(row =>
-            !searchValue || row.ambiente.includes(searchValue)
-        ));
-        handleClose();
-        openSnackbar('Solicitud rechazada exitosamente', 'success');
+    const handleAccept = async () => {
+        if (await updateSolicitudState(selectedRow.id, 'reservado')) {
+            const updatedData = data.map((row) =>
+                row.id === selectedRow.id ? { ...row, estado: 'reservado' } : row
+            );
+            setData(updatedData);
+            setFilteredData(updatedData.filter(row =>
+                !searchValue || row.ambiente.includes(searchValue)
+            ));
+            handleClose();
+        }
+    };
+
+    const handleReject = async () => {
+        if (await updateSolicitudState(selectedRow.id, 'disponible')) {
+            const updatedData = data.map((row) =>
+                row.id === selectedRow.id ? { ...row, estado: 'disponible' } : row
+            );
+            setData(updatedData);
+            setFilteredData(updatedData.filter(row =>
+                !searchValue || row.ambiente.includes(searchValue)
+            ));
+            handleClose();
+        }
     };
 
     const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredData.length) : 0;
@@ -232,34 +245,46 @@ const AprobarSolicitudesPage = () => {
                 <Box>
                     <Grid container spacing={2}>
                         <Grid item xs={6}>
-                            <Typography variant="body1" align="left"><strong>Fecha:</strong> {selectedRow.fecha}</Typography>
+                            <Typography variant="subtitle1">Fecha:</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="body1" align="right"><strong>Ambiente:</strong> {selectedRow.ambiente}</Typography>
+                            <Typography variant="body1">{selectedRow.fecha}</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="body1" align="left"><strong>Horario:</strong> {selectedRow.horario}</Typography>
+                            <Typography variant="subtitle1">Ambiente:</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="body1" align="right"><strong>Capacidad:</strong> {selectedRow.capacidad}</Typography>
+                            <Typography variant="body1">{selectedRow.ambiente}</Typography>
                         </Grid>
                         <Grid item xs={6}>
-                            <Typography variant="body1" align="left"><strong>Prioridad:</strong> {selectedRow.prioridad}</Typography>
+                            <Typography variant="subtitle1">Horario:</Typography>
                         </Grid>
-                        <Grid item xs={12}>
-                            <Typography variant="body1" align="left"><strong>Estado:</strong> {selectedRow.estado}</Typography>
+                        <Grid item xs={6}>
+                            <Typography variant="body1">{selectedRow.horario}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1">Capacidad:</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body1">{selectedRow.capacidad}</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="subtitle1">Estado:</Typography>
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography variant="body1">{selectedRow.estado}</Typography>
                         </Grid>
                     </Grid>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
+                        <Button onClick={handleAccept} variant="contained" color="primary">
+                            ACEPTAR
+                        </Button>
+                        <Button onClick={handleReject} variant="contained" color="error">
+                            RECHAZAR
+                        </Button>
+                    </Box>
                 </Box>
             )}
-            <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-                <Button onClick={handleAccept} variant="contained" color="primary">
-                    ACEPTAR
-                </Button>
-                <Button onClick={handleReject} variant="contained" color="error">
-                    RECHAZAR
-                </Button>
-            </Box>
         </Box>
     );
 
