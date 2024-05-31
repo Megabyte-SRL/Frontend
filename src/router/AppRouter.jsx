@@ -15,6 +15,7 @@ import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
 import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
 import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
 import ProfilePage from '../pages/profilePage/ProfilePage'
+import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/sugerirAmbientesPage'
 
 const AppRouter = () => {
   return (
@@ -38,6 +39,8 @@ const AppRouter = () => {
         <Route path='carga-masiva-docentes' element={<CargaMasivaDocentePage />} />
         <Route path='verificar-solicitudes' element={<VerficarSolicitudesPage />} />
         <Route path='profile' element={<ProfilePage/>} />
+        <Route path='sugerir-ambientes' element={<SugerirAmbientesPage/>}/>
+
       </Route>
 
       <Route
