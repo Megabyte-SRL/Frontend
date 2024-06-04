@@ -3,6 +3,7 @@ import React from 'react'
 import { AppBar, Grid, IconButton, Toolbar, Typography, Avatar, Tooltip, Menu, MenuItem, Box } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
+import BadgeNotify from '../../components/molecules/badgeIcon/BadgeNotify';
 
 const NavBar = ({ anchoCaja }) => {
   const settings = ['Perfil', 'Salir'];
@@ -59,6 +60,7 @@ const NavBar = ({ anchoCaja }) => {
             AULAS FCYT
           </Typography>
         </Grid>
+        <BadgeNotify onClick={handleOpenUserMenu} sx={{ p: 0 }}></BadgeNotify>
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
