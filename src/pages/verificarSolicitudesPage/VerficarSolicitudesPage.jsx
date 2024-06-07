@@ -7,16 +7,7 @@ import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 
 const VerficarSolicitudesPage = () => {
-  const [modalData, setModalData] = useState({
-    fechaDisponible: '',
-    fechaSolicitud: '',
-    ambiente: '',
-    horario: '',
-    capacidad: 0,
-    prioridad: 0,
-    docenteSolicitante: ''
-  });
-
+  
   const fetchSolicitudes = async (params) => {
     const query = new URLSearchParams(params).toString();
     const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
