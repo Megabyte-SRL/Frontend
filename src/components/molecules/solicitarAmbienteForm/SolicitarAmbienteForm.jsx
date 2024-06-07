@@ -165,7 +165,7 @@ const SolicitarAmbienteForm = ({
             </Grid>
             <Grid item xs={12} sx={{ mt: 2 }}>
               <FormControl fullWidth>
-                <InputLabel>Decentes combinados</InputLabel>
+                <InputLabel>Docentes combinados</InputLabel>
                 {loadingDocentes ? (
                   <CircularProgress size={24} />
                 ) : (

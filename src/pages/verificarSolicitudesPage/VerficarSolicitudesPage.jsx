@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { Box, Grid, Paper, Typography } from '@mui/material';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
@@ -7,20 +6,30 @@ import InformationVerificarSolicitudForm from '../../components/molecules/inform
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 
-const fetchSolicitudes = async (params) => {
-  const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
-    }
+const VerficarSolicitudesPage = () => {
+  const [modalData, setModalData] = useState({
+    fechaDisponible: '',
+    fechaSolicitud: '',
+    ambiente: '',
+    horario: '',
+    capacidad: 0,
+    prioridad: 0,
+    docenteSolicitante: ''
   });
 
-  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
-  const data = await response.json();
-  return data;
-}
+  const fetchSolicitudes = async (params) => {
+    const query = new URLSearchParams(params).toString();
+    const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    });
 
-const VerficarSolicitudesPage = () => {
+    if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
+    const data = await response.json();
+    return data;
+  }
+
   const columns = [
     { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
     { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
@@ -68,7 +77,12 @@ const VerficarSolicitudesPage = () => {
   };
 
   const handleOpenReservaForm = (row) => {
-    setSelectedRow(data.find(solicitud => solicitud.id === row.id));
+    const solicitud = data.find(solicitud => solicitud.id === row.id);
+    const docenteSolicitante = {
+      id: solicitud.docente.id,
+      nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
+    };
+    setSelectedRow({ ...solicitud, docenteSolicitante });
     setOpenModal(true);
   };
 

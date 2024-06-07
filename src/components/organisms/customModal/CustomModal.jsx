@@ -21,8 +21,8 @@ const CustomModal = ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '70%',
-        height: '80%',
+        width: '45%',
+        height: '35%',
         bgcolor: 'background.paper',
         boxShadow: 24,
         p: 3,
@@ -31,7 +31,7 @@ const CustomModal = ({
         <Typography id='modal-title' variant='h6' component='h2' sx={{ textAlign: 'center' }}>
           Solicitar Ambiente
         </Typography>
-        <Box id='modal-body' sx={{ mt: 6 }}>
+        <Box id='modal-body' sx={{ mt: 1 }}>
           {React.Children.map(children, (child, index) => (
             <React.Fragment key={index}>
               {child}
