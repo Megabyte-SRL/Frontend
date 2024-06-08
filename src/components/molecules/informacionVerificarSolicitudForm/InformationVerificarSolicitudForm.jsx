@@ -64,7 +64,7 @@ const InformationVerificarSolicitudForm = ({
         <Button 
           variant='contained'
           color='primary'
-          onClick={() => navigate('/dashboard/sugerir-ambientes')}
+          onClick={() => navigate('/dashboard/sugerir-ambientes',{state: row})}
         >
           SUGERIR
         </Button>

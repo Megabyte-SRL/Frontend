@@ -8,6 +8,7 @@ import CustomModal from '../../components/organisms/customModal/CustomModal';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import useTable from '../../hooks/useTable';
 import moment from 'moment';
+import { useLocation } from 'react-router-dom';
 
 const fetchHorariosDisponibles = async (params) => {
   const query = new URLSearchParams(params).toString();
@@ -34,18 +35,31 @@ const renderEstado = (params) => {
 };
 
 const SugerirAmbientesPage = () => {
+
+  const { state } = useLocation();
+  const [idSeleccionado, setIdSeleccionado] = useState(0);
   const [selectedRows, setSelectedRows] = useState({});
   const [filteredData, setFilteredData] = useState([]);
   const [fechaFilter, setFechaFilter] = useState('');
   const [horaFilter, setHoraFilter] = useState([]);
   const horas = ['6:45:00 - 8:15:00', '8:15:00 - 9:45:00', '9:45:00 - 11:15:00', '11:15:00 - 12:45:00', '12:45:00 - 14:15:00', '14:15:00 - 15:45:00', '15:45:00 - 17:15:00', '17:15:00 - 18:45:00', '18:45:00 - 20:15:00', '20:15:00 - 21:45:00'];
-  
+  const [ambienteSeleccionado, setAmbienteSeleccionado] = useState([]);
+  const [selection, setSelection] = useState([]);
+
+
+
   const handleCheckboxChange = (event, id) => {
-    setSelectedRows((prev) => ({
-      ...prev,
-      [id]: event.target.checked,
-    }));
+
+    setSelectedRows((prev) => (
+      {
+        ...prev,
+        [id]: event.target.checked,
+      }
+    ));
+    setIdSeleccionado(id);
+
   };
+
 
   useEffect(() => {
     const selectedRowCountElement = document.querySelector('.MuiDataGrid-selectedRowCount.css-de9k3v-MuiDataGrid-selectedRowCount');
@@ -53,7 +67,7 @@ const SugerirAmbientesPage = () => {
       selectedRowCountElement.remove();
     }
   }, []);
-  
+
   const columns = [
     { field: 'id', headerName: 'Id', width: 70 },
     {
@@ -71,12 +85,12 @@ const SugerirAmbientesPage = () => {
       headerName: 'Seleccionar',
       width: 100,
       renderCell: (params) => (
-      <Checkbox 
-      checked={selectedRows[params.id] || false}
-      onChange={(event) => handleCheckboxChange(event, params.id)}
-      />
+        <Checkbox
+          checked={selectedRows[params.id] || false}
+          onChange={(event) => handleCheckboxChange(event, params.id)}
+        />
       ),
-      }
+    }
   ];
 
   const { openSnackbar } = useSnackbar();
@@ -96,6 +110,8 @@ const SugerirAmbientesPage = () => {
   } = useTable(fetchHorariosDisponibles, 'asc', 'fecha', { estado: 'disponible' });
 
   useEffect(() => {
+
+
     const filtered = data
       .filter(row => row.estado === 'disponible')
       .filter(row => !fechaFilter || row.fecha === fechaFilter)
@@ -106,7 +122,7 @@ const SugerirAmbientesPage = () => {
 
   const handleOnSubmitSolicitud = async (values) => {
     const [, grupoId] = values.grupo.split('-');
-    
+
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/solicitudesAmbientes`, {
       method: 'POST',
       headers: {
@@ -139,10 +155,29 @@ const SugerirAmbientesPage = () => {
   const handleHoraFilterChange = (event) => {
     setHoraFilter(event.target.value);
   };
+  console.log(state);
 
+  const obtenerFilas = (ids) => {
+    const dataFilaSeleccionada = ids.map((id) => filteredData.find((row) => row.id === id));
+    setAmbienteSeleccionado(dataFilaSeleccionada);
+    console.log(dataFilaSeleccionada);
+  };
+
+  const enviarSugerencia=()=>{
+    
+    const objSolicitud={
+      idSolicitud: state.id,
+      ambientes: ambienteSeleccionado,
+    }
+    console.log(objSolicitud);
+  }
   return (
+
+  
     <Formik>
+
       <Grid container justifyContent='center'>
+
         <Grid item xs={10} md={12} lg={11}>
           <Box
             id='verificar-solicitudes-box'
@@ -204,6 +239,7 @@ const SugerirAmbientesPage = () => {
                 <Grid item xs={12} sx={{ mt: 2 }}>
                   <Box sx={{ width: '100%' }}>
                     <DataGrid
+                      checkboxSelection
                       rows={filteredData}
                       columns={columns}
                       sx={{
@@ -217,7 +253,19 @@ const SugerirAmbientesPage = () => {
                         },
                       }}
                       pageSizeOptions={[5, 10]}
+                      onRowSelectionModelChange={(ids) => obtenerFilas(ids)}
+                      
+
+
+
+
+
                     />
+                    <pre style={{ fontSize: 10 }}>
+                      {JSON.stringify(ambienteSeleccionado, null, 4)}
+                    </pre>
+                    
+
                   </Box>
                 </Grid>
 
@@ -226,11 +274,12 @@ const SugerirAmbientesPage = () => {
                     type='submit'
                     color='primary'
                     variant='contained'
+                    onClick={enviarSugerencia}
                   >
                     Enviar Sugerencia
                   </Button>
                 </Grid>
-                
+
               </Grid>
 
               <CustomModal
