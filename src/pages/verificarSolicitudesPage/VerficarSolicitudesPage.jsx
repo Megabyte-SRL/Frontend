@@ -1,23 +1,36 @@
-import React, { useState } from 'react';
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import React, { useState, useCallback } from 'react';
+import { Box, Grid, Paper, Typography, CircularProgress } from '@mui/material';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
 import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
+import debounce from 'lodash.debounce';
 
 const VerficarSolicitudesPage = () => {
-  
+  const cache = {};
+  const [loading, setLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false); // Nueva variable de estado
+
   const fetchSolicitudes = async (params) => {
     const query = new URLSearchParams(params).toString();
+
+    if (cache[query]) {
+      return cache[query];
+    }
+
+    setLoading(true);
     const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
       }
     });
+    setLoading(false);
 
     if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
     const data = await response.json();
+    
+    cache[query] = data;
     return data;
   }
 
@@ -38,7 +51,7 @@ const VerficarSolicitudesPage = () => {
   const {
     data,
     searchText,
-    handleSearchChange,
+    handleSearchChange: handleSearchChangeWithoutDebounce,
     filters,
     handleFilterChange,
     order,
@@ -50,6 +63,14 @@ const VerficarSolicitudesPage = () => {
     handleRowsPerPageChange,
     totalRows
   } = useTable(fetchSolicitudes, 'asc', 'fecha');
+
+  // Debounce handleSearchChange
+  const handleSearchChange = useCallback(
+    debounce((newSearchText) => {
+      handleSearchChangeWithoutDebounce(newSearchText);
+    }, 300),
+    []
+  );
 
   const handleOnSubmitReserva = async (solicitudId) => {
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
@@ -133,6 +154,7 @@ const VerficarSolicitudesPage = () => {
               onSearchChange={handleSearchChange}
               onClickRow={(row) => handleOpenReservaForm(row)}
             />
+            {showLoading && loading && <CircularProgress />} {/* Condición adicional para mostrar el loader */}
             <CustomModal
               open={openModal}
               onClose={() => setOpenModal(false)}

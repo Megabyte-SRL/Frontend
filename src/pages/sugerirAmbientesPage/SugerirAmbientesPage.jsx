@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Chip, Grid, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
 import { green, red, yellow } from '@mui/material/colors';
-import { Field, Formik } from 'formik';
+import { Formik } from 'formik';
 import { DataGrid } from '@mui/x-data-grid';
 import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
@@ -46,10 +46,7 @@ const SugerirAmbientesPage = () => {
   const [ambienteSeleccionado, setAmbienteSeleccionado] = useState([]);
   const [selection, setSelection] = useState([]);
 
-
-
   const handleCheckboxChange = (event, id) => {
-
     setSelectedRows((prev) => (
       {
         ...prev,
@@ -57,9 +54,7 @@ const SugerirAmbientesPage = () => {
       }
     ));
     setIdSeleccionado(id);
-
   };
-
 
   useEffect(() => {
     const selectedRowCountElement = document.querySelector('.MuiDataGrid-selectedRowCount.css-de9k3v-MuiDataGrid-selectedRowCount');
@@ -106,12 +101,9 @@ const SugerirAmbientesPage = () => {
 
   const {
     data,
-
   } = useTable(fetchHorariosDisponibles, 'asc', 'fecha', { estado: 'disponible' });
 
   useEffect(() => {
-
-
     const filtered = data
       .filter(row => row.estado === 'disponible')
       .filter(row => !fechaFilter || row.fecha === fechaFilter)
@@ -155,7 +147,6 @@ const SugerirAmbientesPage = () => {
   const handleHoraFilterChange = (event) => {
     setHoraFilter(event.target.value);
   };
-  console.log(state);
 
   const obtenerFilas = (ids) => {
     const dataFilaSeleccionada = ids.map((id) => filteredData.find((row) => row.id === id));
@@ -163,21 +154,17 @@ const SugerirAmbientesPage = () => {
     console.log(dataFilaSeleccionada);
   };
 
-  const enviarSugerencia=()=>{
-    
-    const objSolicitud={
+  const enviarSugerencia = () => {
+    const objSolicitud = {
       idSolicitud: state.id,
       ambientes: ambienteSeleccionado,
     }
     console.log(objSolicitud);
   }
+
   return (
-
-  
     <Formik>
-
       <Grid container justifyContent='center'>
-
         <Grid item xs={10} md={12} lg={11}>
           <Box
             id='verificar-solicitudes-box'
@@ -254,18 +241,10 @@ const SugerirAmbientesPage = () => {
                       }}
                       pageSizeOptions={[5, 10]}
                       onRowSelectionModelChange={(ids) => obtenerFilas(ids)}
-                      
-
-
-
-
-
                     />
                     <pre style={{ fontSize: 10 }}>
                       {JSON.stringify(ambienteSeleccionado, null, 4)}
                     </pre>
-                    
-
                   </Box>
                 </Grid>
 
@@ -279,7 +258,6 @@ const SugerirAmbientesPage = () => {
                     Enviar Sugerencia
                   </Button>
                 </Grid>
-
               </Grid>
 
               <CustomModal
@@ -293,6 +271,12 @@ const SugerirAmbientesPage = () => {
                   onSubmit={handleOnSubmitSolicitud}
                 />
               </CustomModal>
+
+              {/* Mostrar el estado en el retorno */}
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="h6">Estado recibido:</Typography>
+                <pre>{JSON.stringify(state, null, 2)}</pre>
+              </Box>
             </Paper>
           </Box>
         </Grid>
