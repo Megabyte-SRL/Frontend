@@ -37,14 +37,14 @@ const renderEstado = (params) => {
 const SugerirAmbientesPage = () => {
 
   const { state } = useLocation();
-  const [idSeleccionado, setIdSeleccionado] = useState(0);
   const [selectedRows, setSelectedRows] = useState({});
   const [filteredData, setFilteredData] = useState([]);
-  const [fechaFilter, setFechaFilter] = useState('');
-  const [horaFilter, setHoraFilter] = useState([]);
+  const [fechaFilter, setFechaFilter] = useState(state.horarioDisponible.fecha ? [state.horarioDisponible.fecha] : []);
+  const [horaFilter, setHoraFilter] = useState(state.horarioDisponible.horario ? [state.horarioDisponible.horario] : []);
+  const [capacidadFilter, setCapacidadFilter] = useState(state.horarioDisponible.capacidad ? [state.horarioDisponible.capacidad] : []);
+
   const horas = ['6:45:00 - 8:15:00', '8:15:00 - 9:45:00', '9:45:00 - 11:15:00', '11:15:00 - 12:45:00', '12:45:00 - 14:15:00', '14:15:00 - 15:45:00', '15:45:00 - 17:15:00', '17:15:00 - 18:45:00', '18:45:00 - 20:15:00', '20:15:00 - 21:45:00'];
   const [ambienteSeleccionado, setAmbienteSeleccionado] = useState([]);
-  const [selection, setSelection] = useState([]);
 
   const handleCheckboxChange = (event, id) => {
     setSelectedRows((prev) => (
@@ -53,7 +53,7 @@ const SugerirAmbientesPage = () => {
         [id]: event.target.checked,
       }
     ));
-    setIdSeleccionado(id);
+    obtenerFilas({ ...selectedRows, [id]: event.target.checked }); // Llamar obtenerFilas aquí
   };
 
   useEffect(() => {
@@ -107,10 +107,11 @@ const SugerirAmbientesPage = () => {
     const filtered = data
       .filter(row => row.estado === 'disponible')
       .filter(row => !fechaFilter || row.fecha === fechaFilter)
-      .filter(row => horaFilter.length === 0 || horaFilter.includes(row.horario));
+      .filter(row => horaFilter.length === 0 || horaFilter.includes(row.horario))
+      .filter(row => !capacidadFilter || row.capacidad >= capacidadFilter);
     const filteredWithIds = filtered.map((row, index) => ({ ...row, id: index + 1 }));
     setFilteredData(filteredWithIds);
-  }, [data, fechaFilter, horaFilter]);
+  }, [data, fechaFilter, horaFilter, capacidadFilter]);
 
   const handleOnSubmitSolicitud = async (values) => {
     const [, grupoId] = values.grupo.split('-');
@@ -148,8 +149,13 @@ const SugerirAmbientesPage = () => {
     setHoraFilter(event.target.value);
   };
 
-  const obtenerFilas = (ids) => {
-    const dataFilaSeleccionada = ids.map((id) => filteredData.find((row) => row.id === id));
+  const handleCapacidadFilterChange = (event) => {
+    setCapacidadFilter(event.target.value);
+  };
+
+  const obtenerFilas = (selectedRows) => {
+    const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
+    const dataFilaSeleccionada = selectedIds.map((id) => filteredData.find((row) => row.id === parseInt(id)));
     setAmbienteSeleccionado(dataFilaSeleccionada);
     console.log(dataFilaSeleccionada);
   };
@@ -206,7 +212,7 @@ const SugerirAmbientesPage = () => {
 
                 <Grid item xs={2.3} sx={{ mt: 2, ml: 25 }}>
                   <FormControl fullWidth>
-                    <InputLabel>Horas</InputLabel>
+                    <InputLabel>Horarios</InputLabel>
                     <Select
                       name='hora'
                       label='Hora'
@@ -223,10 +229,21 @@ const SugerirAmbientesPage = () => {
                   </FormControl>
                 </Grid>
 
+                <Grid item xs={2.3} sx={{ mt: 2, ml: 5 }}>
+                  <TextField
+                    name='capacidad'
+                    type='number'
+                    label='Capacidad Mínima'
+                    variant='outlined'
+                    fullWidth
+                    value={capacidadFilter}
+                    onChange={handleCapacidadFilterChange}
+                  />
+                </Grid>
+
                 <Grid item xs={12} sx={{ mt: 2 }}>
                   <Box sx={{ width: '100%' }}>
                     <DataGrid
-                      checkboxSelection
                       rows={filteredData}
                       columns={columns}
                       sx={{
@@ -240,7 +257,6 @@ const SugerirAmbientesPage = () => {
                         },
                       }}
                       pageSizeOptions={[5, 10]}
-                      onRowSelectionModelChange={(ids) => obtenerFilas(ids)}
                     />
                     <pre style={{ fontSize: 10 }}>
                       {JSON.stringify(ambienteSeleccionado, null, 4)}
@@ -253,7 +269,7 @@ const SugerirAmbientesPage = () => {
                     type='submit'
                     color='primary'
                     variant='contained'
-                    onClick={enviarSugerencia}
+                    onClick={() => { obtenerFilas(selectedRows); enviarSugerencia(); }}
                   >
                     Enviar Sugerencia
                   </Button>
@@ -275,7 +291,11 @@ const SugerirAmbientesPage = () => {
               {/* Mostrar el estado en el retorno */}
               <Box sx={{ mt: 2 }}>
                 <Typography variant="h6">Estado recibido:</Typography>
-                <pre>{JSON.stringify(state, null, 2)}</pre>
+                <pre>Fecha solicitud: {JSON.stringify(state.fechaSolicitud, null, 2)}</pre>
+                <pre>Fecha reserva: {JSON.stringify(state.horarioDisponible.fecha, null, 2)}</pre>
+                <pre>Docente: {JSON.stringify(state.docenteSolicitante.nombre, null, 2)}</pre>
+                <pre>ID Docente: {JSON.stringify(state.docenteSolicitante.id, null, 2)}</pre>
+                <pre>Horario: {JSON.stringify(state.horarioDisponible.horario, null, 2)}</pre>
               </Box>
             </Paper>
           </Box>
