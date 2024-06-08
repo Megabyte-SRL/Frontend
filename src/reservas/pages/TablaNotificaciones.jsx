@@ -7,6 +7,7 @@ import {
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import FlagIcon from '@mui/icons-material/Flag';
+import 'TablaNotificaciones.css';
 
 const data = [
     { id: 1, ambiente: 'Aula 1', fecha: '2023-06-01', horario: '08:00 - 10:00', capacidad: 30 },
