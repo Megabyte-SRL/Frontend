@@ -1,0 +1,39 @@
+/* src/reservas/pages/TablaNotificaciones.css */
+.App {
+    text-align: center;
+    padding: 20px;
+}
+
+.App h1 {
+    margin: 20px 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+.MuiTableCell-head {
+    font-weight: bold;
+    background-color: #f5f5f5;
+}
+
+.MuiTableCell-body {
+    font-family: 'Roboto', sans-serif;
+}
+
+.MuiIconButton-root {
+    padding: 5px;
+}
+
+.MuiTablePagination-root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Roboto', sans-serif;
+}
+
+.MuiTablePagination-actions button {
+    padding: 8px;
+}
+
+.MuiTableContainer-root {
+    margin-top: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
