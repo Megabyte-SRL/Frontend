@@ -48,7 +48,8 @@ const VerficarSolicitudesPage = () => {
     page,
     handlePageChange,
     handleRowsPerPageChange,
-    totalRows
+    totalRows,
+    loading
   } = useTable(fetchSolicitudes, 'asc', 'fecha');
 
   const handleOnSubmitReserva = async (solicitudId) => {
@@ -127,6 +128,7 @@ const VerficarSolicitudesPage = () => {
               searchText={searchText}
               onSearchChange={handleSearchChange}
               onClickRow={(row) => handleOpenReservaForm(row)}
+              loading={loading}
             />
             <CustomModal
               open={openModal}

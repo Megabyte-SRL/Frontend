@@ -90,7 +90,8 @@ const SolicitudesPage = () => {
     page,
     handlePageChange,
     handleRowsPerPageChange,
-    totalRows
+    totalRows,
+    loading,
   } = useTable(fetchHorariosDisponibles, 'asc', 'fecha');
 
   const handleOnSubmitSolicitud = async (values) => {
@@ -170,6 +171,7 @@ const SolicitudesPage = () => {
               searchText={searchText}
               onSearchChange={handleSearchChange}
               onClickRow={(row) => console.log(row)}
+              loading={loading}
             />
             <CustomModal
               open={openModal}
