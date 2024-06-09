@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Field } from 'formik';
 import { TextField } from '@mui/material';
 
@@ -9,7 +10,7 @@ const CustomTextField = ({
   placeholder = '',
   touched = {},
   errors = {},
-  mb = 0, // Añadir la propiedad mb para margen inferior
+  mb = 0,
   required = false,
 }) => {
   return (
@@ -27,7 +28,7 @@ const CustomTextField = ({
       helperText={touched[name] ? errors[name] : ''}
       error={touched[name] && Boolean(errors[name])}
       fullWidth
-      sx={{ mb: mb }} // Aplicar margen inferior personalizado
+      sx={{ mb: mb }}
     />
   );
 }

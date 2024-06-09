@@ -15,7 +15,7 @@ import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
 import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
 import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
 import ProfilePage from '../pages/profilePage/ProfilePage'
-import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/sugerirAmbientesPage'
+import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/SugerirAmbientesPage'
 
 const AppRouter = () => {
   return (

@@ -21,15 +21,15 @@ const CustomModal = ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '45%',
-        height: '35%',
+        //width: '45%',
+        //height: '35%',
         bgcolor: 'background.paper',
         boxShadow: 24,
         p: 3,
         borderRadius: 2,
       }}>
         <Typography id='modal-title' variant='h6' component='h2' sx={{ textAlign: 'center' }}>
-          Solicitar Ambiente
+          {title}
         </Typography>
         <Box id='modal-body' sx={{ mt: 1 }}>
           {React.Children.map(children, (child, index) => (
