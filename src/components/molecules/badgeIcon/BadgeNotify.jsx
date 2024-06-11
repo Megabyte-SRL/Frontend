@@ -79,16 +79,18 @@ export default function BadgeNotify() {
         );
     };
 
+    const pendingNotificationsCount = notifications.filter(notification => notification.status === 'pending').length;
+
     return (
         <div>
             <IconButton
-                aria-label={notificationsLabel(notifications.length)}
+                aria-label={notificationsLabel(pendingNotificationsCount)}
                 aria-controls={open ? 'fade-menu' : undefined}
                 aria-haspopup="true"
                 aria-expanded={open ? 'true' : undefined}
                 onClick={handleClick}
             >
-                <Badge badgeContent={notifications.length} color="secondary">
+                <Badge badgeContent={pendingNotificationsCount} color="secondary">
                     <MailIcon />
                 </Badge>
             </IconButton>
