@@ -3,10 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Chip, Grid, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
 import { red, yellow } from '@mui/material/colors';
 import { Formik } from 'formik';
-import { DataGrid } from '@mui/x-data-grid';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import useTable from '../../hooks/useTable';
-import moment from 'moment';
+import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const fetchHorariosDisponibles = async (params) => {
@@ -22,22 +21,55 @@ const fetchHorariosDisponibles = async (params) => {
   return data;
 };
 
-const renderEstado = (params) => {
-  switch (params.value) {
-    case 'disponible':
-      return <Chip label={params.value} style={{ borderRadius: '10%', backgroundColor: "#01AB5E", color: 'white' }} />;
-    case 'solicitado':
-      return <Chip label={params.value} style={{ borderRadius: '10%', backgroundColor: yellow[500], color: 'black' }} />;
-    default:
-      return <Chip label={params.value} style={{ backgroundColor: red[500], color: 'white' }} />;
-  }
-};
-
 const SugerirAmbientesPage = () => {
+  const columns = [
+    { id: 'id', label: 'Id', sortable: true, filterable: false },
+    { id: 'fecha', label: 'Fecha solicitud', sortable: true, filterable: false },
+    { id: 'ambiente', label: 'Ambiente', sortable: true, filterable: false },
+    { id: 'horario', label: 'Horario', sortable: true, filterable: false },
+    { id: 'capacidad', label: 'Capacidad', sortable: true, filterable: false },
+    {
+      id: 'estado',
+      label: 'Estado',
+      sortable: false,
+      filterable: false,
+      render: (row) => {
+        switch (row.estado) {
+          case 'disponible':
+            return <Chip
+              label={row.estado}
+              style={{ borderRadius: '10%', backgroundColor: "#01AB5E", color: 'white' }}
+            />;
+          case 'solicitado':
+            return <Chip
+              label={row.estado}
+              style={{ borderRadius: '10%', backgroundColor: yellow[500], color: 'black' }}
+            />;
+          default:
+            return <Chip
+              label={row.estado}
+              style={{ backgroundColor: red[500], color: 'white' }}
+            />;
+        }
+      }
+    },
+    {
+      id: 'seleccionar',
+      label: 'Seleccionar',
+      sortable: false,
+      filterable: false,
+      render: (params) => (
+        <Checkbox
+          checked={selectedRows[params.id] || false}
+          onChange={(event) => handleCheckboxChange(event, params.id)}
+        />
+      ),
+    }
+  ];
+
   const { state } = useLocation();
   const navigate = useNavigate();
   const [selectedRows, setSelectedRows] = useState({});
-  const [filteredData, setFilteredData] = useState([]);
   const [fechaFilter, setFechaFilter] = useState(state.horarioDisponible.fecha ? [state.horarioDisponible.fecha] : []);
   const [horaFilter, setHoraFilter] = useState(state.horarioDisponible.horario ? [state.horarioDisponible.horario] : []);
   const [capacidadFilter, setCapacidadFilter] = useState(state.horarioDisponible.capacidad ? [state.horarioDisponible.capacidad] : []);
@@ -62,46 +94,24 @@ const SugerirAmbientesPage = () => {
     }
   }, []);
 
-  const columns = [
-    { field: 'id', headerName: 'Id', width: 70 },
-    {
-      field: 'fecha',
-      headerName: 'Fecha solicitud',
-      width: 180,
-      valueFormatter: (params) => moment(params.value).format('DD/MM/YYYY'),
-    },
-    { field: 'ambiente', headerName: 'Ambiente', width: 180 },
-    { field: 'horario', headerName: 'Horario', width: 180 },
-    { field: 'capacidad', headerName: 'Capacidad', width: 150 },
-    { field: 'estado', headerName: 'Estado', width: 180, renderCell: renderEstado },
-    {
-      field: 'seleccionar',
-      headerName: 'Seleccionar',
-      width: 100,
-      renderCell: (params) => (
-        <Checkbox
-          checked={selectedRows[params.id] || false}
-          onChange={(event) => handleCheckboxChange(event, params.id)}
-        />
-      ),
-    }
-  ];
-
   const { openSnackbar } = useSnackbar();
 
   const {
     data,
+    searchText,
+    handleSearchChange,
+    filters,
+    handleFilterChange,
+    order,
+    orderBy,
+    handleSort,
+    rowsPerPage,
+    page,
+    handlePageChange,
+    handleRowsPerPageChange,
+    totalRows,
+    loading,
   } = useTable(fetchHorariosDisponibles, 'asc', 'fecha', { estado: 'disponible' });
-
-  useEffect(() => {
-    const filtered = data
-      .filter(row => row.estado === 'disponible')
-      .filter(row => !fechaFilter || row.fecha === fechaFilter)
-      .filter(row => horaFilter.length === 0 || horaFilter.includes(row.horario))
-      .filter(row => !capacidadFilter || row.capacidad >= capacidadFilter);
-    const filteredWithIds = filtered.map((row, index) => ({ ...row, id: index + 1 }));
-    setFilteredData(filteredWithIds);
-  }, [data, fechaFilter, horaFilter, capacidadFilter]);
 
   const handleOnSubmitSugerencias = async () => {
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/sugerirAmbientes`, {
@@ -218,26 +228,23 @@ const SugerirAmbientesPage = () => {
                 </Grid>
 
                 <Grid item xs={12} sx={{ mt: 2 }}>
-                  <Box sx={{ width: '100%' }}>
-                    <DataGrid
-                      rows={filteredData}
-                      columns={columns}
-                      sx={{
-                        "& .MuiDataGrid-cell:focus": {
-                          outline: "none",
-                        },
-                      }}
-                      initialState={{
-                        pagination: {
-                          paginationModel: { page: 0, pageSize: 5 },
-                        },
-                      }}
-                      pageSizeOptions={[5, 10]}
-                    />
-                    <pre style={{ fontSize: 10 }}>
-                      {JSON.stringify(ambienteSeleccionado, null, 4)}
-                    </pre>
-                  </Box>
+                  <CustomSearchableTable
+                    columns={columns}
+                    data={data}
+                    order={order}
+                    orderBy={orderBy}
+                    onSort={handleSort}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    totalRows={totalRows}
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                    onFilterChange={handleFilterChange}
+                    searchText={searchText}
+                    onSearchChange={handleSearchChange}
+                    onClickRow={(row) => console.log(row)}
+                    loading={loading}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -251,14 +258,6 @@ const SugerirAmbientesPage = () => {
                   </Button>
                 </Grid>
               </Grid>
-
-              {/* Mostrar el estado en el retorno */}
-              <Box sx={{ mt: 2 }}>
-                <Typography variant="h6">Estado recibido:</Typography>
-                <pre style={{ fontSize: 10 }}>
-                  {JSON.stringify(state, null, 4)}
-                </pre>
-              </Box>
             </Paper>
           </Box>
         </Grid>
