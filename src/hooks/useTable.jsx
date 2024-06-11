@@ -9,21 +9,31 @@ const useTable = (fetchData, initialOrder = 'asc', initialOrderBy = '') => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
   const [totalRows, setTotalRows] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
     const fetchTableData = async () => {
-      const params = {
-        search: searchText,
-        sortField: orderBy,
-        sortDirection: order,
-        perPage: rowsPerPage,
-        page: page + 1, // Laravel pagination starts at 1
-        ...filters
-      };
+      try {
+        const params = {
+          search: searchText,
+          sortField: orderBy,
+          sortDirection: order,
+          perPage: rowsPerPage,
+          page: page + 1, // Laravel pagination starts at 1
+          ...filters
+        };
 
-      const result = await fetchData(params);
-      setData(result.data);
-      setTotalRows(result.total);
+        const result = await fetchData(params);
+        setData(result.data);
+        setTotalRows(result.meta.total);
+      } catch (error) {
+        console.error("Failed to fetch table data: ", error);
+        setData([]);
+        setTotalRows(0);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchTableData();
@@ -69,6 +79,7 @@ const useTable = (fetchData, initialOrder = 'asc', initialOrderBy = '') => {
     handlePageChange,
     handleRowsPerPageChange,
     totalRows,
+    loading,
   };
 }
 
