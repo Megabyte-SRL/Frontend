@@ -69,7 +69,12 @@ const VerficarSolicitudesPage = () => {
   };
 
   const handleOpenReservaForm = (row) => {
-    setSelectedRow(data.find(solicitud => solicitud.id === row.id));
+    const solicitud = data.find(solicitud => solicitud.id === row.id);
+    const docenteSolicitante = {
+      id: solicitud.docente.id,
+      nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
+    };
+    setSelectedRow({ ...solicitud, docenteSolicitante });
     setOpenModal(true);
   };
 

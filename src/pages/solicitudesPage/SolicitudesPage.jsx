@@ -10,7 +10,7 @@ import CustomSearchableTable from '../../components/organisms/customSearchableTa
 
 const fetchHorariosDisponibles = async (params) => {
   const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles?${query}`, {
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horarios?${query}`, {
     headers: {
       'Authorization': 'Bearer ' + sessionStorage.getItem("token")
     }
