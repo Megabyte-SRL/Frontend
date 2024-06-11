@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
+
 import { Box, Button, Chip, Grid, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
-import { green, red, yellow } from '@mui/material/colors';
+import { red, yellow } from '@mui/material/colors';
 import { Formik } from 'formik';
 import { DataGrid } from '@mui/x-data-grid';
-import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
-import CustomModal from '../../components/organisms/customModal/CustomModal';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import useTable from '../../hooks/useTable';
 import moment from 'moment';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const fetchHorariosDisponibles = async (params) => {
   const query = new URLSearchParams(params).toString();
@@ -35,8 +34,8 @@ const renderEstado = (params) => {
 };
 
 const SugerirAmbientesPage = () => {
-
   const { state } = useLocation();
+  const navigate = useNavigate();
   const [selectedRows, setSelectedRows] = useState({});
   const [filteredData, setFilteredData] = useState([]);
   const [fechaFilter, setFechaFilter] = useState(state.horarioDisponible.fecha ? [state.horarioDisponible.fecha] : []);
@@ -89,15 +88,6 @@ const SugerirAmbientesPage = () => {
   ];
 
   const { openSnackbar } = useSnackbar();
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState({
-    id: 0,
-    fecha: '',
-    ambiente: '',
-    horario: '',
-    capacidad: 0,
-    estado: ''
-  });
 
   const {
     data,
@@ -113,32 +103,28 @@ const SugerirAmbientesPage = () => {
     setFilteredData(filteredWithIds);
   }, [data, fechaFilter, horaFilter, capacidadFilter]);
 
-  const handleOnSubmitSolicitud = async (values) => {
-    const [, grupoId] = values.grupo.split('-');
-
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/solicitudesAmbientes`, {
+  const handleOnSubmitSugerencias = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/sugerirAmbientes`, {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem("token"),
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        horarioDisponibleId: values.id,
-        grupoId: grupoId,
-        capacidad: values.capacidad,
-        tipoReserva: values.tipoReserva,
-        docentes: values.docentes
+        horariosDisponibles: ambienteSeleccionado,
+        docenteId: state.docenteSolicitante.id,
+        grupoId: state.grupo.id,
+        capacidad: state.capacidad,
+        tipoReserva: state.tipoReserva,
       })
     })
       .then(async response => {
         const data = await response.json();
-        openSnackbar('Solicitud registrada exitosamente', 'success');
-        fetchHorariosDisponibles();
-        setOpenModal(false);
+        openSnackbar(data.msg, 'success');
+        navigate('/dashboard/verificar-solicitudes');
       })
       .catch(async error => {
-        openSnackbar('Error al registrar horario', 'error');
-      })
+        openSnackbar('Error al registrar sugerencias', 'error');
+      });
   };
 
   const handleFechaFilterChange = (event) => {
@@ -155,18 +141,8 @@ const SugerirAmbientesPage = () => {
 
   const obtenerFilas = (selectedRows) => {
     const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
-    const dataFilaSeleccionada = selectedIds.map((id) => filteredData.find((row) => row.id === parseInt(id)));
-    setAmbienteSeleccionado(dataFilaSeleccionada);
-    console.log(dataFilaSeleccionada);
+    setAmbienteSeleccionado(selectedIds);
   };
-
-  const enviarSugerencia = () => {
-    const objSolicitud = {
-      idSolicitud: state.id,
-      ambientes: ambienteSeleccionado,
-    }
-    console.log(objSolicitud);
-  }
 
   return (
     <Formik>
@@ -269,33 +245,19 @@ const SugerirAmbientesPage = () => {
                     type='submit'
                     color='primary'
                     variant='contained'
-                    onClick={() => { obtenerFilas(selectedRows); enviarSugerencia(); }}
+                    onClick={() => handleOnSubmitSugerencias()}
                   >
                     Enviar Sugerencia
                   </Button>
                 </Grid>
               </Grid>
 
-              <CustomModal
-                open={openModal}
-                onClose={() => setOpenModal(false)}
-                title='Solicitar Ambiente'
-              >
-                <SolicitarAmbienteForm
-                  row={selectedRow}
-                  onClose={() => setOpenModal(false)}
-                  onSubmit={handleOnSubmitSolicitud}
-                />
-              </CustomModal>
-
               {/* Mostrar el estado en el retorno */}
               <Box sx={{ mt: 2 }}>
                 <Typography variant="h6">Estado recibido:</Typography>
-                <pre>Fecha solicitud: {JSON.stringify(state.fechaSolicitud, null, 2)}</pre>
-                <pre>Fecha reserva: {JSON.stringify(state.horarioDisponible.fecha, null, 2)}</pre>
-                <pre>Docente: {JSON.stringify(state.docenteSolicitante.nombre, null, 2)}</pre>
-                <pre>ID Docente: {JSON.stringify(state.docenteSolicitante.id, null, 2)}</pre>
-                <pre>Horario: {JSON.stringify(state.horarioDisponible.horario, null, 2)}</pre>
+                <pre style={{ fontSize: 10 }}>
+                  {JSON.stringify(state, null, 4)}
+                </pre>
               </Box>
             </Paper>
           </Box>
