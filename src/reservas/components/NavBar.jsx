@@ -3,6 +3,7 @@ import React from 'react'
 import { AppBar, Grid, IconButton, Toolbar, Typography, Avatar, Tooltip, Menu, MenuItem, Box } from '@mui/material';
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
+import Notification from '../../components/organisms/customModalNotification/notifications';
 
 const NavBar = ({ anchoCaja }) => {
   const settings = ['Perfil', 'Salir'];
@@ -59,6 +60,9 @@ const NavBar = ({ anchoCaja }) => {
             AULAS FCYT
           </Typography>
         </Grid>
+        <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
+          <Notification/>
+        </Box>
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

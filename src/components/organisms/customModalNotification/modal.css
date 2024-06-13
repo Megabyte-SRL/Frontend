@@ -1,0 +1,21 @@
+.modal {
+  display: none;
+  position: fixed;
+  top: 9%; /* Ajustar la distancia desde la parte superior según sea necesario */
+  right: 5%; /* Ajustar la distancia desde la parte derecha según sea necesario */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  z-index: 1000; /* Agregar relleno al modal para separarlo del fondo degradado */
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  width: 100%;
+}
