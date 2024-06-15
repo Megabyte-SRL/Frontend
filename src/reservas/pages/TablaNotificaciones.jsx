@@ -25,117 +25,115 @@ const data = [
 ];
 
 const TablaNotificaciones = () => {
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const [open, setOpen] = useState(false);
-    const [selectedAction, setSelectedAction] = useState(null);
-    const [completedActions, setCompletedActions] = useState({});
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [open, setOpen] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(null);
+  const [completedActions, setCompletedActions] = useState({});
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-    const handleOpen = (action, id) => {
-        setSelectedAction({ action, id });
-        setOpen(true);
-    };
+  const handleOpen = (action, id) => {
+    setSelectedAction({ action, id });
+    setOpen(true);
+  };
 
-    const handleClose = () => {
-        setOpen(false);
-    };
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-    const handleConfirm = () => {
-        const confirmation = selectedAction.action === 'ok' ? 1 : 0;
-        const jsonResponse = JSON.stringify({ confirmation });
-        console.log('JSON Response:', jsonResponse);
-        // Aquí puedes enviar el JSON a tu servidor
-        setCompletedActions((prev) => ({
-            ...prev,
-            [selectedAction.id]: selectedAction.action
-        }));
-        handleClose();
-    };
+  const handleConfirm = () => {
+    const confirmation = selectedAction.action === 'ok' ? 1 : 0;
+    const jsonResponse = JSON.stringify({ confirmation });
+    console.log('JSON Response:', jsonResponse);
+    // Aquí puedes enviar el JSON a tu servidor
+    setCompletedActions((prev) => ({
+      ...prev,
+      [selectedAction.id]: selectedAction.action
+    }));
+    handleClose();
+  };
 
-    return (
-        <>
-            <Paper>
-                <TableContainer>
-                    <Table aria-label="simple table">
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Ambiente</TableCell>
-                                <TableCell>Fecha</TableCell>
-                                <TableCell>Horario</TableCell>
-                                <TableCell>Capacidad</TableCell>
-                                <TableCell>Acciones</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                                <TableRow key={row.id}>
-                                    <TableCell>{row.ambiente}</TableCell>
-                                    <TableCell>{row.fecha}</TableCell>
-                                    <TableCell>{row.horario}</TableCell>
-                                    <TableCell>{row.capacidad}</TableCell>
-                                    <TableCell>
-                                        {completedActions[row.id] ? (
-                                            <FlagIcon color={completedActions[row.id] === 'ok' ? "primary" : "error"} />
-                                        ) : (
-                                            <>
-                                                <IconButton color="success" onClick={() => handleOpen('ok', row.id)}>
-                                                    <CheckCircleIcon />
-                                                </IconButton>
-                                                <IconButton color="error" onClick={() => handleOpen('cancel', row.id)}>
-                                                    <CancelIcon />
-                                                </IconButton>
-                                            </>
-                                        )}
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={data.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                />
-            </Paper>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {"Confirmación de Acción"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {selectedAction?.action === 'ok' ? '¿Estás seguro de que deseas confirmar esta acción?' : '¿Estás seguro de que deseas cancelar esta acción?'}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancelar
-                    </Button>
-                    <Button onClick={handleConfirm} color="primary" autoFocus>
-                        Confirmar
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </>
-    );
+  return (
+    <>
+      <Paper>
+        <TableContainer>
+          <Table aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Ambiente</TableCell>
+                <TableCell>Fecha</TableCell>
+                <TableCell>Horario</TableCell>
+                <TableCell>Capacidad</TableCell>
+                <TableCell>Acciones</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                <TableRow key={row.id}>
+                  <TableCell>{row.ambiente}</TableCell>
+                  <TableCell>{row.fecha}</TableCell>
+                  <TableCell>{row.horario}</TableCell>
+                  <TableCell>{row.capacidad}</TableCell>
+                  <TableCell>
+                    {completedActions[row.id] ? (
+                      <FlagIcon color={completedActions[row.id] === 'ok' ? "primary" : "error"} />
+                    ) : (
+                      <>
+                        <IconButton color="success" onClick={() => handleOpen('ok', row.id)}>
+                          <CheckCircleIcon />
+                        </IconButton>
+                        <IconButton color="error" onClick={() => handleOpen('cancel', row.id)}>
+                          <CancelIcon />
+                        </IconButton>
+                      </>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={data.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </Paper>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">Confirmación de Acción</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {selectedAction?.action === 'ok' ? '¿Estás seguro de que deseas confirmar esta acción?' : '¿Estás seguro de que deseas cancelar esta acción?'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirm} color="primary" autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
 };
 
 export default TablaNotificaciones;
