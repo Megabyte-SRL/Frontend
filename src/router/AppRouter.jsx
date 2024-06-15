@@ -16,7 +16,6 @@ import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasiva
 import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
 import ProfilePage from '../pages/profilePage/ProfilePage'
 import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/SugerirAmbientesPage'
-//import TablaNotificaciones from '../reservas/pages/TablaNotificaciones'
 import NotificacionesSugerenciasPage from '../pages/notificacionesSugerenciasPage/NotificacionesSugerenciasPage'
 
 const AppRouter = () => {
@@ -42,7 +41,6 @@ const AppRouter = () => {
         <Route path='verificar-solicitudes' element={<VerficarSolicitudesPage />} />
         <Route path='profile' element={<ProfilePage/>} />
         <Route path='sugerir-ambientes' element={<SugerirAmbientesPage/>}/>
-        {/* <Route path='notificaciones-sugerencias' element={<TablaNotificaciones />} /> */}
         <Route path='notificaciones-sugerencias' element={<NotificacionesSugerenciasPage />} />
       </Route>
 
