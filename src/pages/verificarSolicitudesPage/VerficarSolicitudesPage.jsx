@@ -48,7 +48,8 @@ const VerficarSolicitudesPage = () => {
     page,
     handlePageChange,
     handleRowsPerPageChange,
-    totalRows
+    totalRows,
+    loading
   } = useTable(fetchSolicitudes, 'asc', 'fecha');
 
   const handleOnSubmitReserva = async (solicitudId) => {
@@ -68,7 +69,12 @@ const VerficarSolicitudesPage = () => {
   };
 
   const handleOpenReservaForm = (row) => {
-    setSelectedRow(data.find(solicitud => solicitud.id === row.id));
+    const solicitud = data.find(solicitud => solicitud.id === row.id);
+    const docenteSolicitante = {
+      id: solicitud.docente.id,
+      nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
+    };
+    setSelectedRow({ ...solicitud, docenteSolicitante });
     setOpenModal(true);
   };
 
@@ -127,6 +133,7 @@ const VerficarSolicitudesPage = () => {
               searchText={searchText}
               onSearchChange={handleSearchChange}
               onClickRow={(row) => handleOpenReservaForm(row)}
+              loading={loading}
             />
             <CustomModal
               open={openModal}
