@@ -16,15 +16,15 @@ const Modal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     const handleOutsideClick = (event) => {
-       if (modalRef.current && !modalRef.current.contains(event.target)) {
-          onClose();
-       }
+      if (modalRef.current && !modalRef.current.contains(event.target)) {
+        onClose();
+      }
     };
 
     document.addEventListener('mousedown', handleOutsideClick);
 
     return () => {
-       document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('mousedown', handleOutsideClick);
     };
  }, [modalRef, onClose]);
 

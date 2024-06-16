@@ -11,8 +11,6 @@ export default function Notifications() {
   };
 
   return (
-    
-      <NotificationModal open={modalOpen} onClose={closeModal} />
-      
+    <NotificationModal open={modalOpen} onClose={closeModal} />
   );
 }
