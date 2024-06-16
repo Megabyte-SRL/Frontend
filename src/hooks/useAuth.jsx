@@ -6,19 +6,22 @@ export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState({
     token: sessionStorage.getItem('token'),
     rol: sessionStorage.getItem('rol'),
+    nombre: sessionStorage.getItem('nombre'),
     isAuthenticated: !!sessionStorage.getItem('token')
   });
 
-  const login = (token, rol) => {
+  const login = (token, rol, nombre) => {
     sessionStorage.setItem('token', token);
     sessionStorage.setItem('rol', rol);
-    setAuth({ token, rol, isAuthenticated: true });
+    sessionStorage.setItem('nombre', nombre);
+    setAuth({ token, rol, nombre, isAuthenticated: true });
   }
 
   const logout = () => {
     sessionStorage.removeItem('token');
     sessionStorage.removeItem('rol');
-    setAuth({ token: null, rol: null, isAuthenticated: false });
+    sessionStorage.removeItem('nombre');
+    setAuth({ token: null, rol: null, nombre: null, isAuthenticated: false });
   }
 
   return (

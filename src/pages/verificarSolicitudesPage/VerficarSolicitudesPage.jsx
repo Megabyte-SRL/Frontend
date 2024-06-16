@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 
-import { Box, Button, Chip, Grid, Paper, Typography } from '@mui/material';
-import { green, red, yellow } from '@mui/material/colors';
-import SolicitarAmbienteForm from '../../components/molecules/solicitarAmbienteForm/SolicitarAmbienteForm';
-import CustomModal from '../../components/organisms/customModal/CustomModal';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import CustomModal from '../../components/organisms/customModal/CustomModal';
+import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 
-const fetchHorariosDisponibles = async (params) => {
+const fetchSolicitudes = async (params) => {
   const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horarios?${query}`, {
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
     headers: {
       'Authorization': 'Bearer ' + sessionStorage.getItem("token")
     }
@@ -19,63 +18,22 @@ const fetchHorariosDisponibles = async (params) => {
   if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
   const data = await response.json();
   return data;
-};
+}
 
-const SolicitudesPage = () => {
+const VerficarSolicitudesPage = () => {
   const columns = [
     { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
+    { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
     { id: 'ambiente', label: 'Ambiente', sortable: true, filterable: true },
     { id: 'horario', label: 'Horario', sortable: true, filterable: true },
-    { id: 'capacidad', label: 'Capacidad', sortable: true, filterable: true },
-    { id: 'estado',
-      label: 'Estado',
-      sortable: false,
-      render: (row) => {
-        switch (row.estado) {
-          case 'disponible':
-            return <Chip
-              label={row.estado}
-              style={{ backgroundColor: green[500], color: 'black' }}
-            />
-          case 'solicitado':
-            return <Chip
-              label={row.estado}
-              style={{ backgroundColor: yellow[500], color: 'black' }}
-            />
-          default:
-            return <Chip
-              label={row.estado}
-              style={{ backgroundColor: red[500], color: 'black' }}
-            />
-        }
-      }
-    },
-    {
-      id: 'acciones',
-      label: 'Acciones',
-      sortable: false,
-      render: (row) => (
-        <Button
-          color='primary'
-          variant='contained'
-          onClick={() => handleOpenSolicitationForm(row)}
-        >
-          Solicitar
-        </Button>
-      )
-    }
-  ]; 
+    { id: 'capacidadAmbiente', label: 'Capacidad ambiente', sortable: true, filterable: true },
+    { id: 'capacidadReserva', label: 'Capacidad reserva', sortable: true, filterable: true },
+    { id: 'prioridad', label: 'Prioridad', sortable: true, filterable: true },
+  ];
 
   const { openSnackbar } = useSnackbar();
   const [openModal, setOpenModal] = useState(false);
-  const [selectedRow, setSelectedRow] = useState({
-    id: 0,
-    fecha: '',
-    ambiente: '',
-    horario: '',
-    capacidad: 0,
-    estado: ''
-  });
+  const [selectedRow, setSelectedRow] = useState(null);
 
   const {
     data,
@@ -91,48 +49,40 @@ const SolicitudesPage = () => {
     handlePageChange,
     handleRowsPerPageChange,
     totalRows,
-    loading,
-  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha');
+    loading
+  } = useTable(fetchSolicitudes, 'asc', 'fecha');
 
-  const handleOnSubmitSolicitud = async (values) => {
-    const [, grupoId] = values.grupo.split('-');
-    
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/solicitudesAmbientes`, {
+  const handleOnSubmitReserva = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem("token"),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        horarioDisponibleId: values.id,
-        grupoId: grupoId,
-        capacidad: values.capacidad,
-        tipoReserva: values.tipoReserva,
-        docentes: values.docentes
-      })
     })
       .then(async response => {
         const data = await response.json();
         console.log('Registrar solicitud ambiente response: ', data);
         openSnackbar('Solicitud registrado exitosamente', 'success');
-        fetchHorariosDisponibles();
+        fetchSolicitudes();
         setOpenModal(false);
       })
       .catch(async error => {
-        openSnackbar('Error al registrar horario', 'error');
+        openSnackbar('Error al reservar ambiente', 'error');
       })
   };
 
-  const handleOpenSolicitationForm = (row) => {
-    setSelectedRow(row);
+  const handleOpenReservaForm = (row) => {
+    const solicitud = data.find(solicitud => solicitud.id === row.id);
+    const docenteSolicitante = {
+      id: solicitud.docente.id,
+      nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
+    };
+    setSelectedRow({ ...solicitud, docenteSolicitante });
     setOpenModal(true);
   };
-  
+
   return (
     <Grid container justifyContent='center'>
       <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
         <Box
-          id='solicitudes-ambientes-box'
+          id='verificar-solicitudes-box'
           sx={{
             display: 'flex',
             justifyContent: 'center',
@@ -151,14 +101,26 @@ const SolicitudesPage = () => {
             }}
           >
             <Typography variant='h4' align='center' gutterBottom>
-              Crear solicitudes ambientes
+              Verificar solicitudes de reserva
             </Typography>
             <Typography variant='body1' gutterBottom sx={{ marginLeft: '5%' }}>
-              Buscar horarios ambientes:
+              Buscar solicitudes:
             </Typography>
+            
             <CustomSearchableTable
               columns={columns}
-              data={data}
+              data={data.map(
+                solicitud => ({
+                  id: solicitud.id,
+                  fecha: solicitud.horarioDisponible.fecha,
+                  fechaSolicitud: solicitud.fechaSolicitud,
+                  ambiente: solicitud.horarioDisponible.ambiente,
+                  horario: solicitud.horarioDisponible.horario,
+                  capacidadAmbiente: solicitud.horarioDisponible.capacidad,
+                  capacidadReserva: solicitud.capacidad,
+                  prioridad: solicitud.prioridad
+                })
+              )}
               order={order}
               orderBy={orderBy}
               onSort={handleSort}
@@ -170,18 +132,18 @@ const SolicitudesPage = () => {
               onFilterChange={handleFilterChange}
               searchText={searchText}
               onSearchChange={handleSearchChange}
-              onClickRow={(row) => console.log(row)}
+              onClickRow={(row) => handleOpenReservaForm(row)}
               loading={loading}
             />
             <CustomModal
               open={openModal}
               onClose={() => setOpenModal(false)}
-              title='Solicitar Ambiente'
+              title='Detalles de la solicitud'
             >
-              <SolicitarAmbienteForm
+              <InformationVerificarSolicitudForm
                 row={selectedRow}
                 onClose={() => setOpenModal(false)}
-                onSubmit={handleOnSubmitSolicitud}
+                onSubmit={handleOnSubmitReserva}
               />
             </CustomModal>
           </Paper>
@@ -189,6 +151,6 @@ const SolicitudesPage = () => {
       </Grid>
     </Grid>
   );
-}
+};
 
-export default SolicitudesPage;
+export default VerficarSolicitudesPage;

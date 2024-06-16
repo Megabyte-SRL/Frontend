@@ -44,7 +44,7 @@ const LoginPage = () => {
           })
             .then(async response => {
               const { data } = await response.json();
-              auth.login(data.token, data.rol);
+              auth.login(data.token, data.rol, data.nombre);
               navigate('/dashboard');
             })
             .catch(error => {

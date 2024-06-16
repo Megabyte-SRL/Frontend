@@ -15,9 +15,8 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
 
-const settings = ['Perfil', 'Salir'];
-
 const NavBar = ({ anchoCaja }) => {
+  const settings = ['Perfil', 'Salir'];
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -44,7 +43,6 @@ const NavBar = ({ anchoCaja }) => {
     setAnchorElUser(null);
     if (link === 'Perfil') {
       navigate('/dashboard/profile');
-      
     }
   };
 
@@ -93,7 +91,6 @@ const NavBar = ({ anchoCaja }) => {
                   } else if (setting === 'Salir') {
                     auth.logout();
                   }
-                  
                   setAnchorElUser(null);
                 }}>
                   <Typography textAlign="center">{setting}</Typography>
@@ -104,7 +101,7 @@ const NavBar = ({ anchoCaja }) => {
       </Toolbar>
 
     </AppBar>
-  )
+  );
 }
 
-export default NavBar
+export default NavBar;
