@@ -1,17 +1,25 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { LogoutOutlined } from '@mui/icons-material'
-import { AppBar, Grid, IconButton, Toolbar, Typography, Avatar, Tooltip, Menu, MenuItem, Box } from '@mui/material'
+import {
+  AppBar,
+  Grid,
+  IconButton,
+  Toolbar,
+  Typography,
+  Avatar,
+  Tooltip,
+  Menu,
+  MenuItem,
+  Box
+} from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
 
 const settings = ['Perfil', 'Salir'];
+
 const NavBar = ({ anchoCaja }) => {
   const auth = useAuth();
   const navigate = useNavigate();
-  const handleAvatarClick = () => {
-    navigate('/dashboard/profile'); 
-  };
 
   function stringAvatar(name) {
     return {
@@ -26,19 +34,10 @@ const NavBar = ({ anchoCaja }) => {
     };
   }
   
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-    auth.logout();
   };
 
   const handleCloseUserMenu = (link) => {
@@ -48,6 +47,7 @@ const NavBar = ({ anchoCaja }) => {
       
     }
   };
+
   return (
     <AppBar position='fixed' 
       sx={{
@@ -67,7 +67,7 @@ const NavBar = ({ anchoCaja }) => {
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar {...stringAvatar('Lizeth Amorraga')} />
+                <Avatar {...stringAvatar(sessionStorage.getItem('nombre'))} />
               </IconButton>
             </Tooltip>
             <Menu

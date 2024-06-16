@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Formik, Form, Field } from 'formik';
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select } from '@mui/material';
@@ -16,8 +16,7 @@ const customStyles = {
 const SignUpPage = () => {
   const { openSnackbar } = useSnackbar();
 
-
-  const rolesUsuarioOptions = ['Administrador', 'Docente'];
+  const rolesUsuarioOptions = ['admin', 'docente'];
   const validationSchema = Yup.object({
     nombre: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El nombre solo puede contener letras"),
     apellido: Yup.string().required("Campo requerido").min(3, "Minimo 3 caracteres").max(50, "Máximo 50 caracteres").matches(/^[a-zA-Z\s]+$/, "El apellido solo puede contener letras"),
@@ -146,6 +145,7 @@ const SignUpPage = () => {
                   </Button>
                 </Grid>
               </Grid>
+
             </Grid>
           </Form>
         )}

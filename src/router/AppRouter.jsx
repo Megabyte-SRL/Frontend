@@ -12,7 +12,11 @@ import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
 import RequireAuth from './RequireAuth'
 import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
-import Profile  from '../pages/profile/Profile'
+import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
+import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
+import ProfilePage from '../pages/profilePage/ProfilePage'
+import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/SugerirAmbientesPage'
+import NotificacionesSugerenciasPage from '../pages/notificacionesSugerenciasPage/NotificacionesSugerenciasPage'
 
 const AppRouter = () => {
   return (
@@ -33,8 +37,13 @@ const AppRouter = () => {
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
         <Route path='signup' element={<SignUpPage />} />
-        <Route path='profile' element={<Profile/>} />
+        <Route path='carga-masiva-docentes' element={<CargaMasivaDocentePage />} />
+        <Route path='verificar-solicitudes' element={<VerficarSolicitudesPage />} />
+        <Route path='profile' element={<ProfilePage/>} />
+        <Route path='sugerir-ambientes' element={<SugerirAmbientesPage/>}/>
+        <Route path='notificaciones-sugerencias' element={<NotificacionesSugerenciasPage />} />
       </Route>
+
       <Route
         path="*"
         element={<Navigate to='/login' replace />}
@@ -43,4 +52,5 @@ const AppRouter = () => {
   )
 }
 
-export default AppRouter
+export default AppRouter;
+
