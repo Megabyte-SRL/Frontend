@@ -9,6 +9,7 @@ import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 
 const fetchHorariosDisponibles = async (params) => {
+  params.estado = 'disponible,solicitado';
   const query = new URLSearchParams(params).toString();
   const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horarios?${query}`, {
     headers: {
@@ -29,7 +30,7 @@ const SolicitudesPage = () => {
     { id: 'capacidad', label: 'Capacidad', sortable: true, filterable: true },
     { id: 'estado',
       label: 'Estado',
-      sortable: false,
+      sortable: true,
       render: (row) => {
         switch (row.estado) {
           case 'disponible':
@@ -76,6 +77,7 @@ const SolicitudesPage = () => {
     capacidad: 0,
     estado: ''
   });
+  const [fetchParams, setFetchParams] = useState({});
 
   const {
     data,
@@ -92,7 +94,8 @@ const SolicitudesPage = () => {
     handleRowsPerPageChange,
     totalRows,
     loading,
-  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha');
+    refreshData,
+  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha', setFetchParams);
 
   const handleOnSubmitSolicitud = async (values) => {
     const [, grupoId] = values.grupo.split('-');
@@ -115,7 +118,7 @@ const SolicitudesPage = () => {
         const data = await response.json();
         console.log('Registrar solicitud ambiente response: ', data);
         openSnackbar('Solicitud registrado exitosamente', 'success');
-        fetchHorariosDisponibles();
+        refreshData(fetchParams);
         setOpenModal(false);
       })
       .catch(async error => {

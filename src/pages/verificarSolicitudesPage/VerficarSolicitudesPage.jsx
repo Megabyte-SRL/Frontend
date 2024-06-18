@@ -6,8 +6,10 @@ import CustomModal from '../../components/organisms/customModal/CustomModal';
 import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
+import { useNavigate } from 'react-router-dom';
 
 const fetchSolicitudes = async (params) => {
+  params.estado = 'solicitado';
   const query = new URLSearchParams(params).toString();
   const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
     headers: {
@@ -32,8 +34,10 @@ const VerficarSolicitudesPage = () => {
   ];
 
   const { openSnackbar } = useSnackbar();
+  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [fetchParams, setFetchParams] = useState({});
 
   const {
     data,
@@ -49,18 +53,43 @@ const VerficarSolicitudesPage = () => {
     handlePageChange,
     handleRowsPerPageChange,
     totalRows,
-    loading
-  } = useTable(fetchSolicitudes, 'asc', 'fecha');
+    loading,
+    refreshData
+  } = useTable(fetchSolicitudes, 'asc', 'fecha', setFetchParams);
 
-  const handleOnSubmitReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
+  const handleAcceptReserva = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${solicitudId}`, {
       method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
     })
       .then(async response => {
         const data = await response.json();
-        console.log('Registrar solicitud ambiente response: ', data);
-        openSnackbar('Solicitud registrado exitosamente', 'success');
-        fetchSolicitudes();
+        openSnackbar(data.msg, 'success');
+        refreshData(fetchParams);
+        setOpenModal(false);
+      })
+      .catch(async error => {
+        openSnackbar('Error al reservar ambiente', 'error');
+      })
+  };
+
+  const handleSuggestAmbientes = async () => {
+    navigate('/dashboard/sugerir-ambientes', {state: selectedRow});
+  };
+
+  const handleRejectReserva = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${solicitudId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        openSnackbar(data.msg, 'success');
+        refreshData(fetchParams);
         setOpenModal(false);
       })
       .catch(async error => {
@@ -143,7 +172,9 @@ const VerficarSolicitudesPage = () => {
               <InformationVerificarSolicitudForm
                 row={selectedRow}
                 onClose={() => setOpenModal(false)}
-                onSubmit={handleOnSubmitReserva}
+                onAccept={handleAcceptReserva}
+                onSuggest={handleSuggestAmbientes}
+                onReject={handleRejectReserva}
               />
             </CustomModal>
           </Paper>

@@ -1,14 +1,13 @@
 import React from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { green, red, yellow } from '@mui/material/colors';
 
 const InformationVerificarSolicitudForm = ({
   row = {},
   onClose = () => {},
-  onSubmit = () => {}
+  onAccept = () => {},
+  onSuggest = () => {},
+  onReject = () => {},
 }) => {
-  const navigate = useNavigate(); // Importante: usar useNavigate para la navegación
 
   console.log('Solicitud: ', row);
   return (
@@ -57,22 +56,22 @@ const InformationVerificarSolicitudForm = ({
           type='submit'
           color='primary'
           variant='contained'
-          onClick={() => onSubmit(row.id)}
+          onClick={() => onAccept(row.id)}
         >
           ACEPTAR
         </Button>
         <Button 
           variant='contained'
-          color='primary'
-          onClick={() => navigate('/dashboard/sugerir-ambientes',{state: row})}
+          color='secondary'
+          onClick={() => onSuggest()}
         >
           SUGERIR
         </Button>
 
         <Button
           variant='contained'
-          color='secondary'
-          onClick={onClose}
+          color='error'
+          onClick={() => onReject(row.id)}
         >
           RECHAZAR
         </Button>

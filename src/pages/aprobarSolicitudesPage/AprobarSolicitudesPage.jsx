@@ -1,368 +1,178 @@
 import {
-    Box, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TableSortLabel, Typography, Paper, Modal, Button, Grid, TextField
+  Box,
+  Typography,
+  Paper,
+  Grid,
 } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
-import { useState, useMemo, useEffect } from 'react';
-import { visuallyHidden } from '@mui/utils';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import useTable from '../../hooks/useTable';
+import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
+import CustomModal from '../../components/organisms/customModal/CustomModal';
+import InformacionSugerenciaAceptadaForm from '../../components/molecules/informacionSugerenciaAceptadaForm/InformacionSugerenciaAceptadaForm';
 
-const createData = (id, fecha, ambiente, horario, capacidad, estado, prioridad) => ({
-    id,
-    fecha,
-    ambiente,
-    horario,
-    capacidad,
-    estado,
-    prioridad,
-});
+const fetchNotificacionesAceptadas = async (params) => {
+  params.estado = 'aceptado';
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+    }
+  });
 
-const headCells = [
-    { id: 'fecha', numeric: false, disablePadding: true, label: 'Fecha' },
-    { id: 'ambiente', numeric: false, disablePadding: false, label: 'Ambiente' },
-    { id: 'horario', numeric: false, disablePadding: false, label: 'Horario' },
-    { id: 'capacidad', numeric: true, disablePadding: false, label: 'Capacidad' },
-    { id: 'prioridad', numeric: true, disablePadding: false, label: 'Prioridad' },
-    { id: 'estado', numeric: false, disablePadding: false, label: 'Estado' },
-];
-
-const descendingComparator = (a, b, orderBy) => {
-    if (b[orderBy] < a[orderBy]) return -1;
-    if (b[orderBy] > a[orderBy]) return 1;
-    return 0;
-};
-
-const getComparator = (order, orderBy) =>
-    order === 'desc'
-        ? (a, b) => descendingComparator(a, b, orderBy)
-        : (a, b) => -descendingComparator(a, b, orderBy);
-
-const stableSort = (array, comparator) => {
-    const stabilizedThis = array.map((el, index) => [el, index]);
-    stabilizedThis.sort((a, b) => {
-        const order = comparator(a[0], b[0]);
-        if (order !== 0) return order;
-        return a[1] - b[1];
-    });
-    return stabilizedThis.map((el) => el[0]);
-};
-
-const EnhancedTableHead = ({ order, orderBy, onRequestSort }) => {
-    const createSortHandler = (property) => (event) => {
-        onRequestSort(event, property);
-    };
-
-    return (
-        <TableHead>
-            <TableRow>
-                {headCells.map((headCell) => (
-                    <TableCell
-                        key={headCell.id}
-                        align={headCell.numeric ? 'right' : 'left'}
-                        padding={headCell.disablePadding ? 'none' : 'normal'}
-                        sortDirection={orderBy === headCell.id ? order : false}
-                    >
-                        <TableSortLabel
-                            active={orderBy === headCell.id}
-                            direction={orderBy === headCell.id ? order : 'asc'}
-                            onClick={createSortHandler(headCell.id)}
-                        >
-                            {headCell.label}
-                            {orderBy === headCell.id ? (
-                                <Box component="span" sx={visuallyHidden}>
-                                    {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                </Box>
-                            ) : null}
-                        </TableSortLabel>
-                    </TableCell>
-                ))}
-            </TableRow>
-        </TableHead>
-    );
-};
-
-EnhancedTableHead.propTypes = {
-    onRequestSort: PropTypes.func.isRequired,
-    order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-    orderBy: PropTypes.string.isRequired,
+  if (!response.ok) throw new Error('Error al obtener la lista de notificaciones');
+  const data = await response.json();
+  return data;
 };
 
 const AprobarSolicitudesPage = () => {
-    const [order, setOrder] = useState('asc');
-    const [orderBy, setOrderBy] = useState('fecha');
-    const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [open, setOpen] = useState(false);
-    const [selectedRow, setSelectedRow] = useState(null);
-    const [data, setData] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
-    const [searchValue, setSearchValue] = useState(null);
-    const { openSnackbar } = useSnackbar();
+  const columns = [
+    { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
+    { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
+    { id: 'ambiente', label: 'Ambiente', sortable: true, filterable: true },
+    { id: 'horario', label: 'Horario', sortable: true, filterable: true },
+    { id: 'capacidadAmbiente', label: 'Capacidad ambiente', sortable: true, filterable: true },
+    { id: 'capacidadReserva', label: 'Capacidad reserva', sortable: true, filterable: true },
+    { id: 'prioridad', label: 'Prioridad', sortable: true, filterable: true },
+  ];
 
-    useEffect(() => {
-        fetch('http://localhost:8080/api/list/solicitudesAmbientes')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Error al obtener la lista de solicitudes');
-                }
-                return response.json();
-            })
-            .then(({ data }) => {
-                const mappedData = data.map(item =>
-                    createData(
-                        item.id,
-                        item.horarioDisponible.fecha,
-                        item.horarioDisponible.ambiente,
-                        item.horarioDisponible.horario,
-                        item.horarioDisponible.capacidad,
-                        item.estado,
-                        item.prioridad
-                    )
-                );
-                setData(mappedData);
-                setFilteredData(mappedData);
-            })
-            .catch(error => {
-                console.error(error);
-                openSnackbar('Error al obtener la lista de solicitudes', 'error');
-            });
-    }, []);
+  const { openSnackbar } = useSnackbar();
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [fetchParams, setFetchParams] = useState({});
 
-    const handleRequestSort = (event, property) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
+  const {
+    data,
+    searchText,
+    handleSearchChange,
+    filters,
+    handleFilterChange,
+    order,
+    orderBy,
+    handleSort,
+    rowsPerPage,
+    page,
+    handlePageChange,
+    handleRowsPerPageChange,
+    totalRows,
+    loading,
+    refreshData
+  } = useTable(fetchNotificacionesAceptadas, 'asc', 'fecha', setFetchParams);
 
-    const handleClick = (event, row) => {
-        setSelectedRow(row);
-        setOpen(true);
-    };
+  const handleAcceptReserva = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${selectedRow.id}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        console.log('Registrar solicitud ambiente response: ', data);
+        openSnackbar(data.msg, 'success');
+        refreshData(fetchParams);
+        setOpenModal(false);
+      })
+      .catch(async error => {
+        openSnackbar('Error al reservar ambiente', 'error');
+      })
+  };
 
-    const handleClose = () => {
-        setOpen(false);
-        setSelectedRow(null);
-    };
+  const handleRejectReserva = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${selectedRow.id}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        openSnackbar(data.msg, 'success');
+        refreshData(fetchParams);
+        setOpenModal(false);
+      })
+      .catch(async error => {
+        openSnackbar('Error al reservar ambiente', 'error');
+      })
+  };
 
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
+  const handleOpenReservaForm = (row) => {
+    const solicitud = data.find(solicitud => solicitud.id === row.id);
+    setSelectedRow(solicitud);
+    setOpenModal(true);
+  };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
-    };
-
-    const updateSolicitudState = async (solicitud_id, nuevoEstado) => {
-        try {
-            const response = await fetch(`http://localhost:8080/api/reservarAmbiente/${solicitud_id}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ estado: nuevoEstado }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al ${nuevoEstado === 'Aprobado' ? 'aprobar' : 'rechazar'} la solicitud`);
-            }
-
-            openSnackbar(`Solicitud ${nuevoEstado === 'Aprobado' ? 'aprobada' : 'rechazada'} exitosamente`, 'success');
-            return true;
-        } catch (error) {
-            console.error(error);
-            openSnackbar(`Error al ${nuevoEstado === 'Aprobado' ? 'aprobar' : 'rechazar'} la solicitud`, 'error');
-            return false;
-        }
-    };
-
-    const handleAccept = async () => {
-        if (await updateSolicitudState(selectedRow.id, 'Aprobado')) {
-            const updatedData = data.map((row) =>
-                row.id === selectedRow.id ? { ...row, estado: 'Aprobado' } : row
-            );
-            setData(updatedData);
-            setFilteredData(updatedData.filter(row =>
-                !searchValue || row.ambiente.includes(searchValue)
-            ));
-            handleClose();
-        }
-    };
-
-    const handleReject = async () => {
-        if (await updateSolicitudState(selectedRow.id, 'disponible')) {
-            const updatedData = data.map((row) =>
-                row.id === selectedRow.id ? { ...row, estado: 'disponible' } : row
-            );
-            setData(updatedData);
-            setFilteredData(updatedData.filter(row =>
-                !searchValue || row.ambiente.includes(searchValue)
-            ));
-            handleClose();
-        }
-    };
-
-    const emptyRows = page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredData.length) : 0;
-
-    const visibleRows = useMemo(
-        () =>
-            stableSort(filteredData, getComparator(order, orderBy)).slice(
-                page * rowsPerPage,
-                page * rowsPerPage + rowsPerPage
-            ),
-        [order, orderBy, page, rowsPerPage, filteredData]
-    );
-
-    const handleSearchChange = (event, newValue) => {
-        setSearchValue(newValue);
-        if (newValue) {
-            const filtered = data.filter(row =>
-                row.ambiente.includes(newValue)
-            );
-            setFilteredData(filtered);
-        } else {
-            setFilteredData(data);
-        }
-    };
-
-    const modalBody = (
+  return (
+    <Grid container justifyContent='center'>
+      <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
         <Box
-            sx={{
-                position: 'absolute',
-                width: 600,
-                bgcolor: 'background.paper',
-                boxShadow: 24,
-                p: 4,
-                top: '50%',
-                left: '50%',
-                transform: 'translate(-50%, -50%)',
-            }}
+          id='verificar-solicitudes-box'
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            marginTop: '10%',
+            background: 'black',
+            minHeight: 'calc(100vh - 20px)',
+          }}
         >
-            <Typography variant="h5" align="center" gutterBottom>
-                Detalles de la Solicitud
+          <Paper
+            sx={{
+              marginTop: '-5%',
+              boxShadow: '0px 0px 10px 2px rgba(0,0,0,0.2)',
+              padding: '2%',
+              width: '100%',
+              backgroundColor: '#F3F6F9',
+            }}
+          >
+            <Typography variant='h4' align='center' gutterBottom>
+              Aprobar solicitudes
             </Typography>
-            {selectedRow && (
-                <Box>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <Typography variant="subtitle1">Fecha:</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">{selectedRow.fecha}</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="subtitle1">Ambiente:</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">{selectedRow.ambiente}</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="subtitle1">Horario:</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">{selectedRow.horario}</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="subtitle1">Capacidad:</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">{selectedRow.capacidad}</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="subtitle1">Estado:</Typography>
-                        </Grid>
-                        <Grid item xs={6}>
-                            <Typography variant="body1">{selectedRow.estado}</Typography>
-                        </Grid>
-                    </Grid>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 2 }}>
-                        <Button onClick={handleAccept} variant="contained" color="primary">
-                            ACEPTAR
-                        </Button>
-                        <Button onClick={handleReject} variant="contained" color="error">
-                            RECHAZAR
-                        </Button>
-                    </Box>
-                </Box>
-            )}
-        </Box>
-    );
 
-    return (
-        <Grid container justifyContent="center">
-            <Grid item xs={12} md={12} lg={10}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        marginTop: '10%',
-                        background: 'black',
-                    }}
-                >
-                    <Paper
-                        sx={{
-                            marginTop: '-5%',
-                            boxShadow: '0px 0px 10px 2px rgba(0,0,0,0.2)',
-                            padding: '2%',
-                            width: '100%',
-                            backgroundColor: '#F3F6F9',
-                        }}
-                    >
-                        <Typography variant="h4" align="center" gutterBottom>
-                            Aprobar Solicitudes
-                        </Typography>
-                        <Autocomplete
-                            options={[...new Set(data.map((row) => row.ambiente))]}
-                            value={searchValue}
-                            onChange={handleSearchChange}
-                            renderInput={(params) => <TextField {...params} label="Buscar por ambiente" variant="outlined" />}
-                            sx={{ mb: 2 }}
-                        />
-                        <TableContainer>
-                            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
-                                <EnhancedTableHead
-                                    order={order}
-                                    orderBy={orderBy}
-                                    onRequestSort={handleRequestSort}
-                                />
-                                <TableBody>
-                                    {visibleRows.map((row) => (
-                                        <TableRow hover onClick={(event) => handleClick(event, row)} tabIndex={-1} key={row.id}>
-                                            <TableCell component="th" scope="row" padding="none">
-                                                {row.fecha}
-                                            </TableCell>
-                                            <TableCell>{row.ambiente}</TableCell>
-                                            <TableCell>{row.horario}</TableCell>
-                                            <TableCell align="right">{row.capacidad}</TableCell>
-                                            <TableCell align="right">{row.prioridad}</TableCell>
-                                            <TableCell>{row.estado}</TableCell>
-                                        </TableRow>
-                                    ))}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                        <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
-                            component="div"
-                            count={filteredData.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onPageChange={handleChangePage}
-                            onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                    </Paper>
-                </Box>
-                <Modal open={open} onClose={handleClose} aria-labelledby="modal-title" aria-describedby="modal-description">
-                    {modalBody}
-                </Modal>
-            </Grid>
-        </Grid>
-    );
+            <CustomSearchableTable
+              columns={columns}
+              data={data.map(
+                solicitud => ({
+                  id: solicitud.id,
+                  fecha: solicitud.horarioDisponible.fecha,
+                  fechaSolicitud: solicitud.fechaSolicitud,
+                  ambiente: solicitud.horarioDisponible.ambiente,
+                  horario: solicitud.horarioDisponible.horario,
+                  capacidadAmbiente: solicitud.horarioDisponible.capacidad,
+                  capacidadReserva: solicitud.capacidad,
+                  prioridad: solicitud.prioridad
+                })
+              )}
+              order={order}
+              orderBy={orderBy}
+              onSort={handleSort}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              totalRows={totalRows}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handleRowsPerPageChange}
+              onFilterChange={handleFilterChange}
+              searchText={searchText}
+              onSearchChange={handleSearchChange}
+              onClickRow={(row) => handleOpenReservaForm(row)}
+              loading={loading}
+            />
+            <CustomModal
+              open={openModal}
+              onClose={() => setOpenModal(false)}
+              title='Detalles de la solicitud'
+            >
+              <InformacionSugerenciaAceptadaForm
+                row={selectedRow}
+                onClose={() => setOpenModal(false)}
+                onAccept={handleAcceptReserva}
+                onReject={handleRejectReserva}
+              />
+            </CustomModal>
+          </Paper>
+        </Box>
+      </Grid>
+    </Grid>
+  );
 };
 
 export default AprobarSolicitudesPage;
