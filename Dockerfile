@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Copy the rest of the app's source code
 COPY . .
@@ -16,6 +16,9 @@ COPY . .
 # Set the environment variable for production
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
+
+# Copy your .env.production file to .env
+COPY .env.production ./.env
 
 # Build the React application using Vite
 RUN yarn build
