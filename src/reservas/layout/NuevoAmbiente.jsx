@@ -2,7 +2,6 @@ import React, { useState } from 'react'; //para modal
 import { Box, Paper, Grid, Typography, TextField, Button, Modal, Select, MenuItem, InputLabel } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import ReservaLayout from '../layout/ReservaLayout';
 import { useNavigate } from 'react-router-dom';
 
 import { useFormik } from "formik";
@@ -19,7 +18,7 @@ const NuevoAmbiente = () => {
   const [openModal, setOpenModal] = useState(false);
   const navigate = useNavigate();
 
-  const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE'];
+  const edificioOptions = ['','Edificion MEMI', 'Edificio Multiacademico', 'Edificio Matematica', 'Edificio CAE', 'Eficio nuevo'];
   const pisoOptions =['',1, 2,3,4,5,6,7];
 
   /**VAlidadciones Formulario */
@@ -173,7 +172,7 @@ const NuevoAmbiente = () => {
   );
 
   return (
-    <ReservaLayout>
+    <div>
       <Grid container justifyContent="center">
         <Grid item xs={12} md={12} lg={90} sx={{ background: '' }}>
           <Box
@@ -280,7 +279,7 @@ const NuevoAmbiente = () => {
           {modalBody}
         </div>
       </Modal>
-    </ReservaLayout>
+    </div>
   );
 };
 
