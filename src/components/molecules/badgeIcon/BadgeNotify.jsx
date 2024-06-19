@@ -1,85 +1,64 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Fade from '@mui/material/Fade';
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-import { Stack, Typography } from '@mui/material';
+import { useSnackbar } from '../../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import AdminNotification from '../adminNotification/AdminNotification';
+import { MenuItem } from '@mui/material';
 
 const notificationsLabel = (count) => {
-  if (count === 0) return 'no notifications';
-  if (count > 99) return 'more than 99 notifications';
-  return `${count} notifications`;
+  if (count === 0) return 'No notificaciones';
+  if (count > 99) return 'Más de 99 notificaciones';
+  return `${count} notificaciones`;
 };
 
-const initialNotifications = [
-  { id: 1, teacher: 'Ing. Leticia Blanco', message: 'El docente ha aceptado la sugerencia de ambiente 591b', status: 'pending' },
-  { id: 2, teacher: 'Ing. Samuel Acha', message: 'El docente ha aceptado la sugerencia de ambiente 617c', status: 'pending' },
-  { id: 3, teacher: 'Ing. Benita Cespedes', message: 'El docente ha rechazado la sugerencia de ambiente 691C', status: 'pending' }
-];
+const fetchNotificacionesAceptadas = async (params) => {
+  params.estado = 'aceptado';
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+    }
+  });
 
-const getBackgroundColor = (status) => {
-  if (status === 'pending') return '#e3f2fd';
-  if (status === 'registrado') return '#e0f2f1';
-  if (status === 'rechazado' || status === 'disponible') return '#ffebee';
-  return '#ffffff'; // Default background color
+  if (!response.ok) throw new Error('Error al obtener la lista de notificaciones');
+  const data = await response.json();
+  return data.data;
 };
 
-const Notification = ({ notification, onAction }) => {
-  return (
-    <MenuItem
-      onClick={onAction}
-      sx={{ backgroundColor: getBackgroundColor(notification.status), margin: '10px' }}
-    >
-      <Box>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography gutterBottom variant="h6" component="div">
-            {notification.teacher}
-          </Typography>
-        </Stack>
-        <Typography color="text.secondary" variant="body2">
-          {notification.message}
-        </Typography>
-        {notification.status === 'pending' ? (
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', px: 4, py: 1 }}>
-            <Button variant="contained" color="primary" onClick={() => onAction(notification.id, 'registrado')}>
-              Registrar
-            </Button>
-            <Button variant="outlined" color="primary" onClick={() => onAction(notification.id, 'rechazado')} sx={{ marginLeft: '5%' }}>
-              Rechazar
-            </Button>
-          </Box>
-        ) : (
-          <Typography color="primary" variant="body2" align="center" sx={{ py: 1 }}>
-            {notification.status === 'registrado' ? 'Registrado' : 'Rechazado'}
-          </Typography>
-        )}
-      </Box>
-    </MenuItem>
-  );
-};
-
-export default function BadgeNotify() {
+const BadgeNotify = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [notifications, setNotifications] = useState(initialNotifications);
-
+  const [notifications, setNotifications] = useState([]);
+  const { openSnackbar } = useSnackbar();
   const open = Boolean(anchorEl);
+
+  useEffect(() => {
+    const fetchNotificaciones = async () => {
+      try {
+        const data = await fetchNotificacionesAceptadas({});
+        setNotifications(data);
+      } catch (error) {
+        openSnackbar('Error al obtener notificaciones', 'error');
+      }
+    };
+
+    fetchNotificaciones();
+  }, [openSnackbar]);
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
   const handleAction = (id, action) => {
-      setNotifications((prevNotifications) =>
-          prevNotifications.map((notification) =>
-              notification.id === id ? { ...notification, status: action } : notification
-          )
-      );
+    setNotifications((prevNotifications) =>
+      prevNotifications.map((notification) =>
+        notification.id === id ? { ...notification, estado: action } : notification
+      )
+    );
   };
 
-  const pendingNotificationsCount = notifications.filter(notification => notification.status === 'pending').length;
+  const pendingNotificationsCount = notifications.filter(notification => notification.estado === 'aceptado').length;
 
   return (
     <div>
@@ -102,17 +81,23 @@ export default function BadgeNotify() {
         onClose={handleClose}
         TransitionComponent={Fade}
       >
-        {notifications.map((notification) => (
-          <Notification
-            key={notification.id}
-            notification={notification}
-            onAction={(id, action) => {
-              handleAction(id, action);
-              handleClose();
-            }}
-          />
-        ))}
+        {notifications.length === 0 ? (
+          <MenuItem>No notificaciones</MenuItem>
+        ) :(
+          notifications.map((notification) => (
+            <AdminNotification
+              key={notification.id}
+              notification={notification}
+              onAction={(id, action) => {
+                handleAction(id, action);
+                handleClose();
+              }}
+            />
+          ))
+        )}
       </Menu>
     </div>
   );
-}
+};
+
+export default BadgeNotify;
