@@ -15,6 +15,7 @@ import {
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
 import Notification from '../../components/organisms/customModalNotification/notifications';
+import BadgeNotify from '../../components/molecules/badgeIcon/BadgeNotify';
 
 const NavBar = ({ anchoCaja }) => {
   const settings = ['Perfil', 'Salir'];
@@ -63,7 +64,10 @@ const NavBar = ({ anchoCaja }) => {
           </Typography>
         </Grid>
         <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
-          <Notification/>
+          <Notification />
+        </Box>
+        <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
+          <BadgeNotify onClick={handleOpenUserMenu} />
         </Box>
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">

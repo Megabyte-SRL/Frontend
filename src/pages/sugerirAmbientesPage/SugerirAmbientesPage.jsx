@@ -9,8 +9,9 @@ import CustomSearchableTable from '../../components/organisms/customSearchableTa
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const fetchHorariosDisponibles = async (params) => {
+  params.estado = 'disponible';
   const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles?${query}`, {
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horarios?${query}`, {
     headers: {
       'Authorization': 'Bearer ' + sessionStorage.getItem("token")
     }
@@ -111,7 +112,23 @@ const SugerirAmbientesPage = () => {
     handleRowsPerPageChange,
     totalRows,
     loading,
-  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha', { estado: 'disponible' });
+  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha');
+
+  const handleRejectReserva = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${solicitudId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        openSnackbar(data.msg, 'success');
+      })
+      .catch(async error => {
+        openSnackbar('Error al rechazar ambiente', 'error');
+      })
+  };
 
   const handleOnSubmitSugerencias = async () => {
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/sugerirAmbientes`, {
@@ -130,6 +147,7 @@ const SugerirAmbientesPage = () => {
       .then(async response => {
         const data = await response.json();
         openSnackbar(data.msg, 'success');
+        handleRejectReserva(state.id);
         navigate('/dashboard/verificar-solicitudes');
       })
       .catch(async error => {

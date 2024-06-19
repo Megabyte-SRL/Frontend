@@ -18,9 +18,10 @@ import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarP
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 
-const fetchNotificacionesSugerencias = async (params) => {
+const fetchSugerencias = async (params) => {
+  params.estado = 'sugerido';
   const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/notificacionesSugerencias?${query}`, {
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
     headers: {
       'Authorization': 'Bearer ' + sessionStorage.getItem("token")
     }
@@ -59,6 +60,7 @@ const NotificacionesSugerenciasPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [dialogAction, setDialogAction] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
+  const [fetchParams, setFetchParams] = useState({});
   
   const {
     data,
@@ -74,10 +76,12 @@ const NotificacionesSugerenciasPage = () => {
     handlePageChange,
     handleRowsPerPageChange,
     totalRows,
-    loading
-  } = useTable(fetchNotificacionesSugerencias, 'asc', 'fecha');
+    loading,
+    refreshData,
+  } = useTable(fetchSugerencias, 'asc', 'fecha', setFetchParams);
 
   const handleOpenDialog = (action, row) => {
+    console.log('handleOpenDialog row: ', row);
     setDialogAction(action);
     setSelectedRow(row);
     setDialogOpen(true);
@@ -89,11 +93,47 @@ const NotificacionesSugerenciasPage = () => {
     setSelectedRow(null);
   };
 
+  const handleAcceptSugerencia = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSugerencia/${solicitudId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        openSnackbar(data.msg, 'success');
+        refreshData(fetchParams);
+      })
+      .catch(async error => {
+        openSnackbar('Error al reservar ambiente', 'error');
+      })
+  };
+
+  const handleRejectSugerencia = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSugerencia/${solicitudId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        openSnackbar(data.msg, 'success');
+        refreshData(fetchParams);
+      })
+      .catch(async error => {
+        openSnackbar('Error al reservar ambiente', 'error');
+      })
+  };
+
   const handleConfirmAction = async () => {
     if (dialogAction === 'approve') {
       console.log('Approved: ', selectedRow);
+      handleAcceptSugerencia(selectedRow.id);
     } else if (dialogAction === 'reject') {
       console.log('Rejected: ', selectedRow);
+      handleRejectSugerencia(selectedRow.id);
     }
     handleCloseDialog();
   };
@@ -127,6 +167,7 @@ const NotificacionesSugerenciasPage = () => {
               columns={columns}
               data={data.map(
                 notificacionSugerencia => ({
+                  id: notificacionSugerencia.id,
                   ambiente: notificacionSugerencia.horarioDisponible.ambiente,
                   fecha: notificacionSugerencia.horarioDisponible.fecha,
                   horario: notificacionSugerencia.horarioDisponible.horario,
@@ -157,10 +198,10 @@ const NotificacionesSugerenciasPage = () => {
           <Typography>¿Estás seguro de que deseas {dialogAction === 'approve' ? 'aprobar' : 'rechazar'} esta sugerencia?</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog} color="primary">
+          <Button onClick={handleCloseDialog} variant='contained' color='secondary'>
             Cancelar
           </Button>
-          <Button onClick={handleConfirmAction} color="primary">
+          <Button onClick={handleConfirmAction} variant='contained' color='primary'>
             Confirmar
           </Button>
         </DialogActions>
