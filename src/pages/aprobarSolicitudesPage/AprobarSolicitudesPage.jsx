@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-
-import { Box, Grid, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+} from '@mui/material';
+import { useState } from 'react';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
-import CustomModal from '../../components/organisms/customModal/CustomModal';
-import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
-import { useNavigate } from 'react-router-dom';
+import CustomModal from '../../components/organisms/customModal/CustomModal';
+import InformacionSugerenciaAceptadaForm from '../../components/molecules/informacionSugerenciaAceptadaForm/InformacionSugerenciaAceptadaForm';
 
-const fetchSolicitudes = async (params) => {
-  params.estado = 'solicitado';
+const fetchNotificacionesAceptadas = async (params) => {
+  params.estado = 'aceptado';
   const query = new URLSearchParams(params).toString();
   const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
     headers: {
@@ -17,12 +20,12 @@ const fetchSolicitudes = async (params) => {
     }
   });
 
-  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
+  if (!response.ok) throw new Error('Error al obtener la lista de notificaciones');
   const data = await response.json();
   return data;
-}
+};
 
-const VerficarSolicitudesPage = () => {
+const AprobarSolicitudesPage = () => {
   const columns = [
     { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
     { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
@@ -34,7 +37,6 @@ const VerficarSolicitudesPage = () => {
   ];
 
   const { openSnackbar } = useSnackbar();
-  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [fetchParams, setFetchParams] = useState({});
@@ -55,10 +57,10 @@ const VerficarSolicitudesPage = () => {
     totalRows,
     loading,
     refreshData
-  } = useTable(fetchSolicitudes, 'asc', 'fecha', setFetchParams);
+  } = useTable(fetchNotificacionesAceptadas, 'asc', 'fecha', setFetchParams);
 
-  const handleAcceptReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${solicitudId}`, {
+  const handleAcceptReserva = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${selectedRow.id}`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
@@ -66,6 +68,7 @@ const VerficarSolicitudesPage = () => {
     })
       .then(async response => {
         const data = await response.json();
+        console.log('Registrar solicitud ambiente response: ', data);
         openSnackbar(data.msg, 'success');
         refreshData(fetchParams);
         setOpenModal(false);
@@ -75,12 +78,8 @@ const VerficarSolicitudesPage = () => {
       })
   };
 
-  const handleSuggestAmbientes = async () => {
-    navigate('/dashboard/sugerir-ambientes', {state: selectedRow});
-  };
-
-  const handleRejectReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${solicitudId}`, {
+  const handleRejectReserva = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${selectedRow.id}`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
@@ -99,11 +98,7 @@ const VerficarSolicitudesPage = () => {
 
   const handleOpenReservaForm = (row) => {
     const solicitud = data.find(solicitud => solicitud.id === row.id);
-    const docenteSolicitante = {
-      id: solicitud.docente.id,
-      nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
-    };
-    setSelectedRow({ ...solicitud, docenteSolicitante });
+    setSelectedRow(solicitud);
     setOpenModal(true);
   };
 
@@ -130,12 +125,9 @@ const VerficarSolicitudesPage = () => {
             }}
           >
             <Typography variant='h4' align='center' gutterBottom>
-              Verificar solicitudes de reserva
+              Aprobar solicitudes
             </Typography>
-            <Typography variant='body1' gutterBottom sx={{ marginLeft: '5%' }}>
-              Buscar solicitudes:
-            </Typography>
-            
+
             <CustomSearchableTable
               columns={columns}
               data={data.map(
@@ -169,11 +161,10 @@ const VerficarSolicitudesPage = () => {
               onClose={() => setOpenModal(false)}
               title='Detalles de la solicitud'
             >
-              <InformationVerificarSolicitudForm
+              <InformacionSugerenciaAceptadaForm
                 row={selectedRow}
                 onClose={() => setOpenModal(false)}
                 onAccept={handleAcceptReserva}
-                onSuggest={handleSuggestAmbientes}
                 onReject={handleRejectReserva}
               />
             </CustomModal>
@@ -184,4 +175,4 @@ const VerficarSolicitudesPage = () => {
   );
 };
 
-export default VerficarSolicitudesPage;
+export default AprobarSolicitudesPage;

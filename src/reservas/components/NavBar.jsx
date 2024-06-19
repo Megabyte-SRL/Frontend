@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
+import BadgeNotify from '../../components/molecules/badgeIcon/BadgeNotify';
 
 const NavBar = ({ anchoCaja }) => {
   const settings = ['Perfil', 'Salir'];
@@ -61,7 +62,9 @@ const NavBar = ({ anchoCaja }) => {
             AULAS FCYT
           </Typography>
         </Grid>
-        
+        <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
+          <BadgeNotify onClick={handleOpenUserMenu} />
+        </Box>
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

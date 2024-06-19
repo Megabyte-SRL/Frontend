@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 
-const useTable = (fetchData, initialOrder = 'asc', initialOrderBy = '') => {
+const useTable = (fetchData, initialOrder = 'asc', initialOrderBy = '', setFetchParams) => {
   const [data, setData] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [filters, setFilters] = useState({});
@@ -11,33 +11,42 @@ const useTable = (fetchData, initialOrder = 'asc', initialOrderBy = '') => {
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
+  const fetchTableData = useCallback(async (params) => {
     setLoading(true);
-    const fetchTableData = async () => {
-      try {
-        const params = {
-          search: searchText,
-          sortField: orderBy,
-          sortDirection: order,
-          perPage: rowsPerPage,
-          page: page + 1, // Laravel pagination starts at 1
-          ...filters
-        };
+    try {
+      const result = await fetchData(params);
+      setData(result.data);
+      setTotalRows(result.meta.total);
+    } catch (error) {
+      console.error('Failed to fetch table data: ', error);
+      setData([]);
+      setTotalRows(0);
+    } finally {
+      setLoading(false);
+    }
+  }, [fetchData]);
 
-        const result = await fetchData(params);
-        setData(result.data);
-        setTotalRows(result.meta.total);
-      } catch (error) {
-        console.error("Failed to fetch table data: ", error);
-        setData([]);
-        setTotalRows(0);
-      } finally {
-        setLoading(false);
-      }
+  useEffect(() => {
+    const params = {
+      search: searchText,
+      sortField: orderBy,
+      sortDirection: order,
+      perPage: rowsPerPage,
+      page: page + 1, // Laravel pagination starts at 1
+      ...filters
     };
 
-    fetchTableData();
-  }, [fetchData, searchText, filters, order, orderBy, rowsPerPage, page]);
+    if (setFetchParams) {
+      setFetchParams(params);
+    }
+
+    fetchTableData(params);
+  },
+  [fetchData, searchText, filters, order, orderBy, rowsPerPage, page, setFetchParams, fetchTableData]);
+
+  const refreshData = (params) => {
+    fetchTableData(params);
+  }
 
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
@@ -80,6 +89,7 @@ const useTable = (fetchData, initialOrder = 'asc', initialOrderBy = '') => {
     handleRowsPerPageChange,
     totalRows,
     loading,
+    refreshData,
   };
 }
 

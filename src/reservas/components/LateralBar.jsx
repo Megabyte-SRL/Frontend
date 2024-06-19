@@ -67,9 +67,6 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                   </ListItemButton>
                 </List>
               </Collapse>
-              <ListItemButton id='reserva-solicitudes' onClick={() => handleOtherItemClick('/dashboard/solicitudes')}>
-                <ListItemText primary='Crear solicitud ambiente' />
-              </ListItemButton>
               <ListItemButton id='verificar-solicitudes' onClick={() => handleOtherItemClick('/dashboard/verificar-solicitudes')}>
                 <ListItemText primary='Verificar solicitudes' />
               </ListItemButton>
@@ -81,6 +78,9 @@ const LateralBar = ({ anchoCaja = 240 }) => {
               </ListItemButton>
               <ListItemButton id='carga-masiva-docentes-button' onClick={() => handleOtherItemClick('/dashboard/carga-masiva-docentes')}>
                 <ListItemText primary="Carga masiva docentes" />
+              </ListItemButton>
+              <ListItemButton id='notificaciones' onClick={() => handleOtherItemClick('/dashboard/aprobar-solicitudes')}>
+                <ListItemText primary="Notificaciones" />
               </ListItemButton>
             </List>
           ) : (
