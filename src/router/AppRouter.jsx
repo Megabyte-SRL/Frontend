@@ -18,6 +18,7 @@ import ProfilePage from '../pages/profilePage/ProfilePage'
 import AprobarSolicitudesPage from '../pages/aprobarSolicitudesPage/AprobarSolicitudesPage'
 import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/SugerirAmbientesPage'
 import NotificacionesSugerenciasPage from '../pages/notificacionesSugerenciasPage/NotificacionesSugerenciasPage'
+import RegistroSolicitudesPage from '../pages/registroSolicitudesPage/RegistroSolicitudesPage'
 
 const AppRouter = () => {
   return (
@@ -44,6 +45,7 @@ const AppRouter = () => {
         <Route path='profile' element={<ProfilePage/>} />
         <Route path='sugerir-ambientes' element={<SugerirAmbientesPage/>}/>
         <Route path='notificaciones-sugerencias' element={<NotificacionesSugerenciasPage />} />
+        <Route path='registro-solicitudes' element={<RegistroSolicitudesPage />} />
       </Route>
 
       <Route

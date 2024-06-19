@@ -125,7 +125,7 @@ const AprobarSolicitudesPage = () => {
             }}
           >
             <Typography variant='h4' align='center' gutterBottom>
-              Aprobar solicitudes
+              Aprobar sugerencias aceptadas
             </Typography>
 
             <CustomSearchableTable
