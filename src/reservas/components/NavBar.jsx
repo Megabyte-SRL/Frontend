@@ -14,6 +14,7 @@ import {
 } from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
+import Notification from '../../components/organisms/customModalNotification/notifications';
 import BadgeNotify from '../../components/molecules/badgeIcon/BadgeNotify';
 
 const NavBar = ({ anchoCaja }) => {
@@ -62,6 +63,9 @@ const NavBar = ({ anchoCaja }) => {
             AULAS FCYT
           </Typography>
         </Grid>
+        <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
+          <Notification />
+        </Box>
         <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
           <BadgeNotify onClick={handleOpenUserMenu} />
         </Box>
