@@ -6,9 +6,14 @@ import { green, red, yellow } from '@mui/material/colors';
 const InformationVerificarSolicitudForm = ({
   row = {},
   onClose = () => {},
-  onSubmit = () => {}
+  onAccept = () => {},
+  onSuggest = () => {},
+  onReject = () => {},
 }) => {
+<<<<<<< HEAD
   const navigate = useNavigate(); // Importante: usar useNavigate para la navegación
+=======
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
 
   console.log('Solicitud: ', row);
   return (
@@ -57,11 +62,12 @@ const InformationVerificarSolicitudForm = ({
           type='submit'
           color='primary'
           variant='contained'
-          onClick={() => onSubmit(row.id)}
+          onClick={() => onAccept(row.id)}
         >
           ACEPTAR
         </Button>
         <Button 
+<<<<<<< HEAD
           variant='contained'
           color='primary'
           onClick={() => navigate('/dashboard/sugerir-ambientes',{state: row})}
@@ -70,9 +76,19 @@ const InformationVerificarSolicitudForm = ({
         </Button>
 
         <Button
+=======
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
           variant='contained'
           color='secondary'
-          onClick={onClose}
+          onClick={() => onSuggest()}
+        >
+          SUGERIR
+        </Button>
+
+        <Button
+          variant='contained'
+          color='error'
+          onClick={() => onReject(row.id)}
         >
           RECHAZAR
         </Button>

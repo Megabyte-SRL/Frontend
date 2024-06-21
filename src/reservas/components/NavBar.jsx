@@ -1,8 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { AppBar, Grid, IconButton, Toolbar, Typography, Avatar, Tooltip, Menu, MenuItem, Box } from '@mui/material';
+import {
+  AppBar,
+  Grid,
+  IconButton,
+  Toolbar,
+  Typography,
+  Avatar,
+  Tooltip,
+  Menu,
+  MenuItem,
+  Box
+} from '@mui/material'
 import { useAuth } from '../../hooks/useAuth'
 import { useNavigate } from 'react-router-dom';
+import BadgeNotify from '../../components/molecules/badgeIcon/BadgeNotify';
 
 const NavBar = ({ anchoCaja }) => {
   const settings = ['Perfil', 'Salir'];
@@ -21,20 +33,11 @@ const NavBar = ({ anchoCaja }) => {
       //onClick: handleAvatarClick,
     };
   }
+  
+  const [anchorElUser, setAnchorElUser] = useState(null);
 
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
-
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
-  };
-
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-    auth.logout();
   };
 
   const handleCloseUserMenu = (link) => {
@@ -59,10 +62,13 @@ const NavBar = ({ anchoCaja }) => {
             AULAS FCYT
           </Typography>
         </Grid>
+        <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
+          <BadgeNotify onClick={handleOpenUserMenu} />
+        </Box>
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-              <Avatar {...stringAvatar(sessionStorage.getItem('nombre'))} />
+                <Avatar {...stringAvatar(sessionStorage.getItem('nombre'))} />
               </IconButton>
             </Tooltip>
             <Menu
@@ -88,7 +94,6 @@ const NavBar = ({ anchoCaja }) => {
                   } else if (setting === 'Salir') {
                     auth.logout();
                   }
-
                   setAnchorElUser(null);
                 }}>
                   <Typography textAlign="center">{setting}</Typography>

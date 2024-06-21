@@ -1,18 +1,18 @@
-import React, { useState, useCallback } from 'react';
-
-import { Box, Grid, Paper, Typography, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Paper,
+  Grid,
+} from '@mui/material';
+import { useState } from 'react';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
-import CustomModal from '../../components/organisms/customModal/CustomModal';
-import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
-<<<<<<< HEAD
-import debounce from 'lodash.debounce';
-=======
-import { useNavigate } from 'react-router-dom';
+import CustomModal from '../../components/organisms/customModal/CustomModal';
+import InformacionSugerenciaAceptadaForm from '../../components/molecules/informacionSugerenciaAceptadaForm/InformacionSugerenciaAceptadaForm';
 
-const fetchSolicitudes = async (params) => {
-  params.estado = 'solicitado';
+const fetchNotificacionesAceptadas = async (params) => {
+  params.estado = 'aceptado';
   const query = new URLSearchParams(params).toString();
   const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
     headers: {
@@ -20,39 +20,12 @@ const fetchSolicitudes = async (params) => {
     }
   });
 
-  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
+  if (!response.ok) throw new Error('Error al obtener la lista de notificaciones');
   const data = await response.json();
   return data;
-}
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
+};
 
-const VerficarSolicitudesPage = () => {
-  const cache = {};
-  const [loading, setLoading] = useState(false);
-  const [showLoading, setShowLoading] = useState(false); // Nueva variable de estado
-
-  const fetchSolicitudes = async (params) => {
-    const query = new URLSearchParams(params).toString();
-
-    if (cache[query]) {
-      return cache[query];
-    }
-
-    setLoading(true);
-    const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
-      }
-    });
-    setLoading(false);
-
-    if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
-    const data = await response.json();
-    
-    cache[query] = data;
-    return data;
-  }
-
+const AprobarSolicitudesPage = () => {
   const columns = [
     { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
     { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
@@ -64,7 +37,6 @@ const VerficarSolicitudesPage = () => {
   ];
 
   const { openSnackbar } = useSnackbar();
-  const navigate = useNavigate();
   const [openModal, setOpenModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [fetchParams, setFetchParams] = useState({});
@@ -72,7 +44,7 @@ const VerficarSolicitudesPage = () => {
   const {
     data,
     searchText,
-    handleSearchChange: handleSearchChangeWithoutDebounce,
+    handleSearchChange,
     filters,
     handleFilterChange,
     order,
@@ -85,23 +57,10 @@ const VerficarSolicitudesPage = () => {
     totalRows,
     loading,
     refreshData
-  } = useTable(fetchSolicitudes, 'asc', 'fecha', setFetchParams);
+  } = useTable(fetchNotificacionesAceptadas, 'asc', 'fecha', setFetchParams);
 
-<<<<<<< HEAD
-  // Debounce handleSearchChange
-  const handleSearchChange = useCallback(
-    debounce((newSearchText) => {
-      handleSearchChangeWithoutDebounce(newSearchText);
-    }, 300),
-    []
-  );
-
-  const handleOnSubmitReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
-=======
-  const handleAcceptReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${solicitudId}`, {
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
+  const handleAcceptReserva = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${selectedRow.id}`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
@@ -109,6 +68,7 @@ const VerficarSolicitudesPage = () => {
     })
       .then(async response => {
         const data = await response.json();
+        console.log('Registrar solicitud ambiente response: ', data);
         openSnackbar(data.msg, 'success');
         refreshData(fetchParams);
         setOpenModal(false);
@@ -118,12 +78,8 @@ const VerficarSolicitudesPage = () => {
       })
   };
 
-  const handleSuggestAmbientes = async () => {
-    navigate('/dashboard/sugerir-ambientes', {state: selectedRow});
-  };
-
-  const handleRejectReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${solicitudId}`, {
+  const handleRejectReserva = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${selectedRow.id}`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
@@ -142,11 +98,7 @@ const VerficarSolicitudesPage = () => {
 
   const handleOpenReservaForm = (row) => {
     const solicitud = data.find(solicitud => solicitud.id === row.id);
-    const docenteSolicitante = {
-      id: solicitud.docente.id,
-      nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
-    };
-    setSelectedRow({ ...solicitud, docenteSolicitante });
+    setSelectedRow(solicitud);
     setOpenModal(true);
   };
 
@@ -173,12 +125,9 @@ const VerficarSolicitudesPage = () => {
             }}
           >
             <Typography variant='h4' align='center' gutterBottom>
-              Verificar solicitudes de reserva
+              Aprobar sugerencias aceptadas
             </Typography>
-            <Typography variant='body1' gutterBottom sx={{ marginLeft: '5%' }}>
-              Buscar solicitudes:
-            </Typography>
-            
+
             <CustomSearchableTable
               columns={columns}
               data={data.map(
@@ -207,17 +156,15 @@ const VerficarSolicitudesPage = () => {
               onClickRow={(row) => handleOpenReservaForm(row)}
               loading={loading}
             />
-            {showLoading && loading && <CircularProgress />} {/* Condición adicional para mostrar el loader */}
             <CustomModal
               open={openModal}
               onClose={() => setOpenModal(false)}
               title='Detalles de la solicitud'
             >
-              <InformationVerificarSolicitudForm
+              <InformacionSugerenciaAceptadaForm
                 row={selectedRow}
                 onClose={() => setOpenModal(false)}
                 onAccept={handleAcceptReserva}
-                onSuggest={handleSuggestAmbientes}
                 onReject={handleRejectReserva}
               />
             </CustomModal>
@@ -228,4 +175,4 @@ const VerficarSolicitudesPage = () => {
   );
 };
 
-export default VerficarSolicitudesPage;
+export default AprobarSolicitudesPage;

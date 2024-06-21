@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { Box, Button, Chip, Grid, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
 import { green, red, yellow } from '@mui/material/colors';
 import { Formik } from 'formik';
@@ -13,6 +14,21 @@ import { useLocation } from 'react-router-dom';
 const fetchHorariosDisponibles = async (params) => {
   const query = new URLSearchParams(params).toString();
   const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horariosDisponibles?${query}`, {
+=======
+
+import { Box, Button, Chip, Grid, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
+import { red, yellow } from '@mui/material/colors';
+import { Formik } from 'formik';
+import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
+import useTable from '../../hooks/useTable';
+import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const fetchHorariosDisponibles = async (params) => {
+  params.estado = 'disponible';
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horarios?${query}`, {
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
     headers: {
       'Authorization': 'Bearer ' + sessionStorage.getItem("token")
     }
@@ -23,6 +39,7 @@ const fetchHorariosDisponibles = async (params) => {
   return data;
 };
 
+<<<<<<< HEAD
 const renderEstado = (params) => {
   switch (params.value) {
     case 'disponible':
@@ -39,6 +56,57 @@ const SugerirAmbientesPage = () => {
   const { state } = useLocation();
   const [selectedRows, setSelectedRows] = useState({});
   const [filteredData, setFilteredData] = useState([]);
+=======
+const SugerirAmbientesPage = () => {
+  const columns = [
+    { id: 'id', label: 'Id', sortable: true, filterable: false },
+    { id: 'fecha', label: 'Fecha solicitud', sortable: true, filterable: false },
+    { id: 'ambiente', label: 'Ambiente', sortable: true, filterable: false },
+    { id: 'horario', label: 'Horario', sortable: true, filterable: false },
+    { id: 'capacidad', label: 'Capacidad', sortable: true, filterable: false },
+    {
+      id: 'estado',
+      label: 'Estado',
+      sortable: false,
+      filterable: false,
+      render: (row) => {
+        switch (row.estado) {
+          case 'disponible':
+            return <Chip
+              label={row.estado}
+              style={{ borderRadius: '10%', backgroundColor: "#01AB5E", color: 'white' }}
+            />;
+          case 'solicitado':
+            return <Chip
+              label={row.estado}
+              style={{ borderRadius: '10%', backgroundColor: yellow[500], color: 'black' }}
+            />;
+          default:
+            return <Chip
+              label={row.estado}
+              style={{ backgroundColor: red[500], color: 'white' }}
+            />;
+        }
+      }
+    },
+    {
+      id: 'seleccionar',
+      label: 'Seleccionar',
+      sortable: false,
+      filterable: false,
+      render: (params) => (
+        <Checkbox
+          checked={selectedRows[params.id] || false}
+          onChange={(event) => handleCheckboxChange(event, params.id)}
+        />
+      ),
+    }
+  ];
+
+  const { state } = useLocation();
+  const navigate = useNavigate();
+  const [selectedRows, setSelectedRows] = useState({});
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
   const [fechaFilter, setFechaFilter] = useState(state.horarioDisponible.fecha ? [state.horarioDisponible.fecha] : []);
   const [horaFilter, setHoraFilter] = useState(state.horarioDisponible.horario ? [state.horarioDisponible.horario] : []);
   const [capacidadFilter, setCapacidadFilter] = useState(state.horarioDisponible.capacidad ? [state.horarioDisponible.capacidad] : []);
@@ -63,6 +131,7 @@ const SugerirAmbientesPage = () => {
     }
   }, []);
 
+<<<<<<< HEAD
   const columns = [
     { field: 'id', headerName: 'Id', width: 70 },
     {
@@ -128,10 +197,60 @@ const SugerirAmbientesPage = () => {
         capacidad: values.capacidad,
         tipoReserva: values.tipoReserva,
         docentes: values.docentes
+=======
+  const { openSnackbar } = useSnackbar();
+
+  const {
+    data,
+    searchText,
+    handleSearchChange,
+    filters,
+    handleFilterChange,
+    order,
+    orderBy,
+    handleSort,
+    rowsPerPage,
+    page,
+    handlePageChange,
+    handleRowsPerPageChange,
+    totalRows,
+    loading,
+  } = useTable(fetchHorariosDisponibles, 'asc', 'fecha');
+
+  const handleRejectReserva = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/rechazarSolicitud/${solicitudId}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+      }
+    })
+      .then(async response => {
+        const data = await response.json();
+        openSnackbar(data.msg, 'success');
+      })
+      .catch(async error => {
+        openSnackbar('Error al rechazar ambiente', 'error');
+      })
+  };
+
+  const handleOnSubmitSugerencias = async () => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/sugerirAmbientes`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        horariosDisponibles: ambienteSeleccionado,
+        docenteId: state.docenteSolicitante.id,
+        grupoId: state.grupo.id,
+        capacidad: state.capacidad,
+        tipoReserva: state.tipoReserva,
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
       })
     })
       .then(async response => {
         const data = await response.json();
+<<<<<<< HEAD
         openSnackbar('Solicitud registrada exitosamente', 'success');
         fetchHorariosDisponibles();
         setOpenModal(false);
@@ -139,6 +258,15 @@ const SugerirAmbientesPage = () => {
       .catch(async error => {
         openSnackbar('Error al registrar horario', 'error');
       })
+=======
+        openSnackbar(data.msg, 'success');
+        handleRejectReserva(state.id);
+        navigate('/dashboard/verificar-solicitudes');
+      })
+      .catch(async error => {
+        openSnackbar('Error al registrar sugerencias', 'error');
+      });
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
   };
 
   const handleFechaFilterChange = (event) => {
@@ -155,6 +283,7 @@ const SugerirAmbientesPage = () => {
 
   const obtenerFilas = (selectedRows) => {
     const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
+<<<<<<< HEAD
     const dataFilaSeleccionada = selectedIds.map((id) => filteredData.find((row) => row.id === parseInt(id)));
     setAmbienteSeleccionado(dataFilaSeleccionada);
     console.log(dataFilaSeleccionada);
@@ -168,6 +297,11 @@ const SugerirAmbientesPage = () => {
     console.log(objSolicitud);
   }
 
+=======
+    setAmbienteSeleccionado(selectedIds);
+  };
+
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
   return (
     <Formik>
       <Grid container justifyContent='center'>
@@ -242,6 +376,7 @@ const SugerirAmbientesPage = () => {
                 </Grid>
 
                 <Grid item xs={12} sx={{ mt: 2 }}>
+<<<<<<< HEAD
                   <Box sx={{ width: '100%' }}>
                     <DataGrid
                       rows={filteredData}
@@ -262,6 +397,25 @@ const SugerirAmbientesPage = () => {
                       {JSON.stringify(ambienteSeleccionado, null, 4)}
                     </pre>
                   </Box>
+=======
+                  <CustomSearchableTable
+                    columns={columns}
+                    data={data}
+                    order={order}
+                    orderBy={orderBy}
+                    onSort={handleSort}
+                    page={page}
+                    rowsPerPage={rowsPerPage}
+                    totalRows={totalRows}
+                    onPageChange={handlePageChange}
+                    onRowsPerPageChange={handleRowsPerPageChange}
+                    onFilterChange={handleFilterChange}
+                    searchText={searchText}
+                    onSearchChange={handleSearchChange}
+                    onClickRow={(row) => console.log(row)}
+                    loading={loading}
+                  />
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
                 </Grid>
 
                 <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
@@ -269,12 +423,17 @@ const SugerirAmbientesPage = () => {
                     type='submit'
                     color='primary'
                     variant='contained'
+<<<<<<< HEAD
                     onClick={() => { obtenerFilas(selectedRows); enviarSugerencia(); }}
+=======
+                    onClick={() => handleOnSubmitSugerencias()}
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
                   >
                     Enviar Sugerencia
                   </Button>
                 </Grid>
               </Grid>
+<<<<<<< HEAD
 
               <CustomModal
                 open={openModal}
@@ -297,6 +456,8 @@ const SugerirAmbientesPage = () => {
                 <pre>ID Docente: {JSON.stringify(state.docenteSolicitante.id, null, 2)}</pre>
                 <pre>Horario: {JSON.stringify(state.horarioDisponible.horario, null, 2)}</pre>
               </Box>
+=======
+>>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
             </Paper>
           </Box>
         </Grid>
