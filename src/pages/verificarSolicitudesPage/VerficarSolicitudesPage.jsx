@@ -6,25 +6,7 @@ import CustomModal from '../../components/organisms/customModal/CustomModal';
 import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
-<<<<<<< HEAD
 import debounce from 'lodash.debounce';
-=======
-import { useNavigate } from 'react-router-dom';
-
-const fetchSolicitudes = async (params) => {
-  params.estado = 'solicitado';
-  const query = new URLSearchParams(params).toString();
-  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
-    headers: {
-      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
-    }
-  });
-
-  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
-  const data = await response.json();
-  return data;
-}
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
 
 const VerficarSolicitudesPage = () => {
   const cache = {};
@@ -87,7 +69,6 @@ const VerficarSolicitudesPage = () => {
     refreshData
   } = useTable(fetchSolicitudes, 'asc', 'fecha', setFetchParams);
 
-<<<<<<< HEAD
   // Debounce handleSearchChange
   const handleSearchChange = useCallback(
     debounce((newSearchText) => {
@@ -98,10 +79,6 @@ const VerficarSolicitudesPage = () => {
 
   const handleOnSubmitReserva = async (solicitudId) => {
     fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
-=======
-  const handleAcceptReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${solicitudId}`, {
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
