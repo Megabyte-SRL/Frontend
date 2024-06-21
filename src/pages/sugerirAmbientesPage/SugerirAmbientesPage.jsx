@@ -160,17 +160,30 @@ const SugerirAmbientesPage = () => {
   };
 
   const handleFechaFilterChange = (event) => {
-    setFechaFilter(event.target.value);
+    const newFechaFilter = event.target.value;
+    setFechaFilter(newFechaFilter);
   };
 
   const handleHoraFilterChange = (event) => {
-    setHoraFilter(event.target.value);
+    const newHoraFilter = event.target.value;
+    setHoraFilter(newHoraFilter);
   };
 
-  const obtenerFilas = (selectedRows) => {
-    const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
-    setAmbienteSeleccionado(selectedIds);
-  };
+  const filteredData = React.useMemo(() => {
+    return data.filter(row => {
+      // Filtro por fecha
+      if (fechaFilter && row.fecha !== fechaFilter) {
+        return false;
+      }
+      
+      // Filtro por horario
+      if (horaFilter.length > 0) {
+        return horaFilter.includes(row.horario);
+      }
+      
+      return true; // Si no hay filtros aplicados, muestra todas las filas
+    });
+  }, [data, fechaFilter, horaFilter]);
 
   return (
     <Formik>
@@ -202,35 +215,35 @@ const SugerirAmbientesPage = () => {
 
               <Grid container spacing={2}>
                 <Grid item xs={2} sx={{ mt: 2, ml: 5 }}>
-                  <TextField
-                    name='fecha'
-                    type='date'
-                    label='Fecha'
-                    variant='outlined'
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    value={fechaFilter}
-                    onChange={handleFechaFilterChange}
-                  />
+                <TextField
+                  name='fecha'
+                  type='date'
+                  label='Fecha'
+                  variant='outlined'
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  value={fechaFilter}
+                  onChange={handleFechaFilterChange}
+                />
                 </Grid>
 
                 <Grid item xs={2.3} sx={{ mt: 2, ml: 25 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Horarios</InputLabel>
-                    <Select
-                      name='hora'
-                      label='Hora'
-                      multiple
-                      value={horaFilter}
-                      onChange={handleHoraFilterChange}
-                    >
-                      {horas.map((hora) => (
-                        <MenuItem key={hora} value={hora}>
-                          {hora}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel>Horarios</InputLabel>
+                  <Select
+                    name='hora'
+                    label='Hora'
+                    multiple
+                    value={horaFilter}
+                    onChange={handleHoraFilterChange}
+                  >
+                    {horas.map((hora) => (
+                      <MenuItem key={hora} value={hora}>
+                        {hora}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 </Grid>
 
                 <Grid item xs={2.3} sx={{ mt: 2, ml: 5 }}>
@@ -250,7 +263,7 @@ const SugerirAmbientesPage = () => {
                 <Grid item xs={12} sx={{ mt: 2 }}>
                   <CustomSearchableTable
                     columns={columns}
-                    data={data}
+                    data={filteredData}
                     order={order}
                     orderBy={orderBy}
                     onSort={handleSort}

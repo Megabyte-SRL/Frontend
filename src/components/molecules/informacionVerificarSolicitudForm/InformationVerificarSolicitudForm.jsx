@@ -47,7 +47,7 @@ const InformationVerificarSolicitudForm = ({
             <Typography variant="body1" align="left"><strong>Prioridad:</strong> {row.prioridad}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body1" align="center"><strong>Docente solicitante:</strong> {row.docenteSolicitante.nombre} (ID: {row.docenteSolicitante.id})</Typography>
+            <Typography variant="body1" align="center"><strong>Docente solicitante:</strong> {row.docenteSolicitante.nombre} </Typography>
           </Grid>
         </Grid>
       </Box>
