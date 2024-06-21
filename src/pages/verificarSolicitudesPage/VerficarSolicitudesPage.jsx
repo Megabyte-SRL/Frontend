@@ -1,40 +1,28 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 
-import { Box, Grid, Paper, Typography, CircularProgress } from '@mui/material';
+import { Box, Grid, Paper, Typography } from '@mui/material';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import CustomModal from '../../components/organisms/customModal/CustomModal';
 import InformationVerificarSolicitudForm from '../../components/molecules/informacionVerificarSolicitudForm/InformationVerificarSolicitudForm';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
-import debounce from 'lodash.debounce';
+import { useNavigate } from 'react-router-dom';
+
+const fetchSolicitudes = async (params) => {
+  params.estado = 'solicitado';
+  const query = new URLSearchParams(params).toString();
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+    }
+  });
+
+  if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
+  const data = await response.json();
+  return data;
+}
 
 const VerficarSolicitudesPage = () => {
-  const cache = {};
-  const [loading, setLoading] = useState(false);
-  const [showLoading, setShowLoading] = useState(false); // Nueva variable de estado
-
-  const fetchSolicitudes = async (params) => {
-    const query = new URLSearchParams(params).toString();
-
-    if (cache[query]) {
-      return cache[query];
-    }
-
-    setLoading(true);
-    const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/solicitudesAmbientes?${query}`, {
-      headers: {
-        'Authorization': 'Bearer ' + sessionStorage.getItem("token")
-      }
-    });
-    setLoading(false);
-
-    if (!response.ok) throw new Error('Error al obtener la lista de solicitudes');
-    const data = await response.json();
-    
-    cache[query] = data;
-    return data;
-  }
-
   const columns = [
     { id: 'fecha', label: 'Fecha', sortable: true, filterable: true },
     { id: 'fechaSolicitud', label: 'Fecha solicitud', sortable: true, filterable: true },
@@ -54,7 +42,7 @@ const VerficarSolicitudesPage = () => {
   const {
     data,
     searchText,
-    handleSearchChange: handleSearchChangeWithoutDebounce,
+    handleSearchChange,
     filters,
     handleFilterChange,
     order,
@@ -69,16 +57,8 @@ const VerficarSolicitudesPage = () => {
     refreshData
   } = useTable(fetchSolicitudes, 'asc', 'fecha', setFetchParams);
 
-  // Debounce handleSearchChange
-  const handleSearchChange = useCallback(
-    debounce((newSearchText) => {
-      handleSearchChangeWithoutDebounce(newSearchText);
-    }, 300),
-    []
-  );
-
-  const handleOnSubmitReserva = async (solicitudId) => {
-    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/reservarAmbiente/${solicitudId}`, {
+  const handleAcceptReserva = async (solicitudId) => {
+    fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/aprobarSolicitud/${solicitudId}`, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + sessionStorage.getItem("token")
@@ -123,7 +103,8 @@ const VerficarSolicitudesPage = () => {
       id: solicitud.docente.id,
       nombre: `${solicitud.docente.nombre} ${solicitud.docente.apellido}`
     };
-    setSelectedRow({ ...solicitud, docenteSolicitante });
+    
+    setSelectedRow({ ...solicitud, docenteSolicitante, capacidadReserva: solicitud.capacidad });
     setOpenModal(true);
   };
 
@@ -184,7 +165,6 @@ const VerficarSolicitudesPage = () => {
               onClickRow={(row) => handleOpenReservaForm(row)}
               loading={loading}
             />
-            {showLoading && loading && <CircularProgress />} {/* Condición adicional para mostrar el loader */}
             <CustomModal
               open={openModal}
               onClose={() => setOpenModal(false)}

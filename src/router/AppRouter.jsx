@@ -15,14 +15,11 @@ import CargaMasivaPage from '../pages/cargaMasivaPage/CargaMasivaPage'
 import CargaMasivaDocentePage from '../pages/cargaMasivaDocentesPage/CargaMasivaDocentePage'
 import VerficarSolicitudesPage from '../pages/verificarSolicitudesPage/VerficarSolicitudesPage'
 import ProfilePage from '../pages/profilePage/ProfilePage'
-<<<<<<< HEAD
-import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/SugerirAmbientesPage'
-=======
 import AprobarSolicitudesPage from '../pages/aprobarSolicitudesPage/AprobarSolicitudesPage'
 import SugerirAmbientesPage from '../pages/sugerirAmbientesPage/SugerirAmbientesPage'
 import NotificacionesSugerenciasPage from '../pages/notificacionesSugerenciasPage/NotificacionesSugerenciasPage'
 import RegistroSolicitudesPage from '../pages/registroSolicitudesPage/RegistroSolicitudesPage'
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
+
 
 const AppRouter = () => {
   return (
@@ -48,12 +45,8 @@ const AppRouter = () => {
         <Route path='aprobar-solicitudes' element={<AprobarSolicitudesPage />} />
         <Route path='profile' element={<ProfilePage/>} />
         <Route path='sugerir-ambientes' element={<SugerirAmbientesPage/>}/>
-<<<<<<< HEAD
-
-=======
         <Route path='notificaciones-sugerencias' element={<NotificacionesSugerenciasPage />} />
         <Route path='registro-solicitudes' element={<RegistroSolicitudesPage />} />
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
       </Route>
 
       <Route

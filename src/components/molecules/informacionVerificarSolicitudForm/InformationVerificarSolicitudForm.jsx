@@ -1,7 +1,5 @@
 import React from 'react';
 import { Box, Button, Grid, Typography } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { green, red, yellow } from '@mui/material/colors';
 
 const InformationVerificarSolicitudForm = ({
   row = {},
@@ -10,10 +8,6 @@ const InformationVerificarSolicitudForm = ({
   onSuggest = () => {},
   onReject = () => {},
 }) => {
-<<<<<<< HEAD
-  const navigate = useNavigate(); // Importante: usar useNavigate para la navegación
-=======
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
 
   console.log('Solicitud: ', row);
   return (
@@ -47,7 +41,7 @@ const InformationVerificarSolicitudForm = ({
             <Typography variant="body1" align="left"><strong>Horario:</strong> {row.horarioDisponible.horario}</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1" align="right"><strong>Capacidad:</strong> {row.horarioDisponible.capacidad}</Typography>
+            <Typography variant="body1" align="right"><strong>Capacidad:</strong> {row.capacidadReserva}</Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1" align="left"><strong>Prioridad:</strong> {row.prioridad}</Typography>
@@ -67,17 +61,6 @@ const InformationVerificarSolicitudForm = ({
           ACEPTAR
         </Button>
         <Button 
-<<<<<<< HEAD
-          variant='contained'
-          color='primary'
-          onClick={() => navigate('/dashboard/sugerir-ambientes',{state: row})}
-        >
-          SUGERIR
-        </Button>
-
-        <Button
-=======
->>>>>>> d5dd86262a62ee74f8db1a00afa8d4ac27b2b3d6
           variant='contained'
           color='secondary'
           onClick={() => onSuggest()}
