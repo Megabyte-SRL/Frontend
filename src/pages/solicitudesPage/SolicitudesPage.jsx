@@ -8,8 +8,25 @@ import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarP
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';
 
+const fetchFechas = async () => {
+  const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/fechas`, {
+    headers: {
+      'Authorization': 'Bearer ' + sessionStorage.getItem("token")
+    }
+  });
+
+  if (!response.ok) throw new Error('Error al obtener las fechas');
+  const data = await response.json();
+  return { fechaInicio: data.fechaInicio, fechaFin: data.fechaFin };
+};
+
 const fetchHorariosDisponibles = async (params) => {
+  const { fechaInicio, fechaFin } = await fetchFechas();
+
   params.estado = 'disponible,solicitado';
+  params.fechaInicio = fechaInicio;
+  params.fechaFin = fechaFin;
+
   const query = new URLSearchParams(params).toString();
   const response = await fetch(`${import.meta.env.VITE_LARAVEL_API_URL}/list/horarios?${query}`, {
     headers: {

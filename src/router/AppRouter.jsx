@@ -7,7 +7,6 @@ import ReservaPage from '../reservas/pages/ReservaPage'
 import NuevoAmbiente from '../reservas/layout/NuevoAmbiente'
 import AmbientesPage from '../pages/ambientesPage/AmbientesPage'
 import SolicitudesPage from '../pages/solicitudesPage/SolicitudesPage';
-import HabilitarFechaPage from '../pages/habilitarFechaPage/HabilitarFechaPage'
 import { Visualizacion } from '../reservas/pages/Visualizacion'
 import ReservaDocente from '../reservas/pages/ReservaDocente'
 import RequireAuth from './RequireAuth'
@@ -35,7 +34,6 @@ const AppRouter = () => {
         <Route path='carga-masiva' element={<CargaMasivaPage />} />
         <Route path='ambientes' element={<AmbientesPage />} />
         <Route path='solicitudes' element={<SolicitudesPage />} />
-        <Route path="visualizar-horario" element={<HabilitarFechaPage />} />
         <Route path="visualizar" element={<Visualizacion />} />
         <Route path="reservaD" element={<ReservaDocente />} />
         <Route path='signup' element={<SignUpPage />} />
@@ -57,4 +55,3 @@ const AppRouter = () => {
 }
 
 export default AppRouter;
-

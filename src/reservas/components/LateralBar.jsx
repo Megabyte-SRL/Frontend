@@ -70,9 +70,6 @@ const LateralBar = ({ anchoCaja = 240 }) => {
               <ListItemButton id='verificar-solicitudes' onClick={() => handleOtherItemClick('/dashboard/verificar-solicitudes')}>
                 <ListItemText primary='Verificar solicitudes' />
               </ListItemButton>
-              <ListItemButton id='ver-button' onClick={() => handleOtherItemClick('/dashboard/visualizar-horario')}>
-                <ListItemText primary="Habilitar Fecha" />
-              </ListItemButton>
               <ListItemButton id='registrar-usuario-button' onClick={() => handleOtherItemClick('/dashboard/signup')}>
                 <ListItemText primary="Usuarios" />
               </ListItemButton>
