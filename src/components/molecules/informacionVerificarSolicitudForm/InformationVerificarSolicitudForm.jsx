@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { Box, Button, Grid, Typography } from '@mui/material';
 
 const InformationVerificarSolicitudForm = ({
@@ -41,13 +42,13 @@ const InformationVerificarSolicitudForm = ({
             <Typography variant="body1" align="left"><strong>Horario:</strong> {row.horarioDisponible.horario}</Typography>
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="body1" align="right"><strong>Capacidad:</strong> {row.horarioDisponible.capacidad}</Typography>
+            <Typography variant="body1" align="right"><strong>Capacidad:</strong> {row.capacidadReserva}</Typography>
           </Grid>
           <Grid item xs={6}>
             <Typography variant="body1" align="left"><strong>Prioridad:</strong> {row.prioridad}</Typography>
           </Grid>
           <Grid item xs={12}>
-            <Typography variant="body1" align="center"><strong>Docente solicitante:</strong> {row.docenteSolicitante.nombre} (ID: {row.docenteSolicitante.id})</Typography>
+            <Typography variant="body1" align="center"><strong>Docente solicitante:</strong> {row.docenteSolicitante.nombre} ({row.docenteSolicitante.apellido})</Typography>
           </Grid>
         </Grid>
       </Box>
