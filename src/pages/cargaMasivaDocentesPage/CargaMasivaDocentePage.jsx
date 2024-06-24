@@ -14,6 +14,7 @@ const CargaMasivaDocentePage = () => {
     { id: 'Tipo', label: 'Tipo'},
     { id: 'Nombre', label: 'Nombre'},
     { id: 'Apellido', label: 'Apellido'},
+    { id: 'Email', label: 'Email'},
   ];
 
   const { openSnackbar } = useSnackbar();

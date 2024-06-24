@@ -5,9 +5,11 @@ import * as Yup from 'yup';
 import {
   Box,
   Button,
+  Checkbox,
   Chip,
   CircularProgress,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -84,8 +86,11 @@ const SolicitarAmbienteForm = ({
 
   const validationSchema = Yup.object({
     grupo: Yup.string().required('La materia es requerida'),
-    capacidad: Yup.number().required('La capacidad es requerida'),
+    capacidad: Yup.number()
+      .required('La capacidad es requerida')
+      .min(10, 'La capacidad debe ser mayor o igual a 10'),
     tipoReserva: Yup.string().required('El tipo de reserva es requerido'),
+    combinadosCheckbox: Yup.boolean(),
   });
 
   return (
@@ -94,17 +99,12 @@ const SolicitarAmbienteForm = ({
         grupo: '',
         capacidad: 0,
         tipoReserva: '',
-        docentes: []
+        docentes: [],
+        combinadosCheckbox: false,
       }}
       validationSchema={validationSchema}
       onSubmit={async (values, { resetForm, setSubmitting }) => {
-        if (values.capacidad === 0) {
-          // Si la capacidad es 0, no enviar el formulario y mostrar un mensaje de error
-          alert('La capacidad no puede ser 0');
-          return;
-        }
-
-        // Si la capacidad no es 0, enviar el formulario
+        // Submit the form only if validation passes
         onSubmit({ ...values, id: row.id });
         resetForm();
         setSubmitting(false);
@@ -163,50 +163,67 @@ const SolicitarAmbienteForm = ({
                 </Field>
               </FormControl>
             </Grid>
+
             <Grid item xs={12} sx={{ mt: 2 }}>
-              <FormControl fullWidth>
-                <InputLabel>Docentes combinados</InputLabel>
-                {loadingDocentes ? (
-                  <CircularProgress size={24} />
-                ) : (
+              <FormControlLabel
+                control={
                   <Field
-                    as={Select}
-                    name='docentes'
-                    label='Dodentes combinados'
-                    multiple
-                    value={values.docentes}
-                    onChange={(event) => {
-                      setFieldValue('docentes', event.target.value);
-                    }}
-                    renderValue={(selected) => (
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {selected.map((value) => (
-                          <Chip
-                            key={value}
-                            label={obtenerDocenteNombreById(value)}
-                          />
-                        ))}
-                      </Box>
-                    )}
-                    fullWidth
-                    MenuProps={{
-                      PaperProps: {
-                        style: {
-                          maxHeight: 48 * 4.5 + 8,
-                          width: 250,
-                        },
-                      },
-                    }}
-                  >
-                    {docentes.map(docente => (
-                      <MenuItem key={docente.id} value={docente.id}>
-                        {docente.nombre} {docente.apellido}
-                      </MenuItem>
-                    ))}
-                  </Field>
-                )}
-              </FormControl>
+                    as={Checkbox}
+                    name="combinadosCheckbox"
+                    type="checkbox"
+                    color="primary"
+                  />
+                }
+                label="Docentes combinados"
+              />
             </Grid>
+
+            {values.combinadosCheckbox && (
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <FormControl fullWidth>
+                  <InputLabel>Docentes combinados</InputLabel>
+                  {loadingDocentes ? (
+                    <CircularProgress size={24} />
+                  ) : (
+                    <Field
+                      as={Select}
+                      name='docentes'
+                      label='Docentes combinados'
+                      multiple
+                      value={values.docentes}
+                      onChange={(event) => {
+                        setFieldValue('docentes', event.target.value);
+                      }}
+                      renderValue={(selected) => (
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                          {selected.map((value) => (
+                            <Chip
+                              key={value}
+                              label={obtenerDocenteNombreById(value)}
+                            />
+                          ))}
+                        </Box>
+                      )}
+                      fullWidth
+                      MenuProps={{
+                        PaperProps: {
+                          style: {
+                            maxHeight: 48 * 4.5 + 8,
+                            width: 250,
+                          },
+                        },
+                      }}
+                    >
+                      {docentes.map(docente => (
+                        <MenuItem key={docente.id} value={docente.id}>
+                          {docente.nombre} {docente.apellido}
+                        </MenuItem>
+                      ))}
+                    </Field>
+                  )}
+                </FormControl>
+              </Grid>
+            )}
 
             <Grid item xs={12} sx={{ mt: 2, display: 'flex', justifyContent: 'space-between' }}>
               <Button
