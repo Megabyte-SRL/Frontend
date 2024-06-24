@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
-import FlagIcon from '@mui/icons-material/Flag';
 import { useSnackbar } from '../../reservas/organisms/snackbarProvider/SnackbarProvider';
 import useTable from '../../hooks/useTable';
 import CustomSearchableTable from '../../components/organisms/customSearchableTable/CustomSearchableTable';

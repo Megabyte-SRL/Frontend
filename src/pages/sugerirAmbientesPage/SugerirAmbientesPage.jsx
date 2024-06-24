@@ -88,14 +88,8 @@ const SugerirAmbientesPage = () => {
     setCapacidadTotalSeleccionada((prevTotal) => 
       isChecked ? prevTotal + selectedCapacidad : prevTotal - selectedCapacidad
     );
+    obtenerFilas({ ...selectedRows, [id]: event.target.checked }); // Llamar obtenerFilas aquí
   };
-
-  useEffect(() => {
-    const selectedRowCountElement = document.querySelector('.MuiDataGrid-selectedRowCount.css-de9k3v-MuiDataGrid-selectedRowCount');
-    if (selectedRowCountElement) {
-      selectedRowCountElement.remove();
-    }
-  }, []);
 
   const { openSnackbar } = useSnackbar();
 
@@ -165,6 +159,11 @@ const SugerirAmbientesPage = () => {
   const handleHoraFilterChange = (event) => {
     const newHoraFilter = event.target.value;
     setHoraFilter(newHoraFilter);
+  };
+
+  const obtenerFilas = (selectedRows) => {
+    const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
+    setAmbienteSeleccionado(selectedIds);
   };
 
   const filteredData = React.useMemo(() => {
