@@ -47,6 +47,8 @@ const NavBar = ({ anchoCaja }) => {
     }
   };
 
+  const isAdmin = sessionStorage.getItem('rol') === 'admin';
+
   return (
     <AppBar position='fixed' 
       sx={{
@@ -62,9 +64,11 @@ const NavBar = ({ anchoCaja }) => {
             AULAS FCYT
           </Typography>
         </Grid>
-        <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
-          <BadgeNotify onClick={handleOpenUserMenu} />
-        </Box>
+        {isAdmin && (
+          <Box sx={{ flexGrow: 0, margin: '0 20px' }}>
+            <BadgeNotify onClick={handleOpenUserMenu} />
+          </Box>
+        )}
         <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Configuración">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>

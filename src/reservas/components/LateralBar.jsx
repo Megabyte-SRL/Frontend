@@ -89,7 +89,7 @@ const LateralBar = ({ anchoCaja = 240 }) => {
                 <ListItemText primary='Crear solicitud ambiente' />
               </ListItemButton>
               <ListItemButton id='notificaciones-sugerencias' onClick={() => handleOtherItemClick('/dashboard/notificaciones-sugerencias')}>
-                <ListItemText primary="Notificaciones sugerencias" />
+                <ListItemText primary="Sugerencias" />
               </ListItemButton>
             </List>
           )

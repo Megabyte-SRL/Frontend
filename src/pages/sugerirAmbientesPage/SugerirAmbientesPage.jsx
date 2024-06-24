@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { Box, Button, Chip, Grid, Paper, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Checkbox } from '@mui/material';
 import { red, yellow } from '@mui/material/colors';
 import { Formik } from 'formik';
@@ -73,19 +72,22 @@ const SugerirAmbientesPage = () => {
   const [selectedRows, setSelectedRows] = useState({});
   const [fechaFilter, setFechaFilter] = useState(state.horarioDisponible.fecha ? [state.horarioDisponible.fecha] : []);
   const [horaFilter, setHoraFilter] = useState(state.horarioDisponible.horario ? [state.horarioDisponible.horario] : []);
-  const [capacidadFilter, setCapacidadFilter] = useState(state.horarioDisponible.capacidad ? [state.horarioDisponible.capacidad] : []);
-
   const horas = ['6:45:00 - 8:15:00', '8:15:00 - 9:45:00', '9:45:00 - 11:15:00', '11:15:00 - 12:45:00', '12:45:00 - 14:15:00', '14:15:00 - 15:45:00', '15:45:00 - 17:15:00', '17:15:00 - 18:45:00', '18:45:00 - 20:15:00', '20:15:00 - 21:45:00'];
   const [ambienteSeleccionado, setAmbienteSeleccionado] = useState([]);
+  const [capacidadTotalSeleccionada, setCapacidadTotalSeleccionada] = useState(0); // Nuevo estado
 
   const handleCheckboxChange = (event, id) => {
-    setSelectedRows((prev) => (
-      {
-        ...prev,
-        [id]: event.target.checked,
-      }
-    ));
-    obtenerFilas({ ...selectedRows, [id]: event.target.checked }); // Llamar obtenerFilas aquí
+    const isChecked = event.target.checked;
+    const selectedCapacidad = data.find(row => row.id === id).capacidad;
+
+    setSelectedRows((prev) => ({
+      ...prev,
+      [id]: isChecked,
+    }));
+
+    setCapacidadTotalSeleccionada((prevTotal) => 
+      isChecked ? prevTotal + selectedCapacidad : prevTotal - selectedCapacidad
+    );
   };
 
   useEffect(() => {
@@ -156,21 +158,30 @@ const SugerirAmbientesPage = () => {
   };
 
   const handleFechaFilterChange = (event) => {
-    setFechaFilter(event.target.value);
+    const newFechaFilter = event.target.value;
+    setFechaFilter(newFechaFilter);
   };
 
   const handleHoraFilterChange = (event) => {
-    setHoraFilter(event.target.value);
+    const newHoraFilter = event.target.value;
+    setHoraFilter(newHoraFilter);
   };
 
-  const handleCapacidadFilterChange = (event) => {
-    setCapacidadFilter(event.target.value);
-  };
-
-  const obtenerFilas = (selectedRows) => {
-    const selectedIds = Object.keys(selectedRows).filter(id => selectedRows[id]);
-    setAmbienteSeleccionado(selectedIds);
-  };
+  const filteredData = React.useMemo(() => {
+    return data.filter(row => {
+      // Filtro por fecha
+      if (fechaFilter && row.fecha !== fechaFilter) {
+        return false;
+      }
+      
+      // Filtro por horario
+      if (horaFilter.length > 0) {
+        return horaFilter.includes(row.horario);
+      }
+      
+      return true; // Si no hay filtros aplicados, muestra todas las filas
+    });
+  }, [data, fechaFilter, horaFilter]);
 
   return (
     <Formik>
@@ -202,53 +213,55 @@ const SugerirAmbientesPage = () => {
 
               <Grid container spacing={2}>
                 <Grid item xs={2} sx={{ mt: 2, ml: 5 }}>
-                  <TextField
-                    name='fecha'
-                    type='date'
-                    label='Fecha'
-                    variant='outlined'
-                    InputLabelProps={{ shrink: true }}
-                    fullWidth
-                    value={fechaFilter}
-                    onChange={handleFechaFilterChange}
-                  />
+                <TextField
+                  name='fecha'
+                  type='date'
+                  label='Fecha'
+                  variant='outlined'
+                  InputLabelProps={{ shrink: true }}
+                  fullWidth
+                  value={fechaFilter}
+                  onChange={handleFechaFilterChange}
+                />
                 </Grid>
 
                 <Grid item xs={2.3} sx={{ mt: 2, ml: 25 }}>
-                  <FormControl fullWidth>
-                    <InputLabel>Horarios</InputLabel>
-                    <Select
-                      name='hora'
-                      label='Hora'
-                      multiple
-                      value={horaFilter}
-                      onChange={handleHoraFilterChange}
-                    >
-                      {horas.map((hora) => (
-                        <MenuItem key={hora} value={hora}>
-                          {hora}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel>Horarios</InputLabel>
+                  <Select
+                    name='hora'
+                    label='Hora'
+                    multiple
+                    value={horaFilter}
+                    onChange={handleHoraFilterChange}
+                  >
+                    {horas.map((hora) => (
+                      <MenuItem key={hora} value={hora}>
+                        {hora}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
                 </Grid>
 
                 <Grid item xs={2.3} sx={{ mt: 2, ml: 5 }}>
                   <TextField
                     name='capacidad'
                     type='number'
-                    label='Capacidad Mínima'
+                    label='Capacidad Solicitada'
                     variant='outlined'
                     fullWidth
-                    value={capacidadFilter}
-                    onChange={handleCapacidadFilterChange}
+                    value={state.capacidad}
+                    InputProps={{
+                      readOnly: true,
+                    }}
                   />
                 </Grid>
 
                 <Grid item xs={12} sx={{ mt: 2 }}>
                   <CustomSearchableTable
                     columns={columns}
-                    data={data}
+                    data={filteredData}
                     order={order}
                     orderBy={orderBy}
                     onSort={handleSort}
@@ -270,7 +283,8 @@ const SugerirAmbientesPage = () => {
                     type='submit'
                     color='primary'
                     variant='contained'
-                    onClick={() => handleOnSubmitSugerencias()}
+                    onClick={handleOnSubmitSugerencias}
+                    disabled={capacidadTotalSeleccionada < state.capacidad} // Botón deshabilitado si la capacidad es menor
                   >
                     Enviar Sugerencia
                   </Button>
